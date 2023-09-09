@@ -1,11 +1,19 @@
 import React from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import HomePage from "./components/HomePage";
+
+import { LandingPage, HomeLayout } from "./pages";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />,
+    element: <HomeLayout />,
+    errorElement: <h1>404 Page Not Found</h1>,
+    children: [
+      {
+        index: true,
+        element: <LandingPage />,
+      },
+    ],
   },
 ]);
 
