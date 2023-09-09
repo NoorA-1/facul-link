@@ -4,7 +4,6 @@ import { Outlet } from "react-router-dom";
 const HomePage = () => {
   return (
     <>
-      <nav>Nav Bar</nav>
       <Outlet />
     </>
   );
