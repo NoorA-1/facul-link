@@ -5,13 +5,15 @@ import main from "../assets/main.svg";
 import AccountBoxOutlinedIcon from "@mui/icons-material/AccountBoxOutlined";
 import WorkHistoryOutlinedIcon from "@mui/icons-material/WorkHistoryOutlined";
 import InventoryOutlinedIcon from "@mui/icons-material/InventoryOutlined";
+import ChevronRightOutlinedIcon from "@mui/icons-material/ChevronRightOutlined";
 import HomeCard from "./HomeCard";
+import { Footer } from "../components";
 
 const LandingPage = () => {
   return (
     <>
       <div className="vh-100">
-        <nav className="vh-10 mb-md-5">
+        <nav className=" mb-md-5">
           <div className="float-end mt-4 me-4">
             <Link to="/sign-in">
               <Button
@@ -52,7 +54,7 @@ const LandingPage = () => {
           </div>
         </nav>
         <div className="container mb-5 p-sm-0 p-5">
-          <div className="row">
+          <div className="row flex-column-reverse flex-lg-row">
             <div className="slogan-container col-12 col-lg-7">
               <h1 className="fw-bold display-md-2  display-4">
                 Elevate <br /> Your Faculty Career
@@ -66,7 +68,8 @@ const LandingPage = () => {
                 <Button
                   size="large"
                   variant="contained"
-                  className="mb-5 d-block mx-auto mx-lg-0"
+                  className="mb-5"
+                  endIcon={<ChevronRightOutlinedIcon />}
                   sx={{
                     color: "#FFF",
                     backgroundColor: "secondary.main",
@@ -78,7 +81,7 @@ const LandingPage = () => {
                 </Button>
               </Link>
             </div>
-            <div className="mt-5 col-12 col-lg-5 ps-5 py-5 py-lg-0">
+            <div className="d-flex justify-content-center mt-5 col-12 col-lg-5 ps-lg-5 ps-0 py-5 py-lg-0">
               <img
                 className="img-fluid"
                 style={{ marginTop: "-6rem" }}
@@ -109,12 +112,7 @@ const LandingPage = () => {
             </HomeCard>
           </div>
         </section>
-        <footer className="p-3 d-flex align-items-center justify-content-center col-12 ">
-          <h6>
-            © 2023 <span className="fw-bold">Facul-Link</span>, All Rights
-            Reserved
-          </h6>
-        </footer>
+        <Footer />
       </div>
     </>
   );

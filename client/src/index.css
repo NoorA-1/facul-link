@@ -37,6 +37,21 @@ nav {
 .card p {
   color: #4e4d4d;
 }
+.sign-up-bg {
+  background-color: #eee;
+}
+.colored-line {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background-color: #0a9396;
+  height: 8px;
+  width: 100%;
+}
+
 footer {
   background-color: #001219;
   color: white;
