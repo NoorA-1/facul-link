@@ -9,6 +9,7 @@ Frontend Packages:
   <li>Vite</li>
   <li>Material UI</li>
   <li>React Router</li>
+  <li>React Icons</li>
 </ol>
 
 Backend Packages:
