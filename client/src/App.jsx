@@ -1,13 +1,21 @@
 import React from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
-import { LandingPage, HomeLayout, SignUpPage, SignInPage } from "./pages";
+import {
+  LandingPage,
+  HomeLayout,
+  SignUpPage,
+  TeacherSignUpPage,
+  SignInPage,
+  ErrorPage,
+  EmployerSignUpPage,
+} from "./pages";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <HomeLayout />,
-    errorElement: <h1>404 Page Not Found</h1>,
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
@@ -20,6 +28,14 @@ const router = createBrowserRouter([
       {
         path: "/sign-in",
         element: <SignInPage />,
+      },
+      {
+        path: "/sign-up-teacher",
+        element: <TeacherSignUpPage />,
+      },
+      {
+        path: "/sign-up-employer",
+        element: <EmployerSignUpPage />,
       },
     ],
   },

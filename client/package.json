@@ -14,10 +14,13 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.8",
     "@mui/material": "^5.14.7",
+    "formik": "^2.4.4",
+    "mui-tel-input": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.11.0",
-    "react-router-dom": "^6.15.0"
+    "react-router-dom": "^6.15.0",
+    "yup": "^1.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
