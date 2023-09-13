@@ -10,6 +10,7 @@ Frontend Packages:
   <li>Material UI</li>
   <li>React Router</li>
   <li>React Icons</li>
+  <li>MUI Tel Input</li>
 </ol>
 
 Backend Packages:
