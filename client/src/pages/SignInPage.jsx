@@ -37,8 +37,10 @@ const SignIn = () => {
               onBlur={handleBlur}
               onChange={handleChange}
               value={values.email}
-              helperText={touched.email && errors.email ? errors.email : ""}
-              error={errors.email && touched.email && true}
+              helperText={
+                Boolean(errors.email) && Boolean(touched.email) && errors.email
+              }
+              error={Boolean(touched.email) && Boolean(errors.email)}
             />
             <TextField
               variant="outlined"
@@ -50,9 +52,11 @@ const SignIn = () => {
               onChange={handleChange}
               value={values.password}
               helperText={
-                touched.password && errors.password ? errors.password : ""
+                Boolean(errors.password) &&
+                Boolean(touched.password) &&
+                errors.password
               }
-              error={errors.password && touched.password && true}
+              error={Boolean(touched.password) && Boolean(errors.password)}
             />
             <Button
               type="submit"
