@@ -17,6 +17,20 @@ Frontend Packages:
 
 Backend Packages:
 <ol>
-  <li></li>
+  <li>Express</li>
+  <li>Express-async-erros</li>
+  <li>Express-validator</li>
+  <li>Bcrypt</li>
+  <li>Concurrently</li>
+  <li>Cookie-parser</li>
+  <li>Dayjs</li>
+  <li>Dotenv</li>
+  <li>Http-status-codes</li>
+  <li>Jsonwebtoken</li>
+  <li>Mongoose</li>
+  <li>Morgan</li>
+  <li>Multer</li>
+  <li>Nanoid</li>
+  <li>Nodemon</li>
 </ol>
 
