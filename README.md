@@ -13,6 +13,7 @@ Frontend Packages:
   <li>MUI Tel Input (unused)</li>
   <li>Formik</li>
   <li>Yup</li>
+  <li>Axios</li>
 </ol>
 
 Backend Packages:
