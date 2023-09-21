@@ -14,7 +14,10 @@ router.post("/sign-up", validateSignUp, async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({
+        // errors: errors.array(),
+        message: errors.array().map((err) => err.msg),
+      });
     }
     // const isFirstAccount = User.countDocuments() ===0;
     // req.body.role = isFirstAccount ? "admin" : req.body.role;
@@ -27,6 +30,12 @@ router.post("/sign-up", validateSignUp, async (req, res) => {
       password,
       role,
     });
+    const checkUser = await User.findOne({ email });
+    if (checkUser) {
+      return res
+        .status(400)
+        .json({ message: "User with this email already exists" });
+    }
     let newUserType;
     if (user.role === "teacher") {
       newUserType = new Teacher({ userId: user._id });
@@ -47,18 +56,19 @@ router.post("/sign-in", validateSignIn, async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const { email } = req.body;
-    const user = await User.findOne({ email });
+    const { email, password } = req.body;
+    const user = await User.findOne({ email, password });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "Incorrect email or password" });
     }
-
     const token = createJWTToken({ userId: user._id, role: user.role });
 
     const oneDayTime = 1000 * 60 * 60 * 24; //One day in milliseconds
 
+    // const tenSeconds = 1000 * 10;
+
     res.cookie("token", token, {
-      httpOnly: true,
+      // httpOnly: false,
       expires: new Date(Date.now() + oneDayTime),
     });
 
@@ -71,7 +81,6 @@ router.post("/sign-in", validateSignIn, async (req, res) => {
 router.get("/sign-out", (req, res) => {
   try {
     res.cookie("token", "loguout", {
-      httpOnly: true,
       expires: new Date(Date.now()),
     });
     res.status(200).json({ message: "User logged out", error: false });

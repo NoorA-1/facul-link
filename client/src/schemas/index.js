@@ -11,12 +11,11 @@ export const signInValidationSchema = Yup.object({
   email: Yup.string()
     .matches(emailRegex, "Please enter valid email.")
     .required("Please enter email"),
-  password: Yup.string()
-    .matches(passwordRegex, "Please enter valid password")
-    .required("Please enter password"),
+  password: Yup.string().required("Please enter password"),
 });
 
-const lettersSpaceOnlyRegex = new RegExp("^[a-zA-Z][a-zA-Z ]+$");
+// const lettersSpaceOnlyRegex = new RegExp("^[a-zA-Z][a-zA-Z ]+$");
+const lettersSpaceOnlyRegex = new RegExp("^[a-zA-Z]+( [a-zA-Z]+)*$");
 
 export const teacherSignUpValidationSchema = new Yup.object({
   firstname: Yup.string()
@@ -32,7 +31,10 @@ export const teacherSignUpValidationSchema = new Yup.object({
     .matches(emailRegex, "Please enter valid email.")
     .required("Please enter email"),
   password: Yup.string()
-    .matches(passwordRegex, "Please enter valid password")
+    .matches(
+      passwordRegex,
+      "Password should contain minimum eight characters (one uppercase, one numeric, one special, no whitespaces)"
+    )
     .required("Please enter password"),
   conpassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords do not match")
@@ -50,7 +52,7 @@ export const employerSignUpValidationSchema = new Yup.object({
     .required("Please enter last name"),
   gender: Yup.string().required("Please enter gender"),
   universityname: Yup.string()
-    .min(3, "University name must be at least 3 characters long")
+    .min(5, "University name must be at least 5 characters long")
     .matches(lettersSpaceOnlyRegex, "Invalid university name")
     .required("Please enter university name"),
   departmentname: Yup.string()

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FormWrapper, InitialForm } from "../components";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -6,9 +6,12 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormLabel from "@mui/material/FormLabel";
-import { Link } from "react-router-dom";
+import Alert from "@mui/material/Alert";
+import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { employerSignUpValidationSchema } from "../schemas";
+
+import http from "../utils/http";
 
 const initialValues = {
   firstname: "",
@@ -22,14 +25,61 @@ const initialValues = {
 };
 
 const EmployerSignUpPage = () => {
+  const navigate = useNavigate();
+  const [alertError, setAlertError] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const submitSignUpData = async (data, actions) => {
+    try {
+      await http.post("/auth/sign-up", data);
+      console.log(data);
+      setAlertError("");
+      setIsSuccess(true);
+      actions.resetForm();
+      setTimeout(() => {
+        navigate("/sign-in");
+      }, 1000);
+    } catch (error) {
+      const { message } = error.response.data;
+      setAlertError(message);
+      console.log(error);
+    }
+  };
+
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
       initialValues,
       validationSchema: employerSignUpValidationSchema,
-      onSubmit: (values) => {
-        console.log(values);
+      onSubmit: (values, actions) => {
+        const trimmedValues = {
+          ...values,
+          firstname: values.firstname.trim(),
+          lastname: values.lastname.trim(),
+        };
+        console.log(trimmedValues);
+
+        const role = "employer";
+        submitSignUpData({ ...trimmedValues, role }, actions);
       },
     });
+
+  const MessageBox = () => {
+    if (alertError) {
+      return (
+        <Alert variant="filled" severity="error">
+          {alertError}
+        </Alert>
+      );
+    }
+    if (isSuccess) {
+      return (
+        <Alert variant="filled" severity="success">
+          Sign Up Successful
+        </Alert>
+      );
+    }
+  };
+
   return (
     <FormWrapper>
       <InitialForm>
@@ -37,6 +87,7 @@ const EmployerSignUpPage = () => {
           Sign Up as Employer
         </h3>
         <hr />
+        <MessageBox />
         <form onSubmit={handleSubmit}>
           <div className="px-sm-5">
             <div className="d-flex gap-3">
@@ -44,7 +95,7 @@ const EmployerSignUpPage = () => {
                 variant="outlined"
                 type="text"
                 label="First Name"
-                className="mt-4"
+                className="mt-4 w-100"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 name="firstname"
@@ -60,7 +111,7 @@ const EmployerSignUpPage = () => {
                 variant="outlined"
                 type="text"
                 label="Last Name"
-                className="mt-4 "
+                className="mt-4 w-100"
                 name="lastname"
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -186,6 +237,7 @@ const EmployerSignUpPage = () => {
               variant="contained"
               fullWidth
               className="mt-5 mb-4"
+              disabled={isSuccess}
             >
               Sign Up
             </Button>

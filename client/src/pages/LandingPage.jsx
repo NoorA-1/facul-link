@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Button from "@mui/material/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import main from "../assets/main.svg";
 import AccountBoxOutlinedIcon from "@mui/icons-material/AccountBoxOutlined";
 import WorkHistoryOutlinedIcon from "@mui/icons-material/WorkHistoryOutlined";

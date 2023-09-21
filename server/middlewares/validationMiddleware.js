@@ -9,13 +9,13 @@ export const validateSignUp = [
     .notEmpty()
     .withMessage("email is required")
     .isEmail()
-    .withMessage("email is invalid")
-    .custom(async (email) => {
-      const checkUser = await User.findOne({ email });
-      if (checkUser) {
-        throw new Error("User already exists");
-      }
-    }),
+    .withMessage("email is invalid"),
+  // .custom(async (email) => {
+  //   const checkUser = await User.findOne({ email });
+  //   if (checkUser) {
+  //     throw new Error("User already exists");
+  //   }
+  // }),
   body("password").notEmpty().withMessage("password is required"),
   body("role").notEmpty().withMessage("role is required"),
 ];
