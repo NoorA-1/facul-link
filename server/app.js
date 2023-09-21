@@ -9,15 +9,20 @@ const app = express();
 
 //routers
 import userAuthRouter from "./routes/userAuthRouter.js";
+import userRouter from "./routes/userRouter.js";
+
+import cookieParser from "cookie-parser";
 
 app.use(morgan("dev"));
+app.use(cookieParser());
 app.use(express.json());
 
 app.get("/api/v1/", (req, res) => {
-  res.send("Hello world");
+  res.json({ message: "Hello world" });
 });
 
 app.use("/api/v1/auth", userAuthRouter);
+app.use("/api/v1/users", userRouter);
 
 app.use("*", (req, res) => {
   res.status(404).send({ message: "404 Not Found" });

@@ -1,5 +1,7 @@
 import * as Yup from "yup";
 
+const emailRegex = new RegExp("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
+
 //Minimum eight characters, at least one uppercase letter, one number and one special character
 const passwordRegex = new RegExp(
   "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$"
@@ -7,7 +9,7 @@ const passwordRegex = new RegExp(
 
 export const signInValidationSchema = Yup.object({
   email: Yup.string()
-    .email("Please enter valid email.")
+    .matches(emailRegex, "Please enter valid email.")
     .required("Please enter email"),
   password: Yup.string()
     .matches(passwordRegex, "Please enter valid password")
@@ -27,7 +29,7 @@ export const teacherSignUpValidationSchema = new Yup.object({
     .required("Please enter last name"),
   gender: Yup.string().required("Please enter gender"),
   email: Yup.string()
-    .email("Please enter valid email.")
+    .matches(emailRegex, "Please enter valid email.")
     .required("Please enter email"),
   password: Yup.string()
     .matches(passwordRegex, "Please enter valid password")
@@ -56,7 +58,7 @@ export const employerSignUpValidationSchema = new Yup.object({
     .matches(lettersSpaceOnlyRegex, "Invalid department name")
     .required("Please enter department name"),
   email: Yup.string()
-    .email("Please enter valid email.")
+    .matches(emailRegex, "Please enter valid email.")
     .required("Please enter email"),
   password: Yup.string()
     .matches(passwordRegex, "Please enter valid password")

@@ -16,6 +16,8 @@ const SignIn = () => {
     useFormik({
       initialValues,
       validationSchema: signInValidationSchema,
+      // validateOnChange: false,
+      // validateOnBlur: false,
       onSubmit: (values) => {
         console.log(values);
       },

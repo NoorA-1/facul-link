@@ -8,6 +8,7 @@ import {
   validateSignUp,
   validateSignIn,
 } from "../middlewares/validationMiddleware.js";
+import { createJWTToken } from "../utils/tokenUtils.js";
 
 router.post("/sign-up", validateSignUp, async (req, res) => {
   try {
@@ -26,14 +27,14 @@ router.post("/sign-up", validateSignUp, async (req, res) => {
       password,
       role,
     });
-    let userRole;
+    let newUserType;
     if (user.role === "teacher") {
-      userRole = new Teacher({ userId: user._id });
+      newUserType = new Teacher({ userId: user._id });
     } else if (user.role === "employer") {
-      userRole = new UniEmployer({ userId: user._id });
+      newUserType = new UniEmployer({ userId: user._id });
     }
     await user.save();
-    await userRole.save();
+    await newUserType.save();
     res.status(200).json({ message: "User created successfully" });
   } catch (error) {
     console.log(error);
@@ -51,7 +52,29 @@ router.post("/sign-in", validateSignIn, async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    res.send("Sign in");
+
+    const token = createJWTToken({ userId: user._id, role: user.role });
+
+    const oneDayTime = 1000 * 60 * 60 * 24; //One day in milliseconds
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      expires: new Date(Date.now() + oneDayTime),
+    });
+
+    res.status(200).json({ message: "Log In successful", error: false });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.get("/sign-out", (req, res) => {
+  try {
+    res.cookie("token", "loguout", {
+      httpOnly: true,
+      expires: new Date(Date.now()),
+    });
+    res.status(200).json({ message: "User logged out", error: false });
   } catch (error) {
     console.log(error);
   }
