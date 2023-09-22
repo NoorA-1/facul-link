@@ -18,6 +18,8 @@ import {
   ProfileSetup,
 } from "./pages";
 
+import { loader as profileSetupLoader } from "./pages/ProfileSetup";
+
 // const token = Cookies.get("token");
 // if (token) {
 //   console.log(token);
@@ -31,6 +33,8 @@ const App = () => {
   useEffect(() => {
     if (cookies.token) {
       setToken(cookies.token);
+    } else {
+      setToken(null);
     }
   }, [cookies, setCookie]);
   useEffect(() => {
@@ -73,6 +77,8 @@ const App = () => {
         {
           path: "/profile-setup",
           element: token ? <ProfileSetup /> : <Navigate to="/" />,
+          // element: <ProfileSetup />,
+          loader: profileSetupLoader,
         },
       ],
     },

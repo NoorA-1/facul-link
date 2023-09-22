@@ -13,7 +13,7 @@ const LandingPage = () => {
   return (
     <>
       <div className="vh-100">
-        <nav className=" mb-md-5">
+        <nav className="landing-nav mb-md-5">
           <div className="float-end mt-4 me-4">
             <Link to="/sign-in">
               <Button

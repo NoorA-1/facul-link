@@ -80,7 +80,7 @@ router.post("/sign-in", validateSignIn, async (req, res) => {
 
 router.get("/sign-out", (req, res) => {
   try {
-    res.cookie("token", "loguout", {
+    res.cookie("token", "signedout", {
       expires: new Date(Date.now()),
     });
     res.status(200).json({ message: "User logged out", error: false });

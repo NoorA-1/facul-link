@@ -110,7 +110,11 @@ const SignIn = () => {
               className="my-5"
               disabled={isSuccess}
             >
-              Sign In
+              {isSuccess ? (
+                <div className="spinner-border" role="status"></div>
+              ) : (
+                "Sign In"
+              )}
             </Button>
             <p className="text-center">
               Don't have an Account?{" "}
