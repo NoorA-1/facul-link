@@ -79,7 +79,7 @@ const ProfileSetup = () => {
           </Menu>
         </div>
       </nav>
-      <h1 className="text-center">Setup Profile</h1>
+      <h1 className="text-center">Complete Your Profile</h1>
     </div>
   );
 };

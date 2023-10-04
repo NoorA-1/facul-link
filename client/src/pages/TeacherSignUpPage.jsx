@@ -1,12 +1,18 @@
 import React, { useState } from "react";
 import { FormWrapper, InitialForm } from "../components";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormLabel from "@mui/material/FormLabel";
 import Alert from "@mui/material/Alert";
+import InputAdornment from "@mui/material/InputAdornment";
+import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { teacherSignUpValidationSchema } from "../schemas";
@@ -26,6 +32,18 @@ const TeacherSignUpPage = () => {
   const navigate = useNavigate();
   const [alertError, setAlertError] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState({
+    password: false,
+    conpassword: false,
+  });
+  const handleClickShowPassword = (name) => {
+    setShowPassword((prev) => {
+      return { ...prev, [name]: !prev[name] };
+    });
+  };
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
   const submitSignUpData = async (data, actions) => {
     try {
@@ -104,6 +122,13 @@ const TeacherSignUpPage = () => {
                   errors.firstname
                 }
                 error={Boolean(touched.firstname) && Boolean(errors.firstname)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <PersonOutlinedIcon />
+                    </InputAdornment>
+                  ),
+                }}
               />
               <TextField
                 variant="outlined"
@@ -120,6 +145,13 @@ const TeacherSignUpPage = () => {
                   errors.lastname
                 }
                 error={Boolean(touched.lastname) && Boolean(errors.lastname)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <PersonOutlinedIcon />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </div>
             <FormLabel className="mt-3" id="radio-buttons-group-label">
@@ -154,10 +186,17 @@ const TeacherSignUpPage = () => {
                 Boolean(errors.email) && Boolean(touched.email) && errors.email
               }
               error={Boolean(touched.email) && Boolean(errors.email)}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <EmailOutlinedIcon />
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               variant="outlined"
-              type="password"
+              type={showPassword.password ? "text" : "password"}
               label="Password"
               fullWidth
               className="mb-3"
@@ -171,10 +210,27 @@ const TeacherSignUpPage = () => {
                 errors.password
               }
               error={Boolean(touched.password) && Boolean(errors.password)}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => handleClickShowPassword("password")}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {showPassword.password ? (
+                        <VisibilityOff />
+                      ) : (
+                        <Visibility />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               variant="outlined"
-              type="password"
+              type={showPassword.conpassword ? "text" : "password"}
               label="Confirm Password"
               fullWidth
               name="conpassword"
@@ -189,6 +245,23 @@ const TeacherSignUpPage = () => {
               error={
                 Boolean(touched.conpassword) && Boolean(errors.conpassword)
               }
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => handleClickShowPassword("conpassword")}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {showPassword.conpassword ? (
+                        <VisibilityOff />
+                      ) : (
+                        <Visibility />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <Button
               type="submit"

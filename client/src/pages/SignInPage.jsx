@@ -4,6 +4,11 @@ import { Link, useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import { useFormik } from "formik";
 import { signInValidationSchema } from "../schemas";
 import http from "../utils/http";
@@ -13,10 +18,16 @@ const initialValues = {
   password: "",
 };
 
-const SignIn = () => {
+const SignInPage = () => {
   const navigate = useNavigate();
   const [alertError, setAlertError] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
   const submitSignInData = async (data, actions) => {
     try {
@@ -86,10 +97,17 @@ const SignIn = () => {
                 Boolean(errors.email) && Boolean(touched.email) && errors.email
               }
               error={Boolean(touched.email) && Boolean(errors.email)}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <EmailOutlinedIcon />
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               variant="outlined"
-              type="password"
+              type={showPassword ? "text" : "password"}
               label="Password"
               name="password"
               fullWidth
@@ -102,6 +120,19 @@ const SignIn = () => {
                 errors.password
               }
               error={Boolean(touched.password) && Boolean(errors.password)}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <Button
               type="submit"
@@ -129,4 +160,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignInPage;
