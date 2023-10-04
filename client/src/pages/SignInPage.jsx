@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FormWrapper, InitialForm } from "../components";
+import { Wrapper, InitialForm, Header, Footer } from "../components";
 import { Link, useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -76,87 +76,96 @@ const SignInPage = () => {
   };
 
   return (
-    <FormWrapper>
-      <InitialForm>
-        <h3 className="text-center fw-bold text-uppercase mt-2">Sign In</h3>
-        <hr />
-        <MessageBox />
-        <form onSubmit={handleSubmit}>
-          <div className="px-5">
-            <TextField
-              variant="outlined"
-              type="email"
-              label="Email"
-              name="email"
-              fullWidth
-              className="my-4"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.email}
-              helperText={
-                Boolean(errors.email) && Boolean(touched.email) && errors.email
-              }
-              error={Boolean(touched.email) && Boolean(errors.email)}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <EmailOutlinedIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
-              variant="outlined"
-              type={showPassword ? "text" : "password"}
-              label="Password"
-              name="password"
-              fullWidth
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.password}
-              helperText={
-                Boolean(errors.password) &&
-                Boolean(touched.password) &&
-                errors.password
-              }
-              error={Boolean(touched.password) && Boolean(errors.password)}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              className="my-5"
-              disabled={isSuccess}
-            >
-              {isSuccess ? (
-                <div className="spinner-border" role="status"></div>
-              ) : (
-                "Sign In"
-              )}
-            </Button>
-            <p className="text-center">
-              Don't have an Account?{" "}
-              <Link to="/sign-up" className="project-name">
-                Sign Up
-              </Link>
-            </p>
-          </div>
-        </form>
-      </InitialForm>
-    </FormWrapper>
+    <Wrapper>
+      <Header />
+      <div
+        style={{ height: "90vh" }}
+        className="d-flex align-items-center justify-content-center mb-4"
+      >
+        <InitialForm>
+          <h3 className="text-center fw-bold text-uppercase mt-2">Sign In</h3>
+          <hr />
+          <MessageBox />
+          <form onSubmit={handleSubmit}>
+            <div className="px-5">
+              <TextField
+                variant="outlined"
+                type="email"
+                label="Email"
+                name="email"
+                fullWidth
+                className="my-4"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.email}
+                helperText={
+                  Boolean(errors.email) &&
+                  Boolean(touched.email) &&
+                  errors.email
+                }
+                error={Boolean(touched.email) && Boolean(errors.email)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <EmailOutlinedIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                variant="outlined"
+                type={showPassword ? "text" : "password"}
+                label="Password"
+                name="password"
+                fullWidth
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.password}
+                helperText={
+                  Boolean(errors.password) &&
+                  Boolean(touched.password) &&
+                  errors.password
+                }
+                error={Boolean(touched.password) && Boolean(errors.password)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                className="my-5"
+                disabled={isSuccess}
+              >
+                {isSuccess ? (
+                  <div className="spinner-border" role="status"></div>
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
+              <p className="text-center">
+                Don't have an Account?{" "}
+                <Link to="/sign-up" className="project-name">
+                  Sign Up
+                </Link>
+              </p>
+            </div>
+          </form>
+        </InitialForm>
+      </div>
+      <Footer />
+    </Wrapper>
   );
 };
 

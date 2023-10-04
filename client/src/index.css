@@ -21,7 +21,7 @@ body {
   background-color: #f6f5f4;
 }
 .landing-nav {
-  height: 20vh;
+  height: 23vh;
 }
 .slogan {
   font-size: 4rem;
@@ -51,7 +51,14 @@ body {
   height: 8px;
   width: 100%;
 }
+.header-nav {
+  /* height: 7%; */
+  background-color: #fff;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
 
+  border-bottom: 4px solid #0a9396;
+}
 footer {
   background-color: #001219;
   color: white;

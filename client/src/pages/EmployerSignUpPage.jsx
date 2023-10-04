@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FormWrapper, InitialForm } from "../components";
+import { Wrapper, InitialForm, Header, Footer } from "../components";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
@@ -100,35 +100,115 @@ const EmployerSignUpPage = () => {
   };
 
   return (
-    <FormWrapper>
-      <InitialForm>
-        <h3 className="text-center fw-bold text-uppercase mt-2">
-          Sign Up as Employer
-        </h3>
-        <hr />
-        <MessageBox />
-        <form onSubmit={handleSubmit}>
-          <div className="px-sm-5">
-            <div className="d-flex gap-3">
+    <Wrapper>
+      <Header />
+      <div
+        style={{ height: "90%" }}
+        className="mt-5 d-flex align-items-center justify-content-center mb-5 py-3"
+      >
+        <InitialForm>
+          <h3 className="text-center fw-bold text-uppercase mt-2">
+            Sign Up as Employer
+          </h3>
+          <hr />
+          <MessageBox />
+          <form onSubmit={handleSubmit}>
+            <div className="px-sm-5">
+              <div className="d-flex gap-3">
+                <TextField
+                  variant="outlined"
+                  type="text"
+                  label="First Name"
+                  className="mt-4 w-100"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  name="firstname"
+                  value={values.firstname}
+                  helperText={
+                    Boolean(errors.firstname) &&
+                    Boolean(touched.firstname) &&
+                    errors.firstname
+                  }
+                  error={
+                    Boolean(touched.firstname) && Boolean(errors.firstname)
+                  }
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <PersonOutlinedIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <TextField
+                  variant="outlined"
+                  type="text"
+                  label="Last Name"
+                  className="mt-4 w-100"
+                  name="lastname"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.lastname}
+                  helperText={
+                    Boolean(errors.lastname) &&
+                    Boolean(touched.lastname) &&
+                    errors.lastname
+                  }
+                  error={Boolean(touched.lastname) && Boolean(errors.lastname)}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <PersonOutlinedIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </div>
+              <FormLabel className="mt-3" id="radio-buttons-group-label">
+                Gender
+              </FormLabel>
+              <RadioGroup
+                aria-labelledby="radio-buttons-group-label"
+                defaultValue="male"
+                name="gender"
+                row
+                onChange={handleChange}
+                value={values.gender}
+              >
+                <FormControlLabel
+                  value="male"
+                  control={<Radio />}
+                  label="Male"
+                />
+                <FormControlLabel
+                  value="female"
+                  control={<Radio />}
+                  label="Female"
+                />
+              </RadioGroup>
               <TextField
                 variant="outlined"
                 type="text"
-                label="First Name"
-                className="mt-4 w-100"
+                label="University Name"
+                fullWidth
+                className="mt-4 mb-3"
+                name="universityname"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                name="firstname"
-                value={values.firstname}
+                value={values.universityname}
                 helperText={
-                  Boolean(errors.firstname) &&
-                  Boolean(touched.firstname) &&
-                  errors.firstname
+                  Boolean(errors.universityname) &&
+                  Boolean(touched.universityname) &&
+                  errors.universityname
                 }
-                error={Boolean(touched.firstname) && Boolean(errors.firstname)}
+                error={
+                  Boolean(touched.universityname) &&
+                  Boolean(errors.universityname)
+                }
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <PersonOutlinedIcon />
+                      <BusinessOutlinedIcon />
                     </InputAdornment>
                   ),
                 }}
@@ -136,210 +216,145 @@ const EmployerSignUpPage = () => {
               <TextField
                 variant="outlined"
                 type="text"
-                label="Last Name"
-                className="mt-4 w-100"
-                name="lastname"
+                label="Department Name"
+                fullWidth
+                className="mb-3"
+                name="departmentname"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.lastname}
+                value={values.departmentname}
                 helperText={
-                  Boolean(errors.lastname) &&
-                  Boolean(touched.lastname) &&
-                  errors.lastname
+                  Boolean(errors.departmentname) &&
+                  Boolean(touched.departmentname) &&
+                  errors.departmentname
                 }
-                error={Boolean(touched.lastname) && Boolean(errors.lastname)}
+                error={
+                  Boolean(touched.departmentname) &&
+                  Boolean(errors.departmentname)
+                }
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <PersonOutlinedIcon />
+                      <BusinessOutlinedIcon />
                     </InputAdornment>
                   ),
                 }}
               />
-            </div>
-            <FormLabel className="mt-3" id="radio-buttons-group-label">
-              Gender
-            </FormLabel>
-            <RadioGroup
-              aria-labelledby="radio-buttons-group-label"
-              defaultValue="male"
-              name="gender"
-              row
-              onChange={handleChange}
-              value={values.gender}
-            >
-              <FormControlLabel value="male" control={<Radio />} label="Male" />
-              <FormControlLabel
-                value="female"
-                control={<Radio />}
-                label="Female"
+              <TextField
+                variant="outlined"
+                type="email"
+                label="Email"
+                fullWidth
+                className="mb-3"
+                name="email"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.email}
+                helperText={
+                  Boolean(errors.email) &&
+                  Boolean(touched.email) &&
+                  errors.email
+                }
+                error={Boolean(touched.email) && Boolean(errors.email)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <EmailOutlinedIcon />
+                    </InputAdornment>
+                  ),
+                }}
               />
-            </RadioGroup>
-            <TextField
-              variant="outlined"
-              type="text"
-              label="University Name"
-              fullWidth
-              className="mt-4 mb-3"
-              name="universityname"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.universityname}
-              helperText={
-                Boolean(errors.universityname) &&
-                Boolean(touched.universityname) &&
-                errors.universityname
-              }
-              error={
-                Boolean(touched.universityname) &&
-                Boolean(errors.universityname)
-              }
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <BusinessOutlinedIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
-              variant="outlined"
-              type="text"
-              label="Department Name"
-              fullWidth
-              className="mb-3"
-              name="departmentname"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.departmentname}
-              helperText={
-                Boolean(errors.departmentname) &&
-                Boolean(touched.departmentname) &&
-                errors.departmentname
-              }
-              error={
-                Boolean(touched.departmentname) &&
-                Boolean(errors.departmentname)
-              }
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <BusinessOutlinedIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
-              variant="outlined"
-              type="email"
-              label="Email"
-              fullWidth
-              className="mb-3"
-              name="email"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.email}
-              helperText={
-                Boolean(errors.email) && Boolean(touched.email) && errors.email
-              }
-              error={Boolean(touched.email) && Boolean(errors.email)}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <EmailOutlinedIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
-              variant="outlined"
-              type={showPassword.password ? "text" : "password"}
-              label="Password"
-              fullWidth
-              className="mb-3"
-              name="password"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.password}
-              helperText={
-                Boolean(errors.password) &&
-                Boolean(touched.password) &&
-                errors.password
-              }
-              error={Boolean(touched.password) && Boolean(errors.password)}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => handleClickShowPassword("password")}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                    >
-                      {showPassword.password ? (
-                        <VisibilityOff />
-                      ) : (
-                        <Visibility />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
-              variant="outlined"
-              type={showPassword.conpassword ? "text" : "password"}
-              label="Confirm Password"
-              fullWidth
-              name="conpassword"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.conpassword}
-              helperText={
-                Boolean(errors.conpassword) &&
-                Boolean(touched.conpassword) &&
-                errors.conpassword
-              }
-              error={
-                Boolean(touched.conpassword) && Boolean(errors.conpassword)
-              }
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => handleClickShowPassword("conpassword")}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                    >
-                      {showPassword.conpassword ? (
-                        <VisibilityOff />
-                      ) : (
-                        <Visibility />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              className="mt-5 mb-4"
-              disabled={isSuccess}
-            >
-              Sign Up
-            </Button>
+              <TextField
+                variant="outlined"
+                type={showPassword.password ? "text" : "password"}
+                label="Password"
+                fullWidth
+                className="mb-3"
+                name="password"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.password}
+                helperText={
+                  Boolean(errors.password) &&
+                  Boolean(touched.password) &&
+                  errors.password
+                }
+                error={Boolean(touched.password) && Boolean(errors.password)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => handleClickShowPassword("password")}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword.password ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                variant="outlined"
+                type={showPassword.conpassword ? "text" : "password"}
+                label="Confirm Password"
+                fullWidth
+                name="conpassword"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.conpassword}
+                helperText={
+                  Boolean(errors.conpassword) &&
+                  Boolean(touched.conpassword) &&
+                  errors.conpassword
+                }
+                error={
+                  Boolean(touched.conpassword) && Boolean(errors.conpassword)
+                }
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => handleClickShowPassword("conpassword")}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword.conpassword ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                className="mt-5 mb-4"
+                disabled={isSuccess}
+              >
+                Sign Up
+              </Button>
 
-            <p className="text-center">
-              Already have an Account?{" "}
-              <Link to="/sign-in" className="project-name">
-                Sign In
-              </Link>
-            </p>
-          </div>
-        </form>
-      </InitialForm>
-    </FormWrapper>
+              <p className="text-center">
+                Already have an Account?{" "}
+                <Link to="/sign-in" className="project-name">
+                  Sign In
+                </Link>
+              </p>
+            </div>
+          </form>
+        </InitialForm>
+      </div>
+      <Footer />
+    </Wrapper>
   );
 };
 

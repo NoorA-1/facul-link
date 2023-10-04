@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import Button from "@mui/material/Button";
 import { Link, useNavigate } from "react-router-dom";
 import main from "../assets/main.svg";
+import logo from "../assets/logo.svg";
 import AccountBoxOutlinedIcon from "@mui/icons-material/AccountBoxOutlined";
 import WorkHistoryOutlinedIcon from "@mui/icons-material/WorkHistoryOutlined";
 import InventoryOutlinedIcon from "@mui/icons-material/InventoryOutlined";
@@ -13,8 +14,9 @@ const LandingPage = () => {
   return (
     <>
       <div className="vh-100">
-        <nav className="landing-nav mb-md-5">
-          <div className="float-end mt-4 me-4">
+        <nav className="container landing-nav mb-md-5 pt-4 d-flex align-items-start gap-5 gap-sm-0 justify-content-sm-between justify-content-center flex-wrap">
+          <img src={logo} className="img-fluid" />
+          <div className="sm-">
             <Link to="/sign-in">
               <Button
                 variant="outlined"
@@ -43,7 +45,7 @@ const LandingPage = () => {
                 sx={{
                   marginLeft: "1.25rem",
                   color: "#FFF",
-                  backgroundColor: "secondary.main",
+                  backgroundColor: "primary.main",
                   textTransform: "capitalize",
                   fontWeight: "bold",
                 }}
@@ -72,7 +74,7 @@ const LandingPage = () => {
                   endIcon={<ChevronRightOutlinedIcon />}
                   sx={{
                     color: "#FFF",
-                    backgroundColor: "secondary.main",
+                    backgroundColor: "primary.main",
                     textTransform: "capitalize",
                     fontWeight: "bold",
                   }}
