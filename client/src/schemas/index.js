@@ -63,7 +63,10 @@ export const employerSignUpValidationSchema = new Yup.object({
     .matches(emailRegex, "Please enter valid email.")
     .required("Please enter email"),
   password: Yup.string()
-    .matches(passwordRegex, "Please enter valid password")
+    .matches(
+      passwordRegex,
+      "Password should contain minimum eight characters (one uppercase, one numeric, one special, no whitespaces)"
+    )
     .required("Please enter password"),
   conpassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords do not match")
