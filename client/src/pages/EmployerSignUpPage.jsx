@@ -113,7 +113,7 @@ const EmployerSignUpPage = () => {
           <hr />
           <MessageBox />
           <form onSubmit={handleSubmit}>
-            <div className="px-sm-5">
+            <div className="px-sm-3">
               <div className="d-flex gap-3">
                 <TextField
                   variant="outlined"

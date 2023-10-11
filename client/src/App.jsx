@@ -16,9 +16,11 @@ import {
   ErrorPage,
   EmployerSignUpPage,
   ProfileSetup,
+  ManageAccountPage,
 } from "./pages";
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
+import { loader as manageAccountLoader } from "./pages/ManageAccountPage";
 
 // const token = Cookies.get("token");
 // if (token) {
@@ -79,6 +81,11 @@ const App = () => {
           element: token ? <ProfileSetup /> : <Navigate to="/" />,
           // element: <ProfileSetup />,
           loader: profileSetupLoader,
+        },
+        {
+          path: "/manage-account",
+          element: token ? <ManageAccountPage /> : <Navigate to="/" />,
+          loader: manageAccountLoader,
         },
       ],
     },

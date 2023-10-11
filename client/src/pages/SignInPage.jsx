@@ -87,7 +87,7 @@ const SignInPage = () => {
           <hr />
           <MessageBox />
           <form onSubmit={handleSubmit}>
-            <div className="px-5">
+            <div className="px-sm-4">
               <TextField
                 variant="outlined"
                 type="email"

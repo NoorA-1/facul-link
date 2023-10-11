@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useLoaderData, useNavigate } from "react-router-dom";
-import Button from "@mui/material/Button";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
+import { useLoaderData, useNavigate, Link } from "react-router-dom";
+import { Button, Menu, MenuItem, useMediaQuery } from "@mui/material";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import http from "../utils/http";
 import { Wrapper, Header } from "../components";
@@ -21,6 +19,8 @@ export const loader = async () => {
 const ProfileSetup = () => {
   const data = useLoaderData();
   const navigate = useNavigate();
+  const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const buttonSize = isSmallScreen ? "small" : "medium";
   useEffect(() => {
     console.log(data);
     if (data && data.user.userId.isProfileSetup) {
@@ -51,6 +51,9 @@ const ProfileSetup = () => {
   return (
     <Wrapper>
       <Header>
+        <h4 className="mt-2 me-3 text-center fw-bold">
+          {!isSmallScreen && "Complete Your Profile"}
+        </h4>
         <Button
           id="basic-button"
           aria-controls={open ? "basic-menu" : undefined}
@@ -63,6 +66,7 @@ const ProfileSetup = () => {
             fontWeight: "bold",
           }}
           endIcon={<KeyboardArrowDownOutlinedIcon />}
+          size={buttonSize}
         >
           Hi, {data.user.userId.firstname}
         </Button>
@@ -75,11 +79,19 @@ const ProfileSetup = () => {
             "aria-labelledby": "basic-button",
           }}
         >
-          <MenuItem onClick={handleClose}>Manage Account Details</MenuItem>
+          <Link
+            to="/manage-account"
+            style={{ color: "unset", textDecoration: "unset" }}
+          >
+            <MenuItem>Manage Account Details</MenuItem>
+          </Link>
+
           <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
         </Menu>
       </Header>
-      <h1 className="mt-5 text-center fw-bold">Complete Your Profile</h1>
+      <h4 className="mt-3 text-center fw-bold">
+        {isSmallScreen && "Complete Your Profile"}
+      </h4>
     </Wrapper>
   );
 };
