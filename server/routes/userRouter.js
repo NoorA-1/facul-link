@@ -26,4 +26,13 @@ router.get("/current-user", authenticateUser, async (req, res) => {
   }
 });
 
+router.put("/change-name", authenticateUser, async (req, res) => {
+  try {
+    const user = req.user;
+    res.json({ user });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 export default router;

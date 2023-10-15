@@ -72,3 +72,32 @@ export const employerSignUpValidationSchema = new Yup.object({
     .oneOf([Yup.ref("password")], "Passwords do not match")
     .required("Please enter confirm password"),
 });
+
+export const changeNameValidationSchema = new Yup.object({
+  firstname: Yup.string()
+    .min(3, "First name must be at least 3 characters long")
+    .matches(lettersSpaceOnlyRegex, "Invalid first name")
+    .required("Please enter first name"),
+  lastname: Yup.string()
+    .min(3, "Last name must be at least 3 characters long")
+    .matches(lettersSpaceOnlyRegex, "Invalid last name")
+    .required("Please enter last name"),
+});
+
+export const changePasswordValidationSchema = new Yup.object({
+  oldpassword: Yup.string()
+    .matches(
+      passwordRegex,
+      "Password should contain minimum eight characters (one uppercase, one numeric, one special, no whitespaces)"
+    )
+    .required("Please old password"),
+  newpassword: Yup.string()
+    .matches(
+      passwordRegex,
+      "Password should contain minimum eight characters (one uppercase, one numeric, one special, no whitespaces)"
+    )
+    .required("Please new password"),
+  connewpassword: Yup.string()
+    .oneOf([Yup.ref("newpassword")], "New passwords do not match")
+    .required("Please enter confirm new password"),
+});

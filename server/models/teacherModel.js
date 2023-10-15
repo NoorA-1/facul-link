@@ -8,6 +8,7 @@ const teacherSchema = new Schema({
   },
   profileImage: { type: String, default: null },
   profileDescription: { type: String, default: null },
+  resumeFile: { type: String, default: null },
   qualification: [
     {
       instituteName: { type: String, default: null },
