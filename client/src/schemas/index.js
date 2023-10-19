@@ -56,9 +56,9 @@ export const employerSignUpValidationSchema = new Yup.object({
     .matches(lettersSpaceOnlyRegex, "Invalid university name")
     .required("Please enter university name"),
   departmentname: Yup.string()
-    .min(3, "Department name must be at least 3 characters long")
+    // .min(3, "Department name must be at least 3 characters long")
     .matches(lettersSpaceOnlyRegex, "Invalid department name")
-    .required("Please enter department name"),
+    .required("Please select department name"),
   email: Yup.string()
     .matches(emailRegex, "Please enter valid email.")
     .required("Please enter email"),
@@ -85,16 +85,16 @@ export const changeNameValidationSchema = new Yup.object({
 });
 
 export const changePasswordValidationSchema = new Yup.object({
-  oldpassword: Yup.string()
-    .matches(
-      passwordRegex,
-      "Password should contain minimum eight characters (one uppercase, one numeric, one special, no whitespaces)"
-    )
-    .required("Please old password"),
+  currentpassword: Yup.string()
+    // .matches(
+    //   passwordRegex,
+    //   "Old password should contain minimum eight characters (one uppercase, one numeric, one special, no whitespaces)"
+    // )
+    .required("Please current password"),
   newpassword: Yup.string()
     .matches(
       passwordRegex,
-      "Password should contain minimum eight characters (one uppercase, one numeric, one special, no whitespaces)"
+      "New password should contain minimum eight characters (one uppercase, one numeric, one special, no whitespaces)"
     )
     .required("Please new password"),
   connewpassword: Yup.string()

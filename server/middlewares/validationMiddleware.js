@@ -28,3 +28,13 @@ export const validateSignIn = [
     .withMessage("email is invalid"),
   body("password").notEmpty().withMessage("password is required"),
 ];
+
+export const validateChangeName = [
+  body("firstname").notEmpty().withMessage("firstname is required"),
+  body("lastname").notEmpty().withMessage("lastname is required"),
+];
+
+export const validateChangePassword = [
+  body("currentpassword").notEmpty().withMessage("oldpassword is required"),
+  body("newpassword").notEmpty().withMessage("newpassword is required"),
+];

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Wrapper, InitialForm, Header, Footer } from "../components";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import {
@@ -7,6 +7,7 @@ import {
   InputAdornment,
   IconButton,
   MenuItem,
+  Alert,
 } from "@mui/material";
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
@@ -30,39 +31,96 @@ export const loader = async () => {
 };
 
 const ManageAccountPage = () => {
-  const data = useLoaderData();
+  let data = useLoaderData();
   const navigate = useNavigate();
+  const [userData, setUserData] = useState(data.user.userId);
+
+  //error type 0 for no error, 1 for error and 2 for no changes error
+  const [alertMessage, setAlertMessage] = useState({
+    message: "",
+    error: null,
+  });
 
   const nameFormInitialValues = {
-    firstname: data.user.userId.firstname,
-    lastname: data.user.userId.lastname,
+    firstname: userData.firstname,
+    lastname: userData.lastname,
   };
 
   const passwordFormInitialValues = {
-    oldpassword: "",
+    currentpassword: "",
     newpassword: "",
     connewpassword: "",
   };
-
   const handleBackButton = () => {
-    navigate(-1);
+    navigate("/profile-setup");
   };
 
   const [listSelect, setListSelect] = useState("");
 
   const handleListSelect = (event) => {
     setListSelect(event.target.value);
+    setAlertMessage({
+      message: "",
+      error: null,
+    });
   };
 
   const ChangeNameLayout = () => {
-    const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
-      useFormik({
-        initialValues: nameFormInitialValues,
-        validationSchema: changeNameValidationSchema,
-        onSubmit: (values) => {
-          console.log(values);
-        },
-      });
+    const submitChangeNameData = async (data) => {
+      try {
+        const response = await http.put("/users/change-name", data);
+        console.log(response);
+        if (response.status === 200) {
+          setAlertMessage(() => {
+            return {
+              message: response.data.message,
+              error: 0,
+            };
+          });
+          setUserData((prev) => {
+            return {
+              ...prev,
+              firstname: data.firstname,
+              lastname: data.lastname,
+            };
+          });
+        }
+      } catch (error) {
+        if (error.response.status === 304) {
+          setAlertMessage(() => {
+            return {
+              message: "Provided first name and last name are same as before.",
+              error: 2,
+            };
+          });
+        }
+        console.log(error);
+      }
+    };
+
+    const {
+      values,
+      handleBlur,
+      handleChange,
+      handleSubmit,
+      errors,
+      touched,
+      resetForm,
+    } = useFormik({
+      initialValues: nameFormInitialValues,
+      validationSchema: changeNameValidationSchema,
+      onSubmit: (values) => {
+        const trimmedValues = {
+          firstname: values.firstname.trim(),
+          lastname: values.lastname.trim(),
+        };
+        submitChangeNameData(trimmedValues);
+      },
+    });
+
+    useEffect(() => {
+      resetForm();
+    }, [userData]);
 
     if (listSelect === 0) {
       return (
@@ -140,18 +198,9 @@ const ManageAccountPage = () => {
   };
 
   const ChangePasswordLayout = () => {
-    const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
-      useFormik({
-        initialValues: passwordFormInitialValues,
-        validationSchema: changePasswordValidationSchema,
-        onSubmit: (values) => {
-          console.log(values);
-        },
-      });
-
     if (listSelect === 1) {
       const [showPassword, setShowPassword] = useState({
-        oldpassword: false,
+        currentpassword: false,
         newpassword: false,
         connewpassword: false,
       });
@@ -163,6 +212,44 @@ const ManageAccountPage = () => {
       const handleMouseDownPassword = (event) => {
         event.preventDefault();
       };
+
+      const SubmitChangePasswordData = async (data) => {
+        try {
+          const response = await http.put("/users/change-password", data);
+          if (response.status === 200) {
+            setAlertMessage(() => {
+              return {
+                message: response.data.message,
+                error: 0,
+              };
+            });
+          }
+        } catch (error) {
+          console.log(error);
+
+          setAlertMessage(() => {
+            return {
+              message: error.response.data.message,
+              error: 1,
+            };
+          });
+        }
+      };
+
+      const {
+        values,
+        handleBlur,
+        handleChange,
+        handleSubmit,
+        errors,
+        touched,
+      } = useFormik({
+        initialValues: passwordFormInitialValues,
+        validationSchema: changePasswordValidationSchema,
+        onSubmit: (values) => {
+          SubmitChangePasswordData(values);
+        },
+      });
       return (
         <>
           <hr />
@@ -171,20 +258,22 @@ const ManageAccountPage = () => {
             <form onSubmit={handleSubmit}>
               <TextField
                 variant="outlined"
-                type={showPassword.oldpassword ? "text" : "password"}
-                label="Old Password"
+                type={showPassword.currentpassword ? "text" : "password"}
+                label="Current Password"
                 fullWidth
-                name="oldpassword"
+                name="currentpassword"
                 className="mt-3"
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
-                        onClick={() => handleClickShowPassword("oldpassword")}
+                        onClick={() =>
+                          handleClickShowPassword("currentpassword")
+                        }
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
                       >
-                        {showPassword.oldpassword ? (
+                        {showPassword.currentpassword ? (
                           <VisibilityOff />
                         ) : (
                           <Visibility />
@@ -195,14 +284,15 @@ const ManageAccountPage = () => {
                 }}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                value={values.oldpassword}
+                value={values.currentpassword}
                 helperText={
-                  Boolean(errors.oldpassword) &&
-                  Boolean(touched.oldpassword) &&
-                  errors.oldpassword
+                  Boolean(errors.currentpassword) &&
+                  Boolean(touched.currentpassword) &&
+                  errors.currentpassword
                 }
                 error={
-                  Boolean(touched.oldpassword) && Boolean(errors.oldpassword)
+                  Boolean(touched.currentpassword) &&
+                  Boolean(errors.currentpassword)
                 }
               />
               <TextField
@@ -296,6 +386,28 @@ const ManageAccountPage = () => {
     return null;
   };
 
+  const MessageBox = () => {
+    if (alertMessage.error === 0) {
+      return (
+        <Alert variant="filled" severity="success">
+          {alertMessage.message}
+        </Alert>
+      );
+    } else if (alertMessage.error === 1) {
+      return (
+        <Alert variant="filled" severity="error">
+          {alertMessage.message}
+        </Alert>
+      );
+    } else if (alertMessage.error === 2) {
+      return (
+        <Alert variant="filled" severity="info">
+          {alertMessage.message}
+        </Alert>
+      );
+    }
+  };
+
   return (
     <Wrapper>
       <Header></Header>
@@ -325,6 +437,7 @@ const ManageAccountPage = () => {
             <MenuItem value={0}>Change Name</MenuItem>
             <MenuItem value={1}>Change Password</MenuItem>
           </TextField>
+          <MessageBox />
           <ChangeNameLayout />
           <ChangePasswordLayout />
         </InitialForm>

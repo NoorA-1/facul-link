@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Wrapper, InitialForm, Header, Footer } from "../components";
-import Button from "@mui/material/Button";
+import { Button, MenuItem } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import Visibility from "@mui/icons-material/Visibility";
@@ -214,9 +214,9 @@ const EmployerSignUpPage = () => {
                 }}
               />
               <TextField
+                select
                 variant="outlined"
-                type="text"
-                label="Department Name"
+                label="Department"
                 fullWidth
                 className="mb-3"
                 name="departmentname"
@@ -232,14 +232,21 @@ const EmployerSignUpPage = () => {
                   Boolean(touched.departmentname) &&
                   Boolean(errors.departmentname)
                 }
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <BusinessOutlinedIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
+                // InputProps={{
+                //   endAdornment: (
+                //     <InputAdornment position="end">
+                //       <BusinessOutlinedIcon />
+                //     </InputAdornment>
+                //   ),
+                // }}
+              >
+                <MenuItem value={"Computer Science"}>Computer Science</MenuItem>
+                <MenuItem value={"Media Science"}>Media Science</MenuItem>
+                <MenuItem value={"Management Science"}>
+                  Management Science
+                </MenuItem>
+                <MenuItem value={"Engineering"}>Engineering</MenuItem>
+              </TextField>
               <TextField
                 variant="outlined"
                 type="email"

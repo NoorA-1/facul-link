@@ -40,7 +40,11 @@ router.post("/sign-up", validateSignUp, async (req, res) => {
     if (user.role === "teacher") {
       newUserType = new Teacher({ userId: user._id });
     } else if (user.role === "employer") {
-      newUserType = new UniEmployer({ userId: user._id });
+      newUserType = new UniEmployer({
+        universityName: req.body.universityname,
+        departmentName: req.body.departmentname,
+        userId: user._id,
+      });
     }
     await user.save();
     await newUserType.save();
