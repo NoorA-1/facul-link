@@ -79,7 +79,10 @@ router.put(
       }
       const reqBody = req.body;
       let user = await User.findOne({ _id: req.user.userId });
-      if (reqBody.newpassword === user.password) {
+      if (
+        reqBody.currentpassword == user.password &&
+        reqBody.newpassword === user.password
+      ) {
         return res.status(400).json({
           message: "New password cannot be same as old password",
           error: true,

@@ -3,7 +3,7 @@ import { useLoaderData, useNavigate, Link } from "react-router-dom";
 import { Button, Menu, MenuItem, useMediaQuery } from "@mui/material";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import http from "../utils/http";
-import { Wrapper, Header } from "../components";
+import { Wrapper, Header, TeacherProfileSetupForm } from "../components";
 
 export const loader = async () => {
   try {
@@ -92,6 +92,15 @@ const ProfileSetup = () => {
       <h4 className="mt-3 text-center fw-bold">
         {isSmallScreen && "Complete Your Profile"}
       </h4>
+      <div className="container">
+        <div className="row justify-content-center">
+          <div className="col-lg-8 col-12">
+            {data.user.userId.role === "teacher" && (
+              <TeacherProfileSetupForm userData={data.user} />
+            )}
+          </div>
+        </div>
+      </div>
     </Wrapper>
   );
 };
