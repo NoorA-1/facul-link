@@ -16,7 +16,7 @@ const LandingPage = () => {
       <div className="vh-100">
         <nav className="container landing-nav mb-md-5 pt-4 d-flex align-items-start gap-5 gap-sm-0 justify-content-sm-between justify-content-center flex-wrap">
           <img src={logo} className="img-fluid" width={200} />
-          <div className="sm-">
+          <div>
             <Link to="/sign-in">
               <Button
                 variant="outlined"

@@ -34,6 +34,11 @@ const ManageAccountPage = () => {
   let data = useLoaderData();
   const navigate = useNavigate();
   const [userData, setUserData] = useState(data.user.userId);
+  const [passwordData, setPasswordData] = useState({
+    currentpassword: "",
+    newpassword: "",
+    connewpassword: "",
+  });
 
   //error type 0 for no error, 1 for error and 2 for no changes error
   const [alertMessage, setAlertMessage] = useState({
@@ -47,9 +52,9 @@ const ManageAccountPage = () => {
   };
 
   const passwordFormInitialValues = {
-    currentpassword: "",
-    newpassword: "",
-    connewpassword: "",
+    currentpassword: passwordData.currentpassword,
+    newpassword: passwordData.newpassword,
+    connewpassword: passwordData.connewpassword,
   };
   const handleBackButton = () => {
     navigate("/profile-setup");
@@ -223,10 +228,25 @@ const ManageAccountPage = () => {
                 error: 0,
               };
             });
+
+            setPasswordData(() => {
+              return {
+                currentpassword: "",
+                newpassword: "",
+                connewpassword: "",
+              };
+            });
           }
         } catch (error) {
           console.log(error);
-
+          setPasswordData((prev) => {
+            return {
+              ...prev,
+              currentpassword: data.currentpassword,
+              newpassword: data.newpassword,
+              connewpassword: data.connewpassword,
+            };
+          });
           setAlertMessage(() => {
             return {
               message: error.response.data.message,
@@ -243,6 +263,7 @@ const ManageAccountPage = () => {
         handleSubmit,
         errors,
         touched,
+        resetForm,
       } = useFormik({
         initialValues: passwordFormInitialValues,
         validationSchema: changePasswordValidationSchema,
@@ -250,6 +271,11 @@ const ManageAccountPage = () => {
           SubmitChangePasswordData(values);
         },
       });
+
+      useEffect(() => {
+        resetForm();
+      }, [passwordData]);
+
       return (
         <>
           <hr />
