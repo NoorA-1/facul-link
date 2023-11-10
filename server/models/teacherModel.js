@@ -29,7 +29,7 @@ const teacherSchema = new Schema({
   experience: [
     {
       title: { type: String, default: null },
-      instituteName: { type: String, default: null },
+      company: { type: String, default: null },
       date: {
         startDate: { type: Date, default: null },
         endDate: { type: Date, default: null },

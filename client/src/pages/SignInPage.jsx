@@ -77,7 +77,23 @@ const SignInPage = () => {
 
   return (
     <Wrapper>
-      <Header />
+      <Header>
+        <Link to="/sign-up">
+          <Button
+            size="large"
+            variant="contained"
+            sx={{
+              marginLeft: "1.25rem",
+              color: "#FFF",
+              backgroundColor: "primary.main",
+              textTransform: "capitalize",
+              fontWeight: "bold",
+            }}
+          >
+            Sign Up
+          </Button>
+        </Link>
+      </Header>
       <div
         style={{ height: "90vh" }}
         className="d-flex align-items-center justify-content-center mb-4"

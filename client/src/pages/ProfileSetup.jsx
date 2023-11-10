@@ -19,7 +19,7 @@ export const loader = async () => {
 const ProfileSetup = () => {
   const data = useLoaderData();
   const navigate = useNavigate();
-  const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("xl"));
   const buttonSize = isSmallScreen ? "small" : "medium";
   useEffect(() => {
     console.log(data);
@@ -51,7 +51,10 @@ const ProfileSetup = () => {
   return (
     <Wrapper>
       <Header>
-        <h4 className="mt-2 me-3 text-center fw-bold">
+        <h4
+          className="mt-2 me-3 text-center fw-bold"
+          style={{ marginLeft: -150 }}
+        >
           {!isSmallScreen && "Complete Your Profile"}
         </h4>
         <Button

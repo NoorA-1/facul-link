@@ -10,21 +10,24 @@ const SignUpPage = () => {
   return (
     <Wrapper>
       <Header>
-        <Link to="/sign-in">
-          <Button
-            size="large"
-            variant="contained"
-            sx={{
-              marginLeft: "1.25rem",
-              color: "#FFF",
-              backgroundColor: "secondary.main",
-              textTransform: "capitalize",
-              fontWeight: "bold",
-            }}
-          >
-            Sign In
-          </Button>
-        </Link>
+        <div>
+          <Link to="/sign-in">
+            <Button
+              variant="outlined"
+              size="large"
+              sx={{
+                border: 2,
+                textTransform: "capitalize",
+                fontWeight: "bold",
+                ":hover": {
+                  border: 2,
+                },
+              }}
+            >
+              Sign In
+            </Button>
+          </Link>
+        </div>
       </Header>
       <div
         style={{ height: "90vh" }}
@@ -56,6 +59,12 @@ const SignUpPage = () => {
               Employer
             </Button>
           </div>
+          <p className="text-center mt-4">
+            Already have an Account?{" "}
+            <Link to="/sign-in" className="project-name">
+              Sign In
+            </Link>
+          </p>
         </InitialForm>
       </div>
       <Footer />

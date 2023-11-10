@@ -19,20 +19,20 @@ const LandingPage = () => {
           <div>
             <Link to="/sign-in">
               <Button
-                variant="outlined"
+                variant="text"
                 size="large"
                 sx={{
-                  color: "#001219",
-                  border: 2,
-                  borderColor: "secondary.main",
+                  // color: "#001219",
+                  // border: 1,
+                  // borderColor: "secondary.main",
                   textTransform: "capitalize",
                   fontWeight: "bold",
-                  boxShadow:
-                    "0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
-                  ":hover": {
-                    border: 2,
-                    borderColor: "secondary.main",
-                  },
+                  // boxShadow:
+                  //   "0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12)",
+                  // ":hover": {
+                  //   border: 2,
+                  //   borderColor: "secondary.main",
+                  // },
                 }}
               >
                 Sign In

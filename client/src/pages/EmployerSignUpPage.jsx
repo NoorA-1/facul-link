@@ -14,6 +14,8 @@ import InputAdornment from "@mui/material/InputAdornment";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
+import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
+
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { employerSignUpValidationSchema } from "../schemas";
@@ -101,7 +103,46 @@ const EmployerSignUpPage = () => {
 
   return (
     <Wrapper>
-      <Header />
+      <Header>
+        <div>
+          <Link to="/sign-up">
+            <Button
+              size="large"
+              variant="contained"
+              sx={{
+                marginRight: "1.25rem",
+                // color: "#FFF",
+                // backgroundColor: "primary.main",
+                textTransform: "capitalize",
+                fontWeight: "bold",
+                // border: 2,
+                // ":hover": {
+                //   border: 2,
+                // },
+              }}
+              startIcon={<ArrowBackOutlinedIcon />}
+            >
+              Account Type
+            </Button>
+          </Link>
+          <Link to="/sign-in">
+            <Button
+              variant="outlined"
+              size="large"
+              sx={{
+                border: 2,
+                textTransform: "capitalize",
+                fontWeight: "bold",
+                ":hover": {
+                  border: 2,
+                },
+              }}
+            >
+              Sign In
+            </Button>
+          </Link>
+        </div>
+      </Header>
       <div
         style={{ height: "90%" }}
         className="mt-5 d-flex align-items-center justify-content-center mb-5 py-3"
