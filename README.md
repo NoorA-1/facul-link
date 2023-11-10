@@ -8,6 +8,8 @@ Frontend Packages:
 <ol>
   <li>Vite</li>
   <li>Material UI</li>
+  <li>Material UI X</li>
+  <li>Dayjs</li>
   <li>React Router</li>
   <li>React Icons</li>
   <li>MUI Tel Input (unused)</li>
