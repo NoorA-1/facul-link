@@ -7,6 +7,8 @@ const passwordRegex = new RegExp(
   "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.])[A-Za-z\\d@$!%*?&.]{8,}$"
 );
 
+const onlyWhiteSpaceRegex = new RegExp("^(?!\\s*$).+");
+
 export const signInValidationSchema = Yup.object({
   email: Yup.string()
     .matches(emailRegex, "Please enter valid email.")
@@ -16,6 +18,9 @@ export const signInValidationSchema = Yup.object({
 
 // const lettersSpaceOnlyRegex = new RegExp("^[a-zA-Z][a-zA-Z ]+$");
 const lettersSpaceOnlyRegex = new RegExp("^[a-zA-Z]+( [a-zA-Z]+)*$");
+const lettersNumbersSpaceOnlyRegex = new RegExp(
+  "^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$"
+);
 
 export const teacherSignUpValidationSchema = new Yup.object({
   firstname: Yup.string()
@@ -100,4 +105,87 @@ export const changePasswordValidationSchema = new Yup.object({
   connewpassword: Yup.string()
     .oneOf([Yup.ref("newpassword")], "New passwords do not match")
     .required("Please enter confirm new password"),
+});
+
+export const teacherQualificationValidationSchema = Yup.object({
+  qualification: Yup.object({
+    instituteName: Yup.string()
+      .required("Institute Name is required")
+      .min(3, "Institute Name must be at least 3 characters long")
+      .test(
+        "is-empty-after-trim",
+        "Institute Name cannot be empty or only whitespace",
+        (value) => value.trim() !== ""
+      ),
+    field: Yup.string()
+      .required("Field of Study is required")
+      .min(2, "Field of Study must be at least 2 characters long")
+      .test(
+        "is-empty-after-trim",
+        "Field of Study cannot be empty or only whitespace",
+        (value) => value.trim() !== ""
+      ),
+    level: Yup.string().required("Level of Study is required"),
+    grade: Yup.string()
+      .required("Grade is required")
+      .min(1, "Grade or GPA must be at least 1 character long")
+      .test(
+        "is-empty-after-trim",
+        "Grade cannot be empty or only whitespace",
+        (value) => value.trim() !== ""
+      ),
+    date: Yup.object({
+      startDate: Yup.date().required("Start Date is required"),
+      endDate: Yup.date()
+        .required("End Date is required")
+        .min(Yup.ref("startDate"), "End date can't be before start date"),
+    }),
+    location: Yup.object({
+      country: Yup.string()
+        .required("Country is required")
+        .matches(lettersSpaceOnlyRegex, "Invalid Country name")
+        .min(3, "Country must be at least 3 characters long"),
+      city: Yup.string()
+        .required("City is required")
+        .matches(lettersSpaceOnlyRegex, "Invalid City name")
+        .min(3, "City must be at least 3 characters long"),
+    }),
+  }),
+});
+
+export const teacherExperienceFormValidationSchema = Yup.object({
+  experience: Yup.object({
+    title: Yup.string()
+      .required("Job Title is required")
+      .min(3, "Job Title must be at least 3 characters long")
+      .test(
+        "is-empty-after-trim",
+        "Field of Study cannot be empty or only whitespace",
+        (value) => value.trim() !== ""
+      ),
+    company: Yup.string()
+      .required("Company Name is required")
+      .test(
+        "is-empty-after-trim",
+        "Field of Study cannot be empty or only whitespace",
+        (value) => value.trim() !== ""
+      ),
+    // .min(3, "Company Name must be at least 3 characters long"),
+    date: Yup.object({
+      startDate: Yup.date().required("Start Date is required"),
+      endDate: Yup.date()
+        .required("End Date is required")
+        .min(Yup.ref("startDate"), "End date can't be before start date"),
+    }),
+    location: Yup.object({
+      country: Yup.string()
+        .required("Country is required")
+        .matches(lettersSpaceOnlyRegex, "Invalid Country name")
+        .min(3, "Country must be at least 3 characters long"),
+      city: Yup.string()
+        .required("City is required")
+        .matches(lettersSpaceOnlyRegex, "Invalid City name")
+        .min(3, "Country must be at least 3 characters long"),
+    }),
+  }),
 });
