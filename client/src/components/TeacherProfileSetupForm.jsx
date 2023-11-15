@@ -8,19 +8,6 @@ import IconButton from "@mui/material/IconButton";
 import QualificationForm from "./QualificationForm";
 import ExperienceForm from "./ExperienceForm";
 
-const modalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 600,
-  bgcolor: "background.paper",
-  borderRadius: 2,
-  // border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-
 const TeacherProfileSetupForm = ({ userData }) => {
   console.log(userData);
   const [qualificationsArray, setQualificationsArray] = useState(
@@ -53,7 +40,9 @@ const TeacherProfileSetupForm = ({ userData }) => {
 
   const addSkill = (skill) => {
     console.log(skill);
-    setSkillsArray((prev) => [...prev, skill]);
+    if (skill.trim() !== "") {
+      setSkillsArray((prev) => [...prev, skill.trim()]);
+    }
   };
 
   const deleteSkill = (index) => {
