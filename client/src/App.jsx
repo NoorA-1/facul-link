@@ -17,6 +17,7 @@ import {
   EmployerSignUpPage,
   ProfileSetup,
   ManageAccountPage,
+  TeacherProfilePage,
 } from "./pages";
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
@@ -32,12 +33,15 @@ import { loader as manageAccountLoader } from "./pages/ManageAccountPage";
 const App = () => {
   const [cookies, setCookie] = useCookies(["token"]);
   const [token, setToken] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     if (cookies.token) {
       setToken(cookies.token);
     } else {
       setToken(null);
     }
+    setIsLoading(false);
   }, [cookies, setCookie]);
   useEffect(() => {
     if (token) console.log(token);
@@ -87,9 +91,16 @@ const App = () => {
           element: token ? <ManageAccountPage /> : <Navigate to="/" />,
           loader: manageAccountLoader,
         },
+        {
+          path: "/dashboard/teacher-profile",
+          element: token ? <TeacherProfilePage /> : <Navigate to="/" />,
+        },
       ],
     },
   ]);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   return <RouterProvider router={router} />;
 };
 

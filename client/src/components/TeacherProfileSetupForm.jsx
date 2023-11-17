@@ -1,21 +1,23 @@
-import React, { memo, useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { useNavigate } from "react-router-dom";
 import InitialForm from "./InitialForm";
 import { useFormik } from "formik";
-import {
-  Avatar,
-  Button,
-  TextField,
-  MenuItem,
-  Box,
-  Chip,
-  Alert,
-} from "@mui/material";
+import { Avatar, Button, TextField, Chip, Alert } from "@mui/material";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import UploadIcon from "@mui/icons-material/Upload";
 import IconButton from "@mui/material/IconButton";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
 
 import QualificationForm from "./QualificationForm";
 import ExperienceForm from "./ExperienceForm";
@@ -23,9 +25,12 @@ import { teacherProfileDescriptionValidationSchema } from "../schemas";
 import http from "../utils/http";
 
 const TeacherProfileSetupForm = ({ userData }) => {
+  const navigate = useNavigate();
   // console.log(userData);
   const initialValues = {
-    profileDescription: userData.profileDescription,
+    profileDescription: Boolean(userData.profileDescription)
+      ? userData.profileDescription
+      : "",
   };
   const [qualificationsArray, setQualificationsArray] = useState(
     Boolean(userData.qualification.length > 0)
@@ -78,8 +83,11 @@ const TeacherProfileSetupForm = ({ userData }) => {
     file: "",
     URL: "",
     value: "",
-    filename: "",
+    filename: resumeFileSrc ? resumeFileSrc.split("documents\\")[1] : "",
+    isRemoved: false,
   });
+
+  // console.log(resume);
 
   const [imageFileError, setImageFileError] = useState("");
   const [resumeFileError, setResumeFileError] = useState("");
@@ -118,7 +126,7 @@ const TeacherProfileSetupForm = ({ userData }) => {
   const handleFile = (event) => {
     const file = event.target.files[0];
     const value = event.target.value;
-    const filetype = file.type;
+    const filetype = file?.type;
     if (event.target.name === "profileImage") {
       const validImageTypes = ["image/png", "image/jpeg"];
       if (validImageTypes.includes(filetype)) {
@@ -130,7 +138,7 @@ const TeacherProfileSetupForm = ({ userData }) => {
             file,
             URL: imageURL,
             value,
-            filename: prevValue.filename,
+            filename: file.name,
           };
         });
       } else {
@@ -146,13 +154,27 @@ const TeacherProfileSetupForm = ({ userData }) => {
             file,
             URL: resumeURL,
             value,
-            filename: prevValue.filename,
+            filename: file.name,
+            isRemoved: false,
           };
         });
       } else {
         setResumeFileError("Resume file must be PDF");
       }
     }
+  };
+
+  const deleteResumeFile = () => {
+    setResumeFileSrc("");
+    setResume(() => {
+      return {
+        file: "",
+        URL: "",
+        value: "",
+        filename: "",
+        isRemoved: true,
+      };
+    });
   };
 
   const submitData = async (values) => {
@@ -166,10 +188,15 @@ const TeacherProfileSetupForm = ({ userData }) => {
       formData.append("qualification", JSON.stringify(qualificationsArray));
       formData.append("skills", JSON.stringify(skillsArray));
       formData.append("experience", JSON.stringify(experiencesArray));
-      formData.append("resumeFile", resume.file);
+      if (resume.file) {
+        formData.append("resumeFile", resume.file);
+      } else if (resume.isRemoved) {
+        formData.append("resumeFile", "");
+      }
 
       const response = await http.put("/users/teacher-profile", formData);
       console.log(response);
+      navigate("/dashboard/teacher-profile");
     } catch (error) {
       console.log(error);
     }
@@ -188,7 +215,6 @@ const TeacherProfileSetupForm = ({ userData }) => {
     });
 
   // console.log(skillsArray);
-  console.log(resume);
 
   return (
     <InitialForm noColoredLine={true} className="w-100 px-5 mt-3 mb-5">
@@ -296,20 +322,29 @@ const TeacherProfileSetupForm = ({ userData }) => {
         <hr />
         <h3 className="fw-bold mt-4 mb-1">Resume</h3>
         <h6 className="text-secondary mb-4">Upload your resume (PDF)</h6>
-        <div className="bg-light-gray border border-dark-subtle rounded shadow-sm px-5 py-3 mb-1 d-flex align-items-center justify-content-between gap-2">
-          <div className="d-flex align-items-center gap-3">
-            <DescriptionOutlinedIcon fontSize="large" color="secondary" />
-            <span>{resume.file.name}</span>
+        {resumeFileSrc && (
+          <div className="bg-light-gray border border-dark-subtle rounded shadow-sm px-5 py-3 mb-1 d-flex align-items-center justify-content-between gap-2">
+            <div className="d-flex align-items-center gap-3">
+              <DescriptionOutlinedIcon fontSize="large" color="secondary" />
+              <span>{resume.filename}</span>
+            </div>
+            <div>
+              <a
+                href={resumeFileSrc}
+                download={resume.filename}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <IconButton size="large" color="secondary">
+                  <FileDownloadOutlinedIcon />
+                </IconButton>
+              </a>
+              <IconButton color="danger" onClick={deleteResumeFile}>
+                <CancelOutlinedIcon />
+              </IconButton>
+            </div>
           </div>
-          <div>
-            <IconButton size="large" color="secondary" onClick={() => {}}>
-              <FileDownloadOutlinedIcon />
-            </IconButton>
-            <IconButton color="danger">
-              <CancelOutlinedIcon />
-            </IconButton>
-          </div>
-        </div>
+        )}
         <div className="d-flex justify-content-center mb-1">
           <Button
             className="mt-4 mb-1 w-50"
@@ -317,10 +352,10 @@ const TeacherProfileSetupForm = ({ userData }) => {
             component="label"
             sx={{ border: 2, ":hover": { border: 2 } }}
             startIcon={<UploadIcon />}
-            disabled={Boolean(resumeFileSrc)}
           >
             Upload Resume
             <input
+              key={resume.isRemoved}
               type="file"
               hidden
               name="resumeFile"
@@ -331,8 +366,13 @@ const TeacherProfileSetupForm = ({ userData }) => {
         </div>
         <ResumeFileMessageBox />
         <div className="d-flex justify-content-center mt-5 mb-3 gap-3">
-          <Button variant="contained" type="submit" className="w-75">
-            Submit
+          <Button
+            variant="contained"
+            type="submit"
+            className="w-75"
+            endIcon={<ArrowForwardOutlinedIcon />}
+          >
+            Save & Proceed
           </Button>
         </div>
       </form>

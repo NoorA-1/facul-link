@@ -7,5 +7,6 @@ export { default as SignInPage } from "./SignInPage";
 // export { default as PrivateRoute } from "./PrivateRoute";
 export { default as ProfileSetup } from "./ProfileSetup";
 export { default as ManageAccountPage } from "./ManageAccountPage";
+export { default as TeacherProfilePage } from "./TeacherProfilePage";
 
 export { default as ErrorPage } from "./ErrorPage";

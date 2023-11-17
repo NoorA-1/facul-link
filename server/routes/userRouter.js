@@ -204,6 +204,10 @@ router.put(
           userInfo.skills = JSON.parse(userInfo.skills);
         }
         await Teacher.findOneAndUpdate({ userId: user.userId }, userInfo);
+        await User.findOneAndUpdate(
+          { _id: user.userId },
+          { isProfileSetup: true }
+        );
         return res
           .status(200)
           .json({ message: "Profile updated successfully", error: false });
