@@ -11,9 +11,17 @@ const app = express();
 import userAuthRouter from "./routes/userAuthRouter.js";
 import userRouter from "./routes/userRouter.js";
 
+//public folder
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import path from "path";
+
 import cookieParser from "cookie-parser";
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(morgan("dev"));
+
+app.use(express.static(path.resolve(__dirname, "./public")));
 app.use(cookieParser());
 app.use(express.json());
 

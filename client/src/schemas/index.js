@@ -189,3 +189,14 @@ export const teacherExperienceFormValidationSchema = Yup.object({
     }),
   }),
 });
+
+export const teacherProfileDescriptionValidationSchema = Yup.object({
+  profileDescription: Yup.string()
+    .required("Description is required")
+    .min(5, "Description must be at least 3 characters long")
+    .test(
+      "is-empty-after-trim",
+      "Description cannot be empty or only whitespace",
+      (value) => value.trim() !== ""
+    ),
+});

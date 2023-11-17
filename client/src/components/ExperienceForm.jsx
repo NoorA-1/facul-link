@@ -25,8 +25,6 @@ const modalStyle = {
   p: 4,
 };
 
-const options = { year: "numeric", month: "short" };
-
 const initialValues = {
   experience: {
     title: "",
@@ -43,7 +41,7 @@ const initialValues = {
 };
 
 const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
-  const [startDate, setStartDate] = useState(dayjs().subtract(20, "year"));
+  const [startDate, setStartDate] = useState(dayjs());
   const [minEndDate, setMinEndDate] = useState(startDate.add(1, "month"));
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -124,6 +122,8 @@ const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
       index,
     });
     values.experience = experiencesArray[index];
+    values.experience.date.startDate = dayjs(values.experience.date.startDate);
+    values.experience.date.endDate = dayjs(values.experience.date.endDate);
     setStartDate(dayjs());
     setMinEndDate(values.experience.date.startDate.add(1, "month"));
     handleOpen();
@@ -135,15 +135,13 @@ const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
     );
   };
 
-  console.log(errors);
-
   return (
     <>
       {experiencesArray &&
         experiencesArray.map((e, index) => {
           return (
             <div
-              className="bg-body-secondary border border-dark-subtle rounded shadow-sm px-5 py-3 mb-3"
+              className="bg-light-gray border border-dark-subtle rounded shadow-sm px-5 py-3 mb-3"
               key={index}
             >
               <div className="mb-2">
@@ -157,13 +155,13 @@ const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
               <div className="mb-2">
                 <p className="fw-bold d-inline">Start Date:</p>{" "}
                 <p className="d-inline">
-                  {e.date.startDate.toDate().toLocaleString("en-US", options)}
+                  {dayjs(e.date.startDate).format("MMM - YYYY")}
                 </p>
               </div>
-              <div className="mb-2">
+              <div className="mb-1">
                 <p className="fw-bold d-inline">End Date:</p>{" "}
                 <p className="d-inline">
-                  {e.date.endDate.toDate().toLocaleString("en-US", options)}
+                  {dayjs(e.date.endDate).format("MMM - YYYY")}
                 </p>
               </div>
               <div className="d-flex justify-content-end">
@@ -309,7 +307,7 @@ const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
               </div>
             </LocalizationProvider>
             <div className="d-flex justify-content-center gap-3">
-              <Button variant="contained" type="submit">
+              <Button variant="contained" type="submit" color="secondary">
                 Save
               </Button>
               <Button
@@ -341,7 +339,6 @@ const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
           startIcon={<AddOutlinedIcon />}
           onClick={newExperience}
           disabled={open}
-          color="secondary"
         >
           Add Experience
         </Button>

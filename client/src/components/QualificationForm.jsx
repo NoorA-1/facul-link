@@ -26,8 +26,6 @@ const modalStyle = {
   p: 4,
 };
 
-const options = { year: "numeric", month: "short" };
-
 const initialValues = {
   qualification: {
     instituteName: "",
@@ -131,6 +129,12 @@ const QualificationForm = memo(
         index,
       });
       values.qualification = qualificationsArray[index];
+      values.qualification.date.startDate = dayjs(
+        values.qualification.date.startDate
+      );
+      values.qualification.date.endDate = dayjs(
+        values.qualification.date.endDate
+      );
       setStartDate(dayjs());
       setMinEndDate(values.qualification.date.startDate.add(1, "month"));
       handleOpen();
@@ -151,7 +155,7 @@ const QualificationForm = memo(
           qualificationsArray.map((e, index) => {
             return (
               <div
-                className="bg-body-secondary border border-dark-subtle rounded shadow-sm px-5 py-3 mb-3"
+                className="bg-light-gray border border-dark-subtle rounded shadow-sm px-5 py-3 mb-3"
                 key={index}
               >
                 <div className="mb-2">
@@ -165,13 +169,13 @@ const QualificationForm = memo(
                 <div className="mb-2">
                   <p className="fw-bold d-inline">Start Date:</p>{" "}
                   <p className="d-inline">
-                    {e.date.startDate.toDate().toLocaleString("en-US", options)}
+                    {dayjs(e.date.startDate).format("MMM - YYYY")}
                   </p>
                 </div>
-                <div className="mb-2">
+                <div className="mb-1">
                   <p className="fw-bold d-inline">End Date:</p>{" "}
                   <p className="d-inline">
-                    {e.date.endDate.toDate().toLocaleString("en-US", options)}
+                    {dayjs(e.date.endDate).format("MMM - YYYY")}
                   </p>
                 </div>
                 <div className="d-flex justify-content-end">
