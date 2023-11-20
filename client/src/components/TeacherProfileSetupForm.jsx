@@ -253,7 +253,7 @@ const TeacherProfileSetupForm = ({ userData }) => {
           Profile Description
           <sup className="fs-5 text-danger">*</sup>
         </h3>
-        <h6 className="text-secondary">Add a profile description.</h6>
+        <h6 className="text-secondary">Write about yourself.</h6>
         <TextField
           label="Description"
           multiline
