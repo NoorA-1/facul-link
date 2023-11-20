@@ -30,6 +30,7 @@ const teacherSchema = new Schema({
     {
       title: { type: String, default: null },
       company: { type: String, default: null },
+      isCurrentlyWorking: { type: Boolean, default: false },
       date: {
         startDate: { type: Date, default: null },
         endDate: { type: Date, default: null },

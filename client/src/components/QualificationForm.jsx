@@ -96,6 +96,8 @@ const QualificationForm = memo(
       }
     };
 
+    // console.log(errors);
+
     const newQualification = () => {
       resetForm();
       setStartDate(dayjs());

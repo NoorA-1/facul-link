@@ -43,11 +43,35 @@ router.get("/current-user", authenticateUser, async (req, res) => {
       const user = await Teacher.findOne({
         userId: req.user.userId,
       }).populate("userId");
+
+      if (!fs.existsSync(user.profileImage)) {
+        await Teacher.updateOne(
+          { userId: req.user.userId },
+          { profileImage: null }
+        );
+        user.profileImage = null;
+      }
+      if (!fs.existsSync(user.resumeFile)) {
+        await Teacher.updateOne(
+          { userId: req.user.userId },
+          { resumeFile: null }
+        );
+        user.resumeFile = null;
+      }
+
       return res.status(200).json({ user });
     } else if (req.user.role === "employer") {
       const user = await UniEmployer.findOne({
         userId: req.user.userId,
       }).populate("userId");
+
+      if (!fs.existsSync(user.profileImage)) {
+        await UniEmployer.updateOne(
+          { userId: req.user.userId },
+          { profileImage: null }
+        );
+        user.profileImage = null;
+      }
 
       return res.status(200).json({ user });
     }

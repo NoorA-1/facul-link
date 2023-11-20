@@ -136,9 +136,8 @@ export const teacherQualificationValidationSchema = Yup.object({
       ),
     date: Yup.object({
       startDate: Yup.date().required("Start Date is required"),
-      endDate: Yup.date()
-        .required("End Date is required")
-        .min(Yup.ref("startDate"), "End date can't be before start date"),
+      endDate: Yup.string().required("End Date is required"),
+      // .min(Yup.ref("startDate"), "End date can't be before start date"),
     }),
     location: Yup.object({
       country: Yup.string()
@@ -174,8 +173,8 @@ export const teacherExperienceFormValidationSchema = Yup.object({
     date: Yup.object({
       startDate: Yup.date().required("Start Date is required"),
       endDate: Yup.date()
-        .required("End Date is required")
-        .min(Yup.ref("startDate"), "End date can't be before start date"),
+        // .min(Yup.ref("startDate"), "End date can't be before start date")
+        .nullable(),
     }),
     location: Yup.object({
       country: Yup.string()
@@ -187,6 +186,7 @@ export const teacherExperienceFormValidationSchema = Yup.object({
         .matches(lettersSpaceOnlyRegex, "Invalid City name")
         .min(3, "Country must be at least 3 characters long"),
     }),
+    isCurrentlyWorking: Yup.boolean(),
   }),
 });
 

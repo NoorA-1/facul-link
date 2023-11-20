@@ -1,7 +1,13 @@
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo, useState, useEffect } from "react";
 import { useFormik } from "formik";
 import Modal from "@mui/material/Modal";
-import { Button, TextField, Box } from "@mui/material";
+import {
+  Button,
+  TextField,
+  Box,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import IconButton from "@mui/material/IconButton";
@@ -29,6 +35,7 @@ const initialValues = {
   experience: {
     title: "",
     company: "",
+    isCurrentlyWorking: false,
     date: {
       startDate: "",
       endDate: "",
@@ -47,14 +54,27 @@ const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
+    resetForm();
+
     setStartDate(dayjs());
     setMinEndDate(startDate.add(1, "month"));
-    resetForm();
   };
   const [editMode, setEditMode] = useState({
     isEditMode: false,
     index: null,
   });
+  const [isCurrentlyWorking, setIsCurrentlyWorking] = useState(false);
+
+  const handleIsCurrentlyWorking = () => {
+    setIsCurrentlyWorking((prev) => {
+      const newIsCurrentlyWorking = !prev;
+      setFieldValue("experience.isCurrentlyWorking", newIsCurrentlyWorking);
+      return newIsCurrentlyWorking;
+    });
+    if (isCurrentlyWorking) {
+      setFieldValue("experience.date.endDate", dayjs().add(1, "month"));
+    }
+  };
 
   const {
     values,
@@ -64,6 +84,7 @@ const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
     errors,
     touched,
     resetForm,
+    setFieldValue,
   } = useFormik({
     initialValues,
     validationSchema: teacherExperienceFormValidationSchema,
@@ -77,8 +98,14 @@ const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
 
   const saveFormData = (values, actions) => {
     if (!editMode.isEditMode) {
+      if (isCurrentlyWorking) {
+        values.experience.date.endDate = null;
+      }
       setExperiencesArray((prev) => [...prev, values.experience]);
     } else {
+      if (isCurrentlyWorking) {
+        values.experience.date.endDate = null;
+      }
       setExperiencesArray((arr) => {
         return arr.map((e, i) => {
           return i === editMode.index ? values.experience : e;
@@ -95,6 +122,7 @@ const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
     resetForm();
     setStartDate(dayjs());
     setMinEndDate(startDate.add(1, "month"));
+    setIsCurrentlyWorking(false);
     setEditMode({
       isEditMode: false,
       index: null,
@@ -102,6 +130,7 @@ const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
     values.experience = {
       title: "",
       company: "",
+      isCurrentlyWorking: false,
       date: {
         startDate: "",
         endDate: "",
@@ -122,8 +151,17 @@ const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
       index,
     });
     values.experience = experiencesArray[index];
+    // console.log(values.experience);
     values.experience.date.startDate = dayjs(values.experience.date.startDate);
-    values.experience.date.endDate = dayjs(values.experience.date.endDate);
+    setIsCurrentlyWorking(() => values.experience.isCurrentlyWorking);
+    if (!values.experience.isCurrentlyWorking) {
+      setFieldValue(
+        "experience.date.endDate",
+        dayjs(values.experience.date.endDate)
+      );
+    } else {
+      setFieldValue("experience.date.endDate", dayjs().add(1, "month"));
+    }
     setStartDate(dayjs());
     setMinEndDate(values.experience.date.startDate.add(1, "month"));
     handleOpen();
@@ -161,7 +199,9 @@ const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
               <div className="mb-1">
                 <p className="fw-bold d-inline">End Date:</p>{" "}
                 <p className="d-inline">
-                  {dayjs(e.date.endDate).format("MMM - YYYY")}
+                  {!e.isCurrentlyWorking
+                    ? dayjs(e.date.endDate).format("MMM - YYYY")
+                    : "Present"}
                 </p>
               </div>
               <div className="d-flex justify-content-end">
@@ -263,6 +303,13 @@ const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
                 Boolean(errors.experience?.location?.city)
               }
             />
+            <FormControlLabel
+              control={<Checkbox />}
+              label="I am currently working in this role"
+              className="mb-3"
+              checked={isCurrentlyWorking}
+              onChange={handleIsCurrentlyWorking}
+            />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <div className="d-flex justify-content-center gap-3">
                 <DatePicker
@@ -291,9 +338,10 @@ const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
                   views={["month", "year"]}
                   openTo="month"
                   minDate={minEndDate}
+                  maxDate={dayjs().add(1, "month")}
                   className="mb-3 bg-white"
                   name="experience.date.endDate"
-                  value={values.experience.date.endDate}
+                  value={dayjs(values.experience.date.endDate)}
                   onBlur={handleBlur}
                   onChange={(newValue) => {
                     handleChange({
@@ -303,6 +351,8 @@ const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
                       },
                     });
                   }}
+                  disabled={isCurrentlyWorking}
+                  sx={{ display: isCurrentlyWorking && "none" }}
                 />
               </div>
             </LocalizationProvider>
