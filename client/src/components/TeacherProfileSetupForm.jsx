@@ -196,7 +196,7 @@ const TeacherProfileSetupForm = ({ userData }) => {
 
       const response = await http.put("/users/teacher-profile", formData);
       console.log(response);
-      navigate("/dashboard/teacher-profile");
+      navigate("/dashboard/profile");
     } catch (error) {
       console.log(error);
     }

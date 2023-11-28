@@ -7,3 +7,4 @@ export { default as Footer } from "./Footer";
 export { default as TeacherProfileSetupForm } from "./TeacherProfileSetupForm";
 export { default as QualificationForm } from "./QualificationForm";
 export { default as ExperienceForm } from "./ExperienceForm";
+export { default as BigSidebar } from "./BigSidebar";

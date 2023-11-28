@@ -17,7 +17,9 @@ import {
   EmployerSignUpPage,
   ProfileSetup,
   ManageAccountPage,
-  TeacherProfilePage,
+  ProfilePage,
+  DashboardLayout,
+  HomePage,
 } from "./pages";
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
@@ -57,15 +59,15 @@ const App = () => {
           element: <LandingPage />,
         },
         {
-          path: "/sign-up",
+          path: "sign-up",
           element: !token ? <SignUpPage /> : <Navigate to="/profile-setup" />,
         },
         {
-          path: "/sign-in",
+          path: "sign-in",
           element: !token ? <SignInPage /> : <Navigate to="/profile-setup" />,
         },
         {
-          path: "/sign-up-teacher",
+          path: "sign-up-teacher",
           element: !token ? (
             <TeacherSignUpPage />
           ) : (
@@ -73,7 +75,7 @@ const App = () => {
           ),
         },
         {
-          path: "/sign-up-employer",
+          path: "sign-up-employer",
           element: !token ? (
             <EmployerSignUpPage />
           ) : (
@@ -81,19 +83,29 @@ const App = () => {
           ),
         },
         {
-          path: "/profile-setup",
+          path: "profile-setup",
           element: token ? <ProfileSetup /> : <Navigate to="/" />,
           // element: <ProfileSetup />,
           loader: profileSetupLoader,
         },
         {
-          path: "/manage-account",
+          path: "manage-account",
           element: token ? <ManageAccountPage /> : <Navigate to="/" />,
           loader: manageAccountLoader,
         },
         {
-          path: "/dashboard/teacher-profile",
-          element: token ? <TeacherProfilePage /> : <Navigate to="/" />,
+          path: "dashboard",
+          element: token ? <DashboardLayout /> : <Navigate to="/" />,
+          children: [
+            {
+              index: true,
+              element: <HomePage />,
+            },
+            {
+              path: "profile",
+              element: <ProfilePage />,
+            },
+          ],
         },
       ],
     },
