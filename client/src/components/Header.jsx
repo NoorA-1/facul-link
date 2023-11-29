@@ -3,7 +3,7 @@ import logo from "../assets/logo.svg";
 import { useNavigate, Link } from "react-router-dom";
 import { Button, useMediaQuery } from "@mui/material";
 
-const Header = ({ children, homeDisabled }) => {
+const Header = ({ children, homeDisabled, classes }) => {
   const navigate = useNavigate();
   const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("lg"));
 
@@ -12,7 +12,10 @@ const Header = ({ children, homeDisabled }) => {
   };
 
   return (
-    <nav className="header-nav d-flex align-items-center justify-content-around">
+    <nav
+      className="header-nav d-flex align-items-center justify-content-around"
+      // style={{ padding: "0 20rem" }}
+    >
       <div className="d-flex align-items-center gap-5">
         <div
           className="logo"
@@ -28,7 +31,7 @@ const Header = ({ children, homeDisabled }) => {
           <Link to="/">
             <Button
               variant="outlined"
-              size="large"
+              size="medium"
               sx={{
                 textTransform: "capitalize",
                 fontWeight: "bold",

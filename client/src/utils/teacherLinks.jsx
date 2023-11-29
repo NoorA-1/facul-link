@@ -9,7 +9,7 @@ const teacherLinks = [
   {
     text: "Home",
     path: "/dashboard",
-    icon: <HomeOutlinedIcon />,
+    icon: <HomeOutlinedIcon className="mb-1" />,
   },
   {
     text: "Search Job",

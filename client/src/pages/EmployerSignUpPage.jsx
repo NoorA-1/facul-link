@@ -107,7 +107,7 @@ const EmployerSignUpPage = () => {
         <div>
           <Link to="/sign-up">
             <Button
-              size="large"
+              size="medium"
               variant="contained"
               sx={{
                 marginRight: "1.25rem",
@@ -128,7 +128,7 @@ const EmployerSignUpPage = () => {
           <Link to="/sign-in">
             <Button
               variant="outlined"
-              size="large"
+              size="medium"
               sx={{
                 border: 2,
                 textTransform: "capitalize",

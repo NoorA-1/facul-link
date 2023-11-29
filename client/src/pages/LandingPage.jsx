@@ -20,7 +20,7 @@ const LandingPage = () => {
             <Link to="/sign-in">
               <Button
                 variant="text"
-                size="large"
+                size="medium"
                 sx={{
                   // color: "#001219",
                   // border: 1,
@@ -40,7 +40,7 @@ const LandingPage = () => {
             </Link>
             <Link to="/sign-up">
               <Button
-                size="large"
+                size="medium"
                 variant="contained"
                 sx={{
                   marginLeft: "1.25rem",

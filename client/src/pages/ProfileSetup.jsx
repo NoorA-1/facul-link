@@ -25,7 +25,7 @@ const ProfileSetup = () => {
     console.log(data);
     if (data && data.user.userId.isProfileSetup) {
       // navigate route here
-      navigate("/dashboard/profile");
+      navigate("/dashboard");
     }
   }, [data]);
 

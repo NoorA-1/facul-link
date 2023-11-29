@@ -30,7 +30,11 @@ export const loader = async () => {
   }
 };
 
-const ManageAccountPage = () => {
+const ManageAccountPage = ({
+  headerDisabled,
+  footerDisabled,
+  backBtnDisabled,
+}) => {
   let data = useLoaderData();
   const navigate = useNavigate();
   const [userData, setUserData] = useState(data.user.userId);
@@ -436,21 +440,23 @@ const ManageAccountPage = () => {
 
   return (
     <Wrapper>
-      <Header></Header>
+      {!headerDisabled && <Header></Header>}
       <div
         style={{ height: "90vh" }}
         className="d-flex align-items-center justify-content-center mb-4"
       >
         <InitialForm>
-          <Button
-            variant="outlined"
-            sx={{ border: 2, ":hover": { border: 2 } }}
-            className="my-3"
-            startIcon={<ArrowBackOutlinedIcon />}
-            onClick={handleBackButton}
-          >
-            Back
-          </Button>
+          {!backBtnDisabled && (
+            <Button
+              variant="outlined"
+              sx={{ border: 2, ":hover": { border: 2 } }}
+              className="my-3"
+              startIcon={<ArrowBackOutlinedIcon />}
+              onClick={handleBackButton}
+            >
+              Back
+            </Button>
+          )}
           <h3 className="text-center fw-bold mb-4">Manage Account Details</h3>
           <TextField
             select
@@ -468,7 +474,7 @@ const ManageAccountPage = () => {
           <ChangePasswordLayout />
         </InitialForm>
       </div>
-      <Footer />
+      {!footerDisabled && <Footer />}
     </Wrapper>
   );
 };

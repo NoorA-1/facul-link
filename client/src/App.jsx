@@ -24,6 +24,7 @@ import {
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
 import { loader as manageAccountLoader } from "./pages/ManageAccountPage";
+import { loader as dashboardLoader } from "./pages/DashboardLayout";
 
 // const token = Cookies.get("token");
 // if (token) {
@@ -96,6 +97,7 @@ const App = () => {
         {
           path: "dashboard",
           element: token ? <DashboardLayout /> : <Navigate to="/" />,
+          loader: dashboardLoader,
           children: [
             {
               index: true,
@@ -104,6 +106,17 @@ const App = () => {
             {
               path: "profile",
               element: <ProfilePage />,
+            },
+            {
+              path: "manage-account",
+              element: (
+                <ManageAccountPage
+                  headerDisabled={true}
+                  footerDisabled={true}
+                  backBtnDisabled={true}
+                />
+              ),
+              loader: manageAccountLoader,
             },
           ],
         },

@@ -80,7 +80,7 @@ const SignInPage = () => {
       <Header>
         <Link to="/sign-up">
           <Button
-            size="large"
+            size="medium"
             variant="contained"
             sx={{
               marginLeft: "1.25rem",

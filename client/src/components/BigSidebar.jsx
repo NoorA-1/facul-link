@@ -6,17 +6,6 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import http from "../utils/http";
 
 const BigSidebar = () => {
-  const navigate = useNavigate();
-  const handleSignOut = async () => {
-    try {
-      navigate("/");
-
-      const { data } = await http.get("/auth/sign-out");
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   return (
     <div className="mt-5" style={{ position: "relative" }}>
       {teacherLinks.map((link) => {
@@ -37,6 +26,8 @@ const BigSidebar = () => {
                 paddingLeft: "30px",
                 ":hover": {
                   backgroundColor: "secondary.main",
+                  borderBottomLeftRadius: 0,
+                  borderTopLeftRadius: 0,
                 },
               }}
               disableRipple
@@ -46,7 +37,7 @@ const BigSidebar = () => {
           </NavLink>
         );
       })}
-      <Button
+      {/* <Button
         variant="text"
         startIcon={<LogoutOutlinedIcon />}
         size="large"
@@ -67,7 +58,7 @@ const BigSidebar = () => {
         onClick={handleSignOut}
       >
         Sign Out
-      </Button>
+      </Button> */}
     </div>
   );
 };

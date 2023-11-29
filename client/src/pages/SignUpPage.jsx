@@ -14,7 +14,7 @@ const SignUpPage = () => {
           <Link to="/sign-in">
             <Button
               variant="outlined"
-              size="large"
+              size="medium"
               sx={{
                 border: 2,
                 textTransform: "capitalize",
