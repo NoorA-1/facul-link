@@ -33,10 +33,7 @@ const HomePage = () => {
           />
         </HomePageCard>
       </div>
-      <div
-        className="mt-5 bg-white p-3 px-5 rounded"
-        style={{ border: "1px solid #BDBBBB" }}
-      >
+      <div className="mt-5 bg-white p-3 px-5 rounded grey-border">
         <h5 className="fw-bold mb-3">Recently Posted Jobs</h5>
         <JobPostCard
           title="Example"
@@ -55,10 +52,7 @@ const HomePage = () => {
         />
       </div>
 
-      <div
-        className="mt-5 bg-white p-3 px-5 rounded"
-        style={{ border: "1px solid #BDBBBB" }}
-      >
+      <div className="mt-5 bg-white p-3 px-5 rounded grey-border">
         <h5 className="fw-bold mb-3">Jobs Matching Your Profile</h5>
         <JobPostCard
           title="Example"

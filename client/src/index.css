@@ -112,3 +112,6 @@ input::-ms-reveal {
 .active button {
   font-weight: bold;
 }
+.grey-border {
+  border: 1px solid #bdbbbb;
+}
