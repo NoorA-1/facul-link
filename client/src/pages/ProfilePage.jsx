@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDashboardContext } from "./DashboardLayout";
 import { Avatar, Button, Chip } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
@@ -7,10 +7,14 @@ import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import IconButton from "@mui/material/IconButton";
 
 import dayjs from "dayjs";
+import { TeacherEditProfileForm } from "../components";
+import http from "../utils/http";
 
 const ProfilePage = () => {
-  const { userData } = useDashboardContext();
-  console.log(userData);
+  const { userData: initialUserData } = useDashboardContext();
+  const [userData, setUserData] = useState(initialUserData);
+  const [editMode, setEditMode] = useState(false);
+  // console.log(userData);
   const serverURL = "http://localhost:3000/";
   const profileImage =
     serverURL + userData.user.profileImage?.split("public\\")[1];
@@ -24,6 +28,29 @@ const ProfilePage = () => {
     value: "",
     filename: resumeFileSrc ? resumeFileSrc.split("documents\\")[1] : "",
   });
+
+  const updateUserData = async () => {
+    const { data } = await http.get("/users/current-user");
+    console.log(data);
+    setUserData(() => data);
+    console.log("updated");
+  };
+
+  useEffect(() => {
+    console.log(userData);
+    setResumeFileSrc(Boolean(userData.user.resumeFile) ? resumeFile : null);
+  }, [userData]);
+
+  if (editMode) {
+    return (
+      <TeacherEditProfileForm
+        userData={userData.user}
+        setEditMode={setEditMode}
+        updateUserData={updateUserData}
+      />
+    );
+  }
+
   return (
     <div className="col-8 mt-3 mx-auto">
       <div className="bg-white p-3 px-5 rounded grey-border">
@@ -32,7 +59,13 @@ const ProfilePage = () => {
         <Button
           variant="outlined"
           startIcon={<EditOutlinedIcon />}
-          sx={{ border: 2 }}
+          sx={{
+            border: 2,
+            ":hover": {
+              border: 2,
+            },
+          }}
+          onClick={() => setEditMode(true)}
         >
           Edit Profile
         </Button>
