@@ -29,9 +29,12 @@ export const validateSignIn = [
   body("password").notEmpty().withMessage("password is required"),
 ];
 
-export const validateChangeName = [
-  body("firstname").notEmpty().withMessage("firstname is required"),
-  body("lastname").notEmpty().withMessage("lastname is required"),
+export const validateChangeEmail = [
+  body("email")
+    .notEmpty()
+    .withMessage("email is required")
+    .isEmail()
+    .withMessage("email is invalid"),
 ];
 
 export const validateChangePassword = [

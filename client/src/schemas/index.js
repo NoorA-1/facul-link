@@ -78,15 +78,10 @@ export const employerSignUpValidationSchema = new Yup.object({
     .required("Please enter confirm password"),
 });
 
-export const changeNameValidationSchema = new Yup.object({
-  firstname: Yup.string()
-    .min(3, "First name must be at least 3 characters long")
-    .matches(lettersSpaceOnlyRegex, "Invalid first name")
-    .required("Please enter first name"),
-  lastname: Yup.string()
-    .min(3, "Last name must be at least 3 characters long")
-    .matches(lettersSpaceOnlyRegex, "Invalid last name")
-    .required("Please enter last name"),
+export const changeEmailValidationSchema = new Yup.object({
+  email: Yup.string()
+    .matches(emailRegex, "Please enter valid email.")
+    .required("Please enter email"),
 });
 
 export const changePasswordValidationSchema = new Yup.object({
@@ -190,7 +185,15 @@ export const teacherExperienceFormValidationSchema = Yup.object({
   }),
 });
 
-export const teacherProfileDescriptionValidationSchema = Yup.object({
+export const teacherProfileValidationSchema = Yup.object({
+  firstname: Yup.string()
+    .min(3, "First name must be at least 3 characters long")
+    .matches(lettersSpaceOnlyRegex, "Invalid first name")
+    .required("Please enter first name"),
+  lastname: Yup.string()
+    .min(3, "Last name must be at least 3 characters long")
+    .matches(lettersSpaceOnlyRegex, "Invalid last name")
+    .required("Please enter last name"),
   profileDescription: Yup.string()
     .required("Description is required")
     .min(5, "Description must be at least 3 characters long")

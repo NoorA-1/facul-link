@@ -94,6 +94,7 @@ input::-ms-reveal {
   height: 90.5vh;
   overflow-y: scroll;
 }
+
 .sidebar {
   width: 15vw;
   height: 90.5vh;
@@ -103,6 +104,9 @@ input::-ms-reveal {
   margin-top: 1.5rem;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
+}
+.admin-sidebar {
+  background-color: #001219;
 }
 .active {
   background-color: #005f73;

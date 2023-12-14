@@ -76,7 +76,9 @@ router.post("/sign-in", validateSignIn, async (req, res) => {
       expires: new Date(Date.now() + oneDayTime),
     });
 
-    res.status(200).json({ message: "Log In successful", error: false });
+    res
+      .status(200)
+      .json({ message: "Log In successful", error: false, role: user.role });
   } catch (error) {
     console.log(error);
   }

@@ -1,14 +1,14 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import teacherLinks from "../utils/teacherLinks";
+import adminLinks from "../utils/adminLinks";
 import { Button } from "@mui/material";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import http from "../utils/http";
-import { useDashboardContext } from "../pages/DashboardLayout";
+import { useDashboardContext } from "../pages/AdminDashboardLayout";
 
-const BigSidebar = () => {
+const AdminBigSidebar = () => {
   const { userData } = useDashboardContext();
-  const links = userData.user?.userId?.role === "teacher" ? teacherLinks : null;
+  const links = adminLinks;
   return (
     <div className="mt-5" style={{ position: "relative" }}>
       {links.map((link) => {
@@ -66,4 +66,4 @@ const BigSidebar = () => {
   );
 };
 
-export default BigSidebar;
+export default AdminBigSidebar;

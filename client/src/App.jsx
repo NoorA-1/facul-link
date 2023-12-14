@@ -20,12 +20,14 @@ import {
   ProfilePage,
   DashboardLayout,
   HomePage,
+  AdminDashboardLayout,
+  AdminHomePage,
 } from "./pages";
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
 import { loader as manageAccountLoader } from "./pages/ManageAccountPage";
 import { loader as dashboardLoader } from "./pages/DashboardLayout";
-
+import { loader as AdminDashboardLoader } from "./pages/AdminDashboardLayout";
 // const token = Cookies.get("token");
 // if (token) {
 //   console.log(token);
@@ -35,19 +37,30 @@ import { loader as dashboardLoader } from "./pages/DashboardLayout";
 
 const App = () => {
   const [cookies, setCookie] = useCookies(["token"]);
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState({
+    token: null,
+    role: null,
+  });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (cookies.token) {
-      setToken(cookies.token);
+      const decodedToken = jwtDecode(cookies.token);
+      setToken(() => {
+        return {
+          token: cookies.token,
+          role: decodedToken.role,
+        };
+      });
     } else {
       setToken(null);
     }
     setIsLoading(false);
   }, [cookies, setCookie]);
   useEffect(() => {
-    if (token) console.log(token);
+    if (token) {
+      console.log(token);
+    }
   }, [token]);
   const router = createBrowserRouter([
     {
@@ -61,42 +74,73 @@ const App = () => {
         },
         {
           path: "sign-up",
-          element: !token ? <SignUpPage /> : <Navigate to="/profile-setup" />,
+          element: !token ? (
+            <SignUpPage />
+          ) : token.role !== "admin" ? (
+            <Navigate to="/profile-setup" />
+          ) : (
+            <Navigate to="/admin-dashboard" />
+          ),
         },
         {
           path: "sign-in",
-          element: !token ? <SignInPage /> : <Navigate to="/profile-setup" />,
+          element: !token ? (
+            <SignInPage />
+          ) : token.role !== "admin" ? (
+            <Navigate to="/profile-setup" />
+          ) : (
+            <Navigate to="/admin-dashboard" />
+          ),
         },
         {
           path: "sign-up-teacher",
           element: !token ? (
             <TeacherSignUpPage />
-          ) : (
+          ) : token.role !== "admin" ? (
             <Navigate to="/profile-setup" />
+          ) : (
+            <Navigate to="/admin-dashboard" />
           ),
         },
         {
           path: "sign-up-employer",
           element: !token ? (
             <EmployerSignUpPage />
-          ) : (
+          ) : token.role !== "admin" ? (
             <Navigate to="/profile-setup" />
+          ) : (
+            <Navigate to="/admin-dashboard" />
           ),
         },
         {
           path: "profile-setup",
-          element: token ? <ProfileSetup /> : <Navigate to="/" />,
+          element:
+            token && token.role !== "admin" ? (
+              <ProfileSetup />
+            ) : (
+              <Navigate to="/" />
+            ),
           // element: <ProfileSetup />,
           loader: profileSetupLoader,
         },
         {
           path: "manage-account",
-          element: token ? <ManageAccountPage /> : <Navigate to="/" />,
+          element:
+            token && token.role !== "admin" ? (
+              <ManageAccountPage />
+            ) : (
+              <Navigate to="/" />
+            ),
           loader: manageAccountLoader,
         },
         {
           path: "dashboard",
-          element: token ? <DashboardLayout /> : <Navigate to="/" />,
+          element:
+            token && token.role !== "admin" ? (
+              <DashboardLayout />
+            ) : (
+              <Navigate to="/" />
+            ),
           loader: dashboardLoader,
           children: [
             {
@@ -106,6 +150,33 @@ const App = () => {
             {
               path: "profile",
               element: <ProfilePage />,
+            },
+            {
+              path: "manage-account",
+              element: (
+                <ManageAccountPage
+                  headerDisabled={true}
+                  footerDisabled={true}
+                  backBtnDisabled={true}
+                />
+              ),
+              loader: manageAccountLoader,
+            },
+          ],
+        },
+        {
+          path: "admin-dashboard",
+          element:
+            token && token.role === "admin" ? (
+              <AdminDashboardLayout />
+            ) : (
+              <Navigate to="/" />
+            ),
+          loader: AdminDashboardLoader,
+          children: [
+            {
+              index: true,
+              element: <AdminHomePage />,
             },
             {
               path: "manage-account",

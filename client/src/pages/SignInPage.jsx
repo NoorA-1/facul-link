@@ -31,13 +31,16 @@ const SignInPage = () => {
 
   const submitSignInData = async (data, actions) => {
     try {
-      await http.post("/auth/sign-in", data);
-      console.log(data);
+      const { data: responseData } = await http.post("/auth/sign-in", data);
+      console.log(responseData);
       setAlertError("");
       setIsSuccess(true);
       actions.resetForm();
       setTimeout(() => {
-        navigate("/profile-setup");
+        if (responseData.role === "admin") {
+        } else {
+          navigate("/profile-setup");
+        }
       }, 1000);
     } catch (error) {
       const { message } = error.response.data;

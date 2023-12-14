@@ -1,22 +1,35 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
-import { Avatar, Button, TextField, Chip, Alert } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  TextField,
+  Chip,
+  Alert,
+  InputAdornment,
+} from "@mui/material";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import UploadIcon from "@mui/icons-material/Upload";
 import IconButton from "@mui/material/IconButton";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
+import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
 
 import QualificationForm from "./QualificationForm";
 import ExperienceForm from "./ExperienceForm";
-import { teacherProfileDescriptionValidationSchema } from "../schemas";
+import { teacherProfileValidationSchema } from "../schemas";
 import http from "../utils/http";
 
 const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
   const initialValues = {
+    firstname: Boolean(userData.userId.firstname)
+      ? userData.userId.firstname
+      : "",
+    lastname: Boolean(userData.userId.lastname) ? userData.userId.lastname : "",
     profileDescription: Boolean(userData.profileDescription)
       ? userData.profileDescription
       : "",
@@ -45,6 +58,7 @@ const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
     URL: "",
     value: "",
     filename: "",
+    isRemoved: false,
   });
 
   const resumeFile = serverURL + userData.resumeFile?.split("public\\")[1];
@@ -109,6 +123,7 @@ const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
             URL: imageURL,
             value,
             filename: file.name,
+            isRemoved: false,
           };
         });
       } else {
@@ -155,7 +170,11 @@ const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
       console.log(image);
       if (image.file) {
         formData.append("profileImage", image.file);
+      } else if (image.isRemoved) {
+        formData.append("profileImage", "");
       }
+      formData.append("firstname", values.firstname);
+      formData.append("lastname", values.lastname);
       formData.append("profileDescription", values.profileDescription);
       formData.append("qualification", JSON.stringify(qualificationsArray));
       formData.append("skills", JSON.stringify(skillsArray));
@@ -178,7 +197,7 @@ const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
       initialValues,
-      validationSchema: teacherProfileDescriptionValidationSchema,
+      validationSchema: teacherProfileValidationSchema,
       onSubmit: (values, actions) => {
         console.log(values);
         if (!imageFileError || !resumeFileError) {
@@ -186,6 +205,33 @@ const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
         }
       },
     });
+
+  const RemoveImageButton = () => {
+    return (
+      imageSrc && (
+        <Button
+          className="mt-4 mb-3"
+          variant="outlined"
+          color="danger"
+          sx={{ border: 2, ":hover": { border: 2 } }}
+          startIcon={<ClearOutlinedIcon />}
+          onClick={() => {
+            setImage({
+              file: "",
+              URL: "",
+              value: "",
+              filename: "",
+              isRemoved: true,
+            });
+            setImageSrc("");
+          }}
+        >
+          Remove Image
+        </Button>
+      )
+    );
+  };
+
   return (
     <div className="col-8 mt-3 mx-auto">
       <div className="bg-white p-3 px-5 rounded grey-border">
@@ -199,27 +245,79 @@ const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
               <h6 className="text-secondary text-center">
                 Upload your image. (JPG or PNG)
               </h6>
-              <Button
-                className="mt-4 mb-3"
-                variant="outlined"
-                component="label"
-                sx={{ border: 2, ":hover": { border: 2 } }}
-                fullWidth
-                startIcon={<UploadIcon />}
-              >
-                Upload Image
-                <input
-                  type="file"
-                  hidden
-                  name="profileImage"
-                  accept=".jpg, .png"
-                  onChange={handleFile}
-                />
-              </Button>
+              <div className="buttons d-flex justify-content-center">
+                <Button
+                  className="mt-4 mb-3 me-3"
+                  variant="outlined"
+                  component="label"
+                  sx={{ border: 2, ":hover": { border: 2 } }}
+                  startIcon={<UploadIcon />}
+                >
+                  Upload Image
+                  <input
+                    type="file"
+                    hidden
+                    name="profileImage"
+                    accept=".jpg, .png"
+                    onChange={handleFile}
+                  />
+                </Button>
+                <RemoveImageButton />
+              </div>
             </div>
           </div>
           <FileMessageBox />
           <hr />
+          <div className="name-fields d-flex justify-content-center gap-3">
+            <TextField
+              variant="outlined"
+              type="text"
+              label="First Name"
+              className="mt-4"
+              fullWidth
+              name="firstname"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <PersonOutlinedIcon />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.firstname}
+              helperText={
+                Boolean(errors.firstname) &&
+                Boolean(touched.firstname) &&
+                errors.firstname
+              }
+              error={Boolean(touched.firstname) && Boolean(errors.firstname)}
+            />
+            <TextField
+              variant="outlined"
+              type="text"
+              label="Last Name"
+              className="mt-4"
+              fullWidth
+              name="lastname"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <PersonOutlinedIcon />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.lastname}
+              helperText={
+                Boolean(errors.lastname) &&
+                Boolean(touched.lastname) &&
+                errors.lastname
+              }
+              error={Boolean(touched.lastname) && Boolean(errors.lastname)}
+            />
+          </div>
           <h3 className="fw-bold mt-4 mb-1">
             Profile Description
             <sup className="fs-5 text-danger">*</sup>

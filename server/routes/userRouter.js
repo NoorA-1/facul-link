@@ -4,7 +4,7 @@ import User from "../models/userModel.js";
 import { authenticateUser } from "../middlewares/authMiddleware.js";
 import { validationResult } from "express-validator";
 import {
-  validateChangeName,
+  validateChangeEmail,
   validateChangePassword,
 } from "../middlewares/validationMiddleware.js";
 import Teacher from "../models/teacherModel.js";
@@ -74,6 +74,9 @@ router.get("/current-user", authenticateUser, async (req, res) => {
       }
 
       return res.status(200).json({ user });
+    } else if (req.user.role === "admin") {
+      const user = await User.findOne({ _id: req.user.userId });
+      return res.status(200).json({ user });
     }
     return res.status(404).json({ message: "User not found" });
   } catch (error) {
@@ -82,9 +85,9 @@ router.get("/current-user", authenticateUser, async (req, res) => {
 });
 
 router.put(
-  "/change-name",
+  "/change-email",
   authenticateUser,
-  validateChangeName,
+  validateChangeEmail,
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -93,22 +96,22 @@ router.put(
           message: errors.array().map((err) => err.msg),
         });
       }
-      let user = await User.findOne({ _id: req.user.userId });
       const reqBody = req.body;
-      if (
-        user.firstname === reqBody.firstname &&
-        user.lastname === reqBody.lastname
-      ) {
-        return res.status(304).json({
-          message: "Provided first name and last name are same as before.",
-        });
+      const checkUser = await User.findOne({
+        email: reqBody.email,
+        _id: { $ne: req.user.userId },
+      });
+      if (checkUser) {
+        return res
+          .status(400)
+          .json({ message: "User with this email already exists" });
       }
-      user.firstname = reqBody.firstname;
-      user.lastname = reqBody.lastname;
+      let user = await User.findOne({ _id: req.user.userId });
+      user.email = reqBody.email;
       await user.save();
       return res
         .status(200)
-        .json({ message: "Name has been updated", error: false });
+        .json({ message: "Email has been updated", error: false });
     } catch (error) {
       console.log(error);
     }
@@ -230,7 +233,11 @@ router.put(
         await Teacher.findOneAndUpdate({ userId: user.userId }, userInfo);
         await User.findOneAndUpdate(
           { _id: user.userId },
-          { isProfileSetup: true }
+          {
+            firstname: userInfo.firstname,
+            lastname: userInfo.lastname,
+            isProfileSetup: true,
+          }
         );
         return res
           .status(200)

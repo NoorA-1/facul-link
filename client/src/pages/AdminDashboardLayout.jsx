@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { BigSidebar, Header } from "../components";
+import React, { createContext, useContext, useState } from "react";
+import { AdminBigSidebar, Header } from "../components";
 import { NavLink, Outlet, useLoaderData, useNavigate } from "react-router-dom";
 import { Button, Menu, MenuItem, useMediaQuery, Avatar } from "@mui/material";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
@@ -16,10 +16,10 @@ export const loader = async () => {
   }
 };
 
-const DashboardLayout = () => {
-  const userData = useLoaderData();
+const AdminDashboardLayout = () => {
   const navigate = useNavigate();
 
+  const userData = useLoaderData();
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("xl"));
   const buttonSize = isSmallScreen ? "small" : "medium";
   const [anchorEl, setAnchorEl] = useState(null);
@@ -41,23 +41,13 @@ const DashboardLayout = () => {
       console.log(error);
     }
   };
-  useEffect(() => {
-    console.log(userData);
-  }, []);
-
-  const serverURL = "http://localhost:3000/";
-  const profileImage = Boolean(userData.user.profileImage)
-    ? serverURL + userData.user.profileImage?.split("public\\")[1]
-    : null;
 
   return (
     <DashboardContext.Provider value={{ userData }}>
       <div className="sign-up-bg">
         <Header homeDisabled={true}>
           <div className="d-flex align-items-center gap-3">
-            <Avatar src={profileImage} sx={{ border: "2px solid #0a9396" }}>
-              {`${userData.user.userId.firstname[0]} ${userData.user.userId.lastname[0]}`}
-            </Avatar>
+            <Avatar sx={{ border: "2px solid #0a9396" }}>{`A`}</Avatar>
             <Button
               id="basic-button"
               aria-controls={open ? "basic-menu" : undefined}
@@ -72,7 +62,7 @@ const DashboardLayout = () => {
               endIcon={<KeyboardArrowDownOutlinedIcon />}
               size={buttonSize}
             >
-              {userData.user.userId.firstname}
+              {userData.user.firstname}
             </Button>
           </div>
           <Menu
@@ -96,8 +86,8 @@ const DashboardLayout = () => {
           </Menu>
         </Header>
         <div className="row w-100">
-          <div className="col-2 sidebar">
-            <BigSidebar />
+          <div className="col-2 admin-sidebar sidebar">
+            <AdminBigSidebar />
           </div>
           <div
             className="col-10 px-5 py-4 dashboard-page"
@@ -112,4 +102,5 @@ const DashboardLayout = () => {
 };
 
 export const useDashboardContext = () => useContext(DashboardContext);
-export default DashboardLayout;
+
+export default AdminDashboardLayout;

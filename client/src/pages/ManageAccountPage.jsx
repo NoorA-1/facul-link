@@ -13,10 +13,11 @@ import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 
 import { useFormik } from "formik";
 import {
-  changeNameValidationSchema,
+  changeEmailValidationSchema,
   changePasswordValidationSchema,
 } from "../schemas";
 import http from "../utils/http";
@@ -24,6 +25,7 @@ import http from "../utils/http";
 export const loader = async () => {
   try {
     const { data } = await http.get("/users/current-user");
+
     return data;
   } catch (error) {
     return null;
@@ -37,7 +39,9 @@ const ManageAccountPage = ({
 }) => {
   let data = useLoaderData();
   const navigate = useNavigate();
-  const [userData, setUserData] = useState(data.user.userId);
+  const [userData, setUserData] = useState(
+    data.user?.role === "admin" ? data.user : data.user.userId
+  );
   const [passwordData, setPasswordData] = useState({
     currentpassword: "",
     newpassword: "",
@@ -50,9 +54,8 @@ const ManageAccountPage = ({
     error: null,
   });
 
-  const nameFormInitialValues = {
-    firstname: userData.firstname,
-    lastname: userData.lastname,
+  const emailFormInitialValues = {
+    email: userData.email,
   };
 
   const passwordFormInitialValues = {
@@ -74,10 +77,10 @@ const ManageAccountPage = ({
     });
   };
 
-  const ChangeNameLayout = () => {
-    const submitChangeNameData = async (data) => {
+  const ChangeEmailLayout = () => {
+    const submitChangeEmailData = async (data) => {
       try {
-        const response = await http.put("/users/change-name", data);
+        const response = await http.put("/users/change-email", data);
         console.log(response);
         if (response.status === 200) {
           setAlertMessage(() => {
@@ -88,18 +91,21 @@ const ManageAccountPage = ({
           });
           setUserData((prev) => {
             return {
-              ...prev,
-              firstname: data.firstname,
-              lastname: data.lastname,
+              email: data.email,
             };
           });
         }
       } catch (error) {
-        if (error.response.status === 304) {
+        setUserData((prev) => {
+          return {
+            email: data.email,
+          };
+        });
+        if (error.response.status === 400) {
           setAlertMessage(() => {
             return {
-              message: "Provided first name and last name are same as before.",
-              error: 2,
+              message: "User with this email already exists.",
+              error: 1,
             };
           });
         }
@@ -116,14 +122,10 @@ const ManageAccountPage = ({
       touched,
       resetForm,
     } = useFormik({
-      initialValues: nameFormInitialValues,
-      validationSchema: changeNameValidationSchema,
+      initialValues: emailFormInitialValues,
+      validationSchema: changeEmailValidationSchema,
       onSubmit: (values) => {
-        const trimmedValues = {
-          firstname: values.firstname.trim(),
-          lastname: values.lastname.trim(),
-        };
-        submitChangeNameData(trimmedValues);
+        submitChangeEmailData(values);
       },
     });
 
@@ -135,59 +137,33 @@ const ManageAccountPage = ({
       return (
         <>
           <hr />
-          <h5 className="text-center text-secondary">Change Your Name</h5>
+          <h5 className="text-center text-secondary">Change Your Email</h5>
           <div className="px-sm-4">
             <form onSubmit={handleSubmit}>
               <div className="d-flex gap-3 mb-5">
                 <TextField
                   variant="outlined"
-                  type="text"
-                  label="First Name"
+                  type="email"
+                  label="Email"
                   fullWidth
                   className="mt-4"
-                  name="firstname"
+                  name="email"
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <PersonOutlinedIcon />
+                        <EmailOutlinedIcon />
                       </InputAdornment>
                     ),
                   }}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  value={values.firstname}
+                  value={values.email}
                   helperText={
-                    Boolean(errors.firstname) &&
-                    Boolean(touched.firstname) &&
-                    errors.firstname
+                    Boolean(errors.email) &&
+                    Boolean(touched.email) &&
+                    errors.email
                   }
-                  error={
-                    Boolean(touched.firstname) && Boolean(errors.firstname)
-                  }
-                />
-                <TextField
-                  variant="outlined"
-                  type="text"
-                  label="Last Name"
-                  fullWidth
-                  className="mt-4"
-                  name="lastname"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <PersonOutlinedIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.lastname}
-                  helperText={
-                    Boolean(errors.lastname) &&
-                    Boolean(touched.lastname) &&
-                    errors.lastname
-                  }
-                  error={Boolean(touched.lastname) && Boolean(errors.lastname)}
+                  error={Boolean(touched.email) && Boolean(errors.email)}
                 />
               </div>
               <Button
@@ -196,7 +172,7 @@ const ManageAccountPage = ({
                 variant="contained"
                 className="mb-3"
               >
-                Change Name
+                Change Email
               </Button>
             </form>
           </div>
@@ -466,11 +442,11 @@ const ManageAccountPage = ({
             onChange={handleListSelect}
             className="mb-3"
           >
-            <MenuItem value={0}>Change Name</MenuItem>
+            <MenuItem value={0}>Change Email</MenuItem>
             <MenuItem value={1}>Change Password</MenuItem>
           </TextField>
           <MessageBox />
-          <ChangeNameLayout />
+          <ChangeEmailLayout />
           <ChangePasswordLayout />
         </InitialForm>
       </div>

@@ -16,8 +16,9 @@ const ProfilePage = () => {
   const [editMode, setEditMode] = useState(false);
   // console.log(userData);
   const serverURL = "http://localhost:3000/";
-  const profileImage =
-    serverURL + userData.user.profileImage?.split("public\\")[1];
+  const profileImage = Boolean(userData.user.profileImage)
+    ? serverURL + userData.user.profileImage?.split("public\\")[1]
+    : null;
   const resumeFile = serverURL + userData.user.resumeFile?.split("public\\")[1];
   const [resumeFileSrc, setResumeFileSrc] = useState(
     Boolean(userData.user.resumeFile) ? resumeFile : null
