@@ -25,6 +25,7 @@ import { teacherProfileValidationSchema } from "../schemas";
 import http from "../utils/http";
 
 const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
+  const navigate = useNavigate();
   const initialValues = {
     firstname: Boolean(userData.userId.firstname)
       ? userData.userId.firstname
@@ -189,6 +190,7 @@ const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
       console.log(response);
       updateUserData();
       setEditMode(false);
+      navigate("/dashboard/profile");
     } catch (error) {
       console.log(error);
     }

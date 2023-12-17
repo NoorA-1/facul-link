@@ -38,6 +38,7 @@ const SignInPage = () => {
       actions.resetForm();
       setTimeout(() => {
         if (responseData.role === "admin") {
+          navigate("/admin-dashboard");
         } else {
           navigate("/profile-setup");
         }
