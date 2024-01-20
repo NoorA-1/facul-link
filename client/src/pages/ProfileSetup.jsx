@@ -3,7 +3,12 @@ import { useLoaderData, useNavigate, Link } from "react-router-dom";
 import { Button, Menu, MenuItem, useMediaQuery } from "@mui/material";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import http from "../utils/http";
-import { Wrapper, Header, TeacherProfileSetupForm } from "../components";
+import {
+  Wrapper,
+  Header,
+  TeacherProfileSetupForm,
+  EmployerProfileSetupForm,
+} from "../components";
 
 export const loader = async () => {
   try {
@@ -99,8 +104,12 @@ const ProfileSetup = () => {
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-lg-8 col-12">
-            {data.user.userId.role === "teacher" && (
+            {data.user.userId.role === "teacher" ? (
               <TeacherProfileSetupForm userData={data.user} />
+            ) : (
+              data.user.userId.role === "employer" && (
+                <EmployerProfileSetupForm userData={data.user} />
+              )
             )}
           </div>
         </div>

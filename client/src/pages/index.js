@@ -13,5 +13,10 @@ export { default as HomePage } from "./HomePage";
 
 export { default as ErrorPage } from "./ErrorPage";
 
+export { default as SearchJob } from "./SearchJob";
+export { default as AllJobs } from "./AllJobs";
+export { default as AppHistory } from "./AppHistory";
+export { default as Bookmarks } from "./Bookmarks";
+
 export { default as AdminDashboardLayout } from "./AdminDashboardLayout";
 export { default as AdminHomePage } from "./AdminHomePage";

@@ -22,6 +22,10 @@ import {
   HomePage,
   AdminDashboardLayout,
   AdminHomePage,
+  SearchJob,
+  AllJobs,
+  AppHistory,
+  Bookmarks,
 } from "./pages";
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
@@ -146,6 +150,22 @@ const App = () => {
             {
               index: true,
               element: <HomePage />,
+            },
+            {
+              path: "search-job",
+              element: <SearchJob />,
+            },
+            {
+              path: "all-jobs",
+              element: <AllJobs />,
+            },
+            {
+              path: "application-history",
+              element: <AppHistory />,
+            },
+            {
+              path: "bookmarks",
+              element: <Bookmarks />,
             },
             {
               path: "profile",

@@ -91,7 +91,8 @@ input::-ms-reveal {
 .dashboard-page {
   /* width: 90vw; */
   /* padding: 2rem 0; */
-  height: 90.5vh;
+  /* height: 90.5vh; */
+  height: 93vh;
   overflow-y: scroll;
 }
 
