@@ -101,7 +101,14 @@ const ManageAccountPage = ({
             email: data.email,
           };
         });
-        if (error.response.status === 400) {
+        if (error.response.status === 304) {
+          setAlertMessage(() => {
+            return {
+              message: "New email provided is same as old email.",
+              error: 2,
+            };
+          });
+        } else if (error.response.status === 400) {
           setAlertMessage(() => {
             return {
               message: "User with this email already exists.",

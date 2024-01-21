@@ -97,6 +97,7 @@ router.put(
         });
       }
       const reqBody = req.body;
+      //To check if another user with email already exists
       const checkUser = await User.findOne({
         email: reqBody.email,
         _id: { $ne: req.user.userId },
@@ -106,7 +107,13 @@ router.put(
           .status(400)
           .json({ message: "User with this email already exists" });
       }
+      //Get only current user
       let user = await User.findOne({ _id: req.user.userId });
+      if (user.email === reqBody.email) {
+        return res
+          .status(304)
+          .json({ message: "User with this email already exists" });
+      }
       user.email = reqBody.email;
       await user.save();
       return res

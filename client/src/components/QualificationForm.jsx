@@ -154,49 +154,51 @@ const QualificationForm = memo(
     return (
       <>
         {qualificationsArray &&
-          qualificationsArray.map((e, index) => {
-            return (
-              <div
-                className="bg-light-gray border border-dark-subtle rounded shadow-sm px-5 py-3 mb-3"
-                key={index}
-              >
-                <div className="mb-2">
-                  <p className="fw-bold d-inline">Institute:</p>{" "}
-                  <p className="d-inline">{e.instituteName}</p>
+          qualificationsArray
+            .sort((a, b) => dayjs(b.date.startDate) - dayjs(a.date.startDate))
+            .map((e, index) => {
+              return (
+                <div
+                  className="bg-light-gray border border-dark-subtle rounded shadow-sm px-5 py-3 mb-3"
+                  key={index}
+                >
+                  <div className="mb-2">
+                    <p className="fw-bold d-inline">Institute:</p>{" "}
+                    <p className="d-inline">{e.instituteName}</p>
+                  </div>
+                  <div className="mb-2">
+                    <p className="fw-bold d-inline">Field of Study:</p>{" "}
+                    <p className="d-inline">{e.field}</p>
+                  </div>
+                  <div className="mb-2">
+                    <p className="fw-bold d-inline">Start Date:</p>{" "}
+                    <p className="d-inline">
+                      {dayjs(e.date.startDate).format("MMM - YYYY")}
+                    </p>
+                  </div>
+                  <div className="mb-1">
+                    <p className="fw-bold d-inline">End Date:</p>{" "}
+                    <p className="d-inline">
+                      {dayjs(e.date.endDate).format("MMM - YYYY")}
+                    </p>
+                  </div>
+                  <div className="d-flex justify-content-end">
+                    <IconButton
+                      onClick={() => editQualification(index)}
+                      color="secondary"
+                    >
+                      <EditOutlinedIcon />
+                    </IconButton>
+                    <IconButton
+                      color="danger"
+                      onClick={() => deleteQualification(index)}
+                    >
+                      <CancelOutlinedIcon />
+                    </IconButton>
+                  </div>
                 </div>
-                <div className="mb-2">
-                  <p className="fw-bold d-inline">Field of Study:</p>{" "}
-                  <p className="d-inline">{e.field}</p>
-                </div>
-                <div className="mb-2">
-                  <p className="fw-bold d-inline">Start Date:</p>{" "}
-                  <p className="d-inline">
-                    {dayjs(e.date.startDate).format("MMM - YYYY")}
-                  </p>
-                </div>
-                <div className="mb-1">
-                  <p className="fw-bold d-inline">End Date:</p>{" "}
-                  <p className="d-inline">
-                    {dayjs(e.date.endDate).format("MMM - YYYY")}
-                  </p>
-                </div>
-                <div className="d-flex justify-content-end">
-                  <IconButton
-                    onClick={() => editQualification(index)}
-                    color="secondary"
-                  >
-                    <EditOutlinedIcon />
-                  </IconButton>
-                  <IconButton
-                    color="danger"
-                    onClick={() => deleteQualification(index)}
-                  >
-                    <CancelOutlinedIcon />
-                  </IconButton>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
         <Modal open={open} onClose={handleClose}>
           <Box sx={modalStyle}>
             <h3 className="text-center fw-bold mb-5">Qualification</h3>

@@ -117,42 +117,46 @@ const ProfilePage = () => {
               className="bg-subtle py-3 px-4 rounded shadow-sm"
               style={{ border: "1px solid #0a9396" }}
             >
-              {userData.user.experience.map((e, index) => {
-                return (
-                  <div
-                    className="bg-light-gray border border-dark-subtle rounded shadow-sm px-5 py-3 mb-2"
-                    key={index}
-                  >
-                    <div className="mb-2">
-                      <p className="fw-bold d-inline">Job Title:</p>{" "}
-                      <p className="d-inline">{e.title}</p>
+              {userData.user.experience
+                .sort(
+                  (a, b) => dayjs(b.date.startDate) - dayjs(a.date.startDate)
+                )
+                .map((e, index) => {
+                  return (
+                    <div
+                      className="bg-light-gray border border-dark-subtle rounded shadow-sm px-5 py-3 mb-2"
+                      key={index}
+                    >
+                      <div className="mb-2">
+                        <p className="fw-bold d-inline">Job Title:</p>{" "}
+                        <p className="d-inline">{e.title}</p>
+                      </div>
+                      <div className="mb-2">
+                        <p className="fw-bold d-inline">Company:</p>{" "}
+                        <p className="d-inline">{e.company}</p>
+                      </div>
+                      <div className="mb-2">
+                        <p className="fw-bold d-inline">Start Date:</p>{" "}
+                        <p className="d-inline">
+                          {dayjs(e.date.startDate).format("MMM - YYYY")}
+                        </p>
+                        {", "}
+                        <p className="fw-bold d-inline">End Date:</p>{" "}
+                        <p className="d-inline">
+                          {!e.isCurrentlyWorking
+                            ? dayjs(e.date.endDate).format("MMM - YYYY")
+                            : "Present"}
+                        </p>
+                      </div>
+                      <div className="mb-2">
+                        <p className="fw-bold d-inline">Location:</p>{" "}
+                        <p className="d-inline">
+                          {e.location.country + ", " + e.location.city}
+                        </p>
+                      </div>
                     </div>
-                    <div className="mb-2">
-                      <p className="fw-bold d-inline">Company:</p>{" "}
-                      <p className="d-inline">{e.company}</p>
-                    </div>
-                    <div className="mb-2">
-                      <p className="fw-bold d-inline">Start Date:</p>{" "}
-                      <p className="d-inline">
-                        {dayjs(e.date.startDate).format("MMM - YYYY")}
-                      </p>
-                      {", "}
-                      <p className="fw-bold d-inline">End Date:</p>{" "}
-                      <p className="d-inline">
-                        {!e.isCurrentlyWorking
-                          ? dayjs(e.date.endDate).format("MMM - YYYY")
-                          : "Present"}
-                      </p>
-                    </div>
-                    <div className="mb-2">
-                      <p className="fw-bold d-inline">Location:</p>{" "}
-                      <p className="d-inline">
-                        {e.location.country + ", " + e.location.city}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
           </>
         )}
@@ -164,49 +168,53 @@ const ProfilePage = () => {
               className="bg-subtle py-3 px-4 rounded shadow-sm"
               style={{ border: "1px solid #0a9396" }}
             >
-              {userData.user.qualification.map((e, index) => {
-                return (
-                  <div
-                    className="bg-light-gray border border-dark-subtle rounded shadow-sm px-5 py-3 mb-3"
-                    key={index}
-                  >
-                    <div className="mb-2">
-                      <p className="fw-bold d-inline">Institute:</p>{" "}
-                      <p className="d-inline">{e.instituteName}</p>
-                    </div>
-                    <div className="mb-2">
-                      <p className="fw-bold d-inline">Field of Study:</p>{" "}
-                      <p className="d-inline">{e.field}</p>
-                    </div>
-                    <div className="mb-2">
-                      <p className="fw-bold d-inline">Level of Study:</p>{" "}
-                      <p className="d-inline">{e.level}</p>
-                    </div>
-                    <div className="mb-2">
-                      <p className="fw-bold d-inline">Grade:</p>{" "}
-                      <p className="d-inline">{e.grade}</p>
-                    </div>
-                    <div className="mb-2">
-                      <p className="fw-bold d-inline">Start Date:</p>{" "}
-                      <p className="d-inline">
-                        {dayjs(e.date.startDate).format("MMM - YYYY")}
-                        {", "}
-                      </p>
-                      <p className="fw-bold d-inline">End Date:</p>{" "}
-                      <p className="d-inline">
-                        {dayjs(e.date.endDate).format("MMM - YYYY")}
-                      </p>
-                    </div>
+              {userData.user.qualification
+                .sort(
+                  (a, b) => dayjs(b.date.startDate) - dayjs(a.date.startDate)
+                )
+                .map((e, index) => {
+                  return (
+                    <div
+                      className="bg-light-gray border border-dark-subtle rounded shadow-sm px-5 py-3 mb-3"
+                      key={index}
+                    >
+                      <div className="mb-2">
+                        <p className="fw-bold d-inline">Institute:</p>{" "}
+                        <p className="d-inline">{e.instituteName}</p>
+                      </div>
+                      <div className="mb-2">
+                        <p className="fw-bold d-inline">Field of Study:</p>{" "}
+                        <p className="d-inline">{e.field}</p>
+                      </div>
+                      <div className="mb-2">
+                        <p className="fw-bold d-inline">Level of Study:</p>{" "}
+                        <p className="d-inline">{e.level}</p>
+                      </div>
+                      <div className="mb-2">
+                        <p className="fw-bold d-inline">Grade:</p>{" "}
+                        <p className="d-inline">{e.grade}</p>
+                      </div>
+                      <div className="mb-2">
+                        <p className="fw-bold d-inline">Start Date:</p>{" "}
+                        <p className="d-inline">
+                          {dayjs(e.date.startDate).format("MMM - YYYY")}
+                          {", "}
+                        </p>
+                        <p className="fw-bold d-inline">End Date:</p>{" "}
+                        <p className="d-inline">
+                          {dayjs(e.date.endDate).format("MMM - YYYY")}
+                        </p>
+                      </div>
 
-                    <div className="mb-2">
-                      <p className="fw-bold d-inline">Location:</p>{" "}
-                      <p className="d-inline">
-                        {e.location.country + ", " + e.location.city}
-                      </p>
+                      <div className="mb-2">
+                        <p className="fw-bold d-inline">Location:</p>{" "}
+                        <p className="d-inline">
+                          {e.location.country + ", " + e.location.city}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
           </>
         )}
