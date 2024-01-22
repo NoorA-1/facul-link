@@ -26,6 +26,10 @@ import {
   AllJobs,
   AppHistory,
   Bookmarks,
+  AdminManageJobsPage,
+  AdminManageTeachersPage,
+  AdminManageEmployersPage,
+  AdminManageHiringTestsPage,
 } from "./pages";
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
@@ -197,6 +201,22 @@ const App = () => {
             {
               index: true,
               element: <AdminHomePage />,
+            },
+            {
+              path: "manage-jobs",
+              element: <AdminManageJobsPage />,
+            },
+            {
+              path: "manage-teachers",
+              element: <AdminManageTeachersPage />,
+            },
+            {
+              path: "manage-employers",
+              element: <AdminManageEmployersPage />,
+            },
+            {
+              path: "manage-tests",
+              element: <AdminManageHiringTestsPage />,
             },
             {
               path: "manage-account",

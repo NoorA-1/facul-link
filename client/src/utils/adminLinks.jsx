@@ -13,22 +13,22 @@ const adminLinks = [
   },
   {
     text: "Manage Jobs",
-    path: "search-job",
+    path: "manage-jobs",
     icon: <WorkOutlineOutlinedIcon />,
   },
   {
     text: "Manage Teachers",
-    path: "all-jobs",
+    path: "manage-teachers",
     icon: <PersonOutlineOutlinedIcon />,
   },
   {
     text: "Manage Employers",
-    path: "application-history",
+    path: "manage-employers",
     icon: <BadgeOutlinedIcon />,
   },
   {
     text: "Manage Hiring Tests",
-    path: "bookmarks",
+    path: "manage-tests",
     icon: <ArticleOutlinedIcon className="mb-1" />,
   },
 ];

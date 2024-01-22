@@ -20,3 +20,7 @@ export { default as Bookmarks } from "./Bookmarks";
 
 export { default as AdminDashboardLayout } from "./AdminDashboardLayout";
 export { default as AdminHomePage } from "./AdminHomePage";
+export { default as AdminManageJobsPage } from "./AdminManageJobsPage";
+export { default as AdminManageTeachersPage } from "./AdminManageTeachersPage";
+export { default as AdminManageEmployersPage } from "./AdminManageEmployersPage";
+export { default as AdminManageHiringTestsPage } from "./AdminManageHiringTestsPage";
