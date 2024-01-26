@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Wrapper, InitialForm, Header, Footer } from "../components";
+import { Wrapper, InitialForm, Header, Footer } from "../../components";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
@@ -16,9 +16,9 @@ import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
-import { teacherSignUpValidationSchema } from "../schemas";
+import { teacherSignUpValidationSchema } from "../../schemas";
 
-import http from "../utils/http";
+import http from "../../utils/http";
 
 const initialValues = {
   firstname: "",

@@ -1,6 +1,6 @@
 import React from "react";
 import { useDashboardContext } from "./DashboardLayout";
-import { HomePageCard, JobPostCard } from "../components";
+import { HomePageCard, JobPostCard } from "../../components";
 import CasesOutlinedIcon from "@mui/icons-material/CasesOutlined";
 import AssignmentTurnedInOutlinedIcon from "@mui/icons-material/AssignmentTurnedInOutlined";
 import FolderOffOutlinedIcon from "@mui/icons-material/FolderOffOutlined";

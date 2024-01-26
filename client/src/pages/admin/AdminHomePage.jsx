@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDashboardContext } from "./AdminDashboardLayout";
-import { HomePageCard } from "../components";
+import { HomePageCard } from "../../components";
 import CasesOutlinedIcon from "@mui/icons-material/CasesOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import AssignmentTurnedInOutlinedIcon from "@mui/icons-material/AssignmentTurnedInOutlined";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
-import http from "../utils/http";
+import http from "../../utils/http";
 import {
   LineChart,
   Line,

@@ -4,7 +4,7 @@ import teacherLinks from "../utils/teacherLinks";
 import { Button } from "@mui/material";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import http from "../utils/http";
-import { useDashboardContext } from "../pages/DashboardLayout";
+import { useDashboardContext } from "../pages/teacher/DashboardLayout";
 
 const BigSidebar = () => {
   const { userData } = useDashboardContext();

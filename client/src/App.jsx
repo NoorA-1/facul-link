@@ -34,8 +34,8 @@ import {
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
 import { loader as manageAccountLoader } from "./pages/ManageAccountPage";
-import { loader as dashboardLoader } from "./pages/DashboardLayout";
-import { loader as AdminDashboardLoader } from "./pages/AdminDashboardLayout";
+import { loader as dashboardLoader } from "./pages/teacher/DashboardLayout";
+import { loader as AdminDashboardLoader } from "./pages/admin/AdminDashboardLayout";
 // const token = Cookies.get("token");
 // if (token) {
 //   console.log(token);

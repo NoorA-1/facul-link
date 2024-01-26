@@ -4,7 +4,7 @@ import adminLinks from "../utils/adminLinks";
 import { Button } from "@mui/material";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import http from "../utils/http";
-import { useDashboardContext } from "../pages/AdminDashboardLayout";
+import { useDashboardContext } from "../pages/admin/AdminDashboardLayout";
 
 const AdminBigSidebar = () => {
   const { userData } = useDashboardContext();

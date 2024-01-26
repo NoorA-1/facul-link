@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState } from "react";
-import { AdminBigSidebar, Header } from "../components";
+import { AdminBigSidebar, Header } from "../../components";
 import { NavLink, Outlet, useLoaderData, useNavigate } from "react-router-dom";
 import { Button, Menu, MenuItem, useMediaQuery, Avatar } from "@mui/material";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
-import http from "../utils/http";
+import http from "../../utils/http";
 
 const DashboardContext = createContext();
 
