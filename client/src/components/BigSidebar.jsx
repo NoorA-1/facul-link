@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import teacherLinks from "../utils/teacherLinks";
+import employerLinks from "../utils/employerLinks";
 import { Button } from "@mui/material";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import http from "../utils/http";
@@ -8,7 +9,10 @@ import { useDashboardContext } from "../pages/teacher/DashboardLayout";
 
 const BigSidebar = () => {
   const { userData } = useDashboardContext();
-  const links = userData.user?.userId?.role === "teacher" ? teacherLinks : null;
+  const links =
+    userData.user?.userId?.role === "teacher"
+      ? teacherLinks
+      : userData.user?.userId?.role === "employer" && employerLinks;
   return (
     <div className="mt-5" style={{ position: "relative" }}>
       {links.map((link) => {

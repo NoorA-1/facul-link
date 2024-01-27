@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDashboardContext } from "./teacher/DashboardLayout";
+import { useDashboardContext } from "./DashboardLayout";
 import { Avatar, Button, Chip } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
@@ -7,8 +7,8 @@ import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import IconButton from "@mui/material/IconButton";
 
 import dayjs from "dayjs";
-import { TeacherEditProfileForm } from "../components";
-import http from "../utils/http";
+import { TeacherEditProfileForm } from "../../components";
+import http from "../../utils/http";
 
 const ProfilePage = () => {
   const { userData: initialUserData } = useDashboardContext();

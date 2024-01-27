@@ -15,8 +15,11 @@ import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
 
 import { employerProfileValidationSchema } from "../schemas";
+import http from "../utils/http";
+import { useNavigate } from "react-router-dom";
 
 const EmployerProfileSetupForm = ({ userData }) => {
+  const navigate = useNavigate();
   const initialValues = {
     firstname: Boolean(userData.userId.firstname)
       ? userData.userId.firstname
@@ -33,15 +36,19 @@ const EmployerProfileSetupForm = ({ userData }) => {
       : "",
   };
 
-  const [imageSrc, setImageSrc] = useState(
-    Boolean(userData.profileImage) ? profileImage : null
-  );
+  const serverURL = "http://localhost:3000/";
+  const profileImage = serverURL + userData.profileImage?.split("public\\")[1];
+  const universityLogo =
+    serverURL + userData.universityLogo?.split("public\\")[1];
+
+  const [imageSrc, setImageSrc] = useState({
+    profileImage: Boolean(userData.profileImage) ? profileImage : null,
+    universityLogo: Boolean(userData.universityLogo) ? universityLogo : null,
+  });
 
   const [image, setImage] = useState({
-    file: "",
-    URL: "",
-    value: "",
-    filename: "",
+    profileImage: { file: "", URL: "", value: "", filename: "" },
+    universityLogo: { file: "", URL: "", value: "", filename: "" },
   });
 
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
@@ -50,42 +57,95 @@ const EmployerProfileSetupForm = ({ userData }) => {
       validationSchema: employerProfileValidationSchema,
       onSubmit: (values, actions) => {
         console.log(values);
-        if (!imageFileError) {
+        if (!imageFileError.profileImage && !imageFileError.universityLogo) {
           submitData(values);
         }
       },
     });
 
+  const submitData = async (values) => {
+    const formData = new FormData();
+    try {
+      console.log(image);
+      if (image.profileImage.file) {
+        formData.append("profileImage", image.profileImage.file);
+      }
+      if (image.universityLogo.file) {
+        formData.append("universityLogo", image.universityLogo.file);
+      }
+      formData.append("firstname", values.firstname);
+      formData.append("lastname", values.lastname);
+      formData.append("profileDescription", values.profileDescription);
+      formData.append("universityName", values.universityname);
+      formData.append("departmentName", values.departmentname);
+
+      const response = await http.put("/users/employer-profile", formData);
+      console.log(response);
+      navigate("/dashboard/profile");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleFile = (event) => {
     const file = event.target.files[0];
     const value = event.target.value;
     const filetype = file?.type;
-    if (event.target.name === "profileImage") {
-      const validImageTypes = ["image/png", "image/jpeg"];
-      if (validImageTypes.includes(filetype)) {
-        setImageFileError("");
-        const imageURL = URL.createObjectURL(file);
-        setImageSrc(imageURL);
-        setImage((prevValue) => {
-          return {
-            file,
-            URL: imageURL,
-            value,
-            filename: file.name,
-          };
-        });
-      } else {
-        setImageFileError("Image file must be JPG or PNG");
-      }
+    const targetName = event.target.name;
+    // if (event.target.name === "profileImage") {
+    const validImageTypes = ["image/png", "image/jpeg"];
+    if (validImageTypes.includes(filetype)) {
+      setImageFileError((prev) => {
+        return {
+          ...prev,
+          [targetName]: "",
+        };
+      });
+      const imageURL = URL.createObjectURL(file);
+      setImageSrc((prev) => {
+        return {
+          ...prev,
+          [targetName]: imageURL,
+        };
+      });
+      setImage((prevValue) => {
+        return {
+          ...prevValue,
+          [targetName]: { file, URL: imageURL, value, filename: file.name },
+        };
+      });
+    } else {
+      setImageFileError((prev) => {
+        return {
+          ...prev,
+          [targetName]: "Image file must be JPG or PNG",
+        };
+      });
     }
+    // }
   };
-  const [imageFileError, setImageFileError] = useState("");
+  const [imageFileError, setImageFileError] = useState({
+    profileImage: "",
+    universityLogo: "",
+  });
 
-  const FileMessageBox = () => {
-    if (imageFileError) {
+  console.log(imageFileError);
+
+  const ProfileImageMessageBox = () => {
+    if (imageFileError.profileImage) {
       return (
         <Alert variant="filled" severity="error">
-          {imageFileError}
+          {imageFileError.profileImage}
+        </Alert>
+      );
+    }
+  };
+
+  const LogoImageMessageBox = () => {
+    if (imageFileError.universityLogo) {
+      return (
+        <Alert variant="filled" severity="error">
+          {imageFileError.universityLogo}
         </Alert>
       );
     }
@@ -95,7 +155,7 @@ const EmployerProfileSetupForm = ({ userData }) => {
     <InitialForm noColoredLine={true} className="w-100 px-5 mt-3 mb-5">
       <form onSubmit={handleSubmit} encType="multipart/form-data">
         <div className="d-flex align-items-center justify-content-center flex-column gap-3">
-          <Avatar sx={{ width: 120, height: 120 }} src={imageSrc}>
+          <Avatar sx={{ width: 120, height: 120 }} src={imageSrc.profileImage}>
             {`${userData.userId.firstname[0]} ${userData.userId.lastname[0]}`}
           </Avatar>
           <div>
@@ -122,9 +182,14 @@ const EmployerProfileSetupForm = ({ userData }) => {
             </Button>
           </div>
         </div>
+        <ProfileImageMessageBox />
+
         <hr className="mb-3" />
         <div className="d-flex align-items-center justify-content-center flex-column gap-3 mt-3">
-          <Avatar sx={{ width: 80, height: 80 }} src={imageSrc}></Avatar>
+          <Avatar
+            sx={{ width: 80, height: 80 }}
+            src={imageSrc.universityLogo}
+          ></Avatar>
           <div>
             <h3 className="fw-bold text-center mb-1">University Logo</h3>
             <h6 className="text-secondary text-center">
@@ -142,7 +207,7 @@ const EmployerProfileSetupForm = ({ userData }) => {
               <input
                 type="file"
                 hidden
-                name="profileImage"
+                name="universityLogo"
                 accept=".jpg, .png"
                 onChange={handleFile}
               />
@@ -150,7 +215,7 @@ const EmployerProfileSetupForm = ({ userData }) => {
           </div>
         </div>
 
-        <FileMessageBox />
+        <LogoImageMessageBox />
         <hr />
         <div className="name-fields d-flex justify-content-center gap-3">
           <TextField

@@ -7,6 +7,7 @@ const uniEmployerSchema = new Schema({
     ref: "User",
   },
   profileImage: { type: String, default: null },
+  universityLogo: { type: String, default: null },
   profileDescription: { type: String, default: null },
   universityName: { type: String, default: null },
   departmentName: { type: String, default: null },

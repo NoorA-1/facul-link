@@ -19,7 +19,10 @@ const storage = multer.diskStorage({
     try {
       if (file.fieldname === "resumeFile") {
         dir = path.join(dir, "/documents");
-      } else if (file.fieldname === "profileImage") {
+      } else if (
+        file.fieldname === "profileImage" ||
+        file.fieldname === "universityLogo"
+      ) {
         dir = path.join(dir, "/images");
       }
       await fs.promises.mkdir(dir, { recursive: true });
@@ -71,6 +74,14 @@ router.get("/current-user", authenticateUser, async (req, res) => {
           { profileImage: null }
         );
         user.profileImage = null;
+      }
+
+      if (!fs.existsSync(user.universityLogo)) {
+        await UniEmployer.updateOne(
+          { userId: req.user.userId },
+          { universityLogo: null }
+        );
+        user.universityLogo = null;
       }
 
       return res.status(200).json({ user });
@@ -238,6 +249,93 @@ router.put(
           userInfo.skills = JSON.parse(userInfo.skills);
         }
         await Teacher.findOneAndUpdate({ userId: user.userId }, userInfo);
+        await User.findOneAndUpdate(
+          { _id: user.userId },
+          {
+            firstname: userInfo.firstname,
+            lastname: userInfo.lastname,
+            isProfileSetup: true,
+          }
+        );
+        return res
+          .status(200)
+          .json({ message: "Profile updated successfully", error: false });
+      }
+      return res.status(404).json({ message: "User not found" });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+router.put(
+  "/employer-profile",
+  authenticateUser,
+  upload.fields([
+    { name: "profileImage", maxCount: 1 },
+    { name: "universityLogo", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      let userInfo = { ...req.body };
+      console.log(userInfo);
+
+      if (req.user.role === "employer") {
+        //File format validation
+        const imageFormatCheck =
+          req.files.profileImage &&
+          !req.files.profileImage[0].mimetype.startsWith("image/")
+            ? "Wrong image format"
+            : null;
+
+        const universityLogoFormatCheck =
+          req.files.universityLogo &&
+          !req.files.universityLogo[0].mimetype.startsWith("image/")
+            ? "Wrong image format"
+            : null;
+
+        if (Boolean(imageFormatCheck) || Boolean(universityLogoFormatCheck)) {
+          if (imageFormatCheck) {
+            await fs.promises.unlink(
+              path.resolve(req.files.profileImage[0].path)
+            );
+          }
+          if (universityLogoFormatCheck) {
+            await fs.promises.unlink(
+              path.resolve(req.files.universityLogo[0].path)
+            );
+          }
+          return res
+            .status(400)
+            .send({ error: { imageFormatCheck, universityLogoFormatCheck } });
+        }
+        let user = await UniEmployer.findOne({
+          userId: req.user.userId,
+        });
+
+        //if record has file and file exists else new file
+        if (req.files.profileImage) {
+          if (
+            user.profileImage &&
+            fs.existsSync(user.profileImage) &&
+            user.profileImage !== req.files.profileImage[0].path
+          ) {
+            await fs.promises.unlink(path.resolve(user.profileImage));
+          }
+          userInfo.profileImage = req.files.profileImage[0].path;
+        }
+        if (req.files.universityLogo) {
+          if (
+            user.universityLogo &&
+            fs.existsSync(user.universityLogo) &&
+            user.universityLogo !== req.files.universityLogo[0].path
+          ) {
+            await fs.promises.unlink(path.resolve(user.universityLogo));
+          }
+          userInfo.universityLogo = req.files.universityLogo[0].path;
+        }
+
+        await UniEmployer.findOneAndUpdate({ userId: user.userId }, userInfo);
         await User.findOneAndUpdate(
           { _id: user.userId },
           {
