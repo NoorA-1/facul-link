@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDashboardContext } from "./DashboardLayout";
+import { useDashboardContext } from "../DashboardLayout";
 import { Avatar, Button, Chip } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";

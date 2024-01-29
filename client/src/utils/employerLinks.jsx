@@ -2,9 +2,10 @@ import React from "react";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import WorkOutlineOutlinedIcon from "@mui/icons-material/WorkOutlineOutlined";
-import WorkHistoryOutlinedIcon from "@mui/icons-material/WorkHistoryOutlined";
-import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
+import PostAddOutlinedIcon from "@mui/icons-material/PostAddOutlined";
+import NoteAddOutlinedIcon from "@mui/icons-material/NoteAddOutlined";
+import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 const employerLinks = [
   {
     text: "Home",
@@ -23,17 +24,17 @@ const employerLinks = [
   },
   {
     text: "Post Job",
-    path: "application-history",
-    icon: <WorkHistoryOutlinedIcon />,
+    path: "post-job",
+    icon: <NoteAddOutlinedIcon />,
   },
   {
     text: "Hiring Tests",
-    path: "bookmarks",
-    icon: <BookmarkBorderOutlinedIcon className="mb-1" />,
+    path: "hiring-tests",
+    icon: <AssignmentOutlinedIcon className="mb-1" />,
   },
   {
     text: "Profile",
-    path: "employer-profile",
+    path: "profile",
     icon: <PersonOutlineOutlinedIcon className="mb-1" />,
   },
 ];

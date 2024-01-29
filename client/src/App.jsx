@@ -30,11 +30,12 @@ import {
   AdminManageTeachersPage,
   AdminManageEmployersPage,
   AdminManageHiringTestsPage,
+  EmployerProfilePage,
 } from "./pages";
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
 import { loader as manageAccountLoader } from "./pages/ManageAccountPage";
-import { loader as dashboardLoader } from "./pages/teacher/DashboardLayout";
+import { loader as dashboardLoader } from "./pages/DashboardLayout";
 import { loader as AdminDashboardLoader } from "./pages/admin/AdminDashboardLayout";
 // const token = Cookies.get("token");
 // if (token) {
@@ -165,15 +166,30 @@ const App = () => {
             },
             {
               path: "application-history",
-              element: <AppHistory />,
+              element:
+                token.role === "teacher" ? (
+                  <AppHistory />
+                ) : (
+                  <Navigate to="/dashboard" />
+                ),
             },
             {
               path: "bookmarks",
-              element: <Bookmarks />,
+              element:
+                token.role === "teacher" ? (
+                  <Bookmarks />
+                ) : (
+                  <Navigate to="/dashboard" />
+                ),
             },
             {
               path: "profile",
-              element: <ProfilePage />,
+              element:
+                token.role === "teacher" ? (
+                  <ProfilePage />
+                ) : (
+                  token.role === "employer" && <EmployerProfilePage />
+                ),
             },
             {
               path: "manage-account",

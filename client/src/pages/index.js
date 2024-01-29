@@ -1,5 +1,5 @@
 export { default as HomeLayout } from "./HomeLayout";
-export { default as DashboardLayout } from "./teacher/DashboardLayout";
+export { default as DashboardLayout } from "./DashboardLayout";
 export { default as LandingPage } from "./LandingPage";
 export { default as SignUpPage } from "./SignUpPage";
 export { default as TeacherSignUpPage } from "./teacher/TeacherSignUpPage";
@@ -9,6 +9,7 @@ export { default as SignInPage } from "./SignInPage";
 export { default as ProfileSetup } from "./ProfileSetup";
 export { default as ManageAccountPage } from "./ManageAccountPage";
 export { default as ProfilePage } from "./teacher/ProfilePage";
+export { default as EmployerProfilePage } from "./employer/EmployerProfilePage";
 export { default as HomePage } from "./teacher/HomePage";
 
 export { default as ErrorPage } from "./ErrorPage";
