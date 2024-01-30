@@ -8,6 +8,7 @@ import {
   Alert,
   InputAdornment,
   MenuItem,
+  Autocomplete,
 } from "@mui/material";
 import UploadIcon from "@mui/icons-material/Upload";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
@@ -16,6 +17,7 @@ import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
 
 import { employerProfileValidationSchema } from "../schemas";
 import http from "../utils/http";
+import data from "../utils/universities";
 import { useNavigate } from "react-router-dom";
 
 const EmployerProfileSetupForm = ({ userData }) => {
@@ -51,17 +53,24 @@ const EmployerProfileSetupForm = ({ userData }) => {
     universityLogo: { file: "", URL: "", value: "", filename: "" },
   });
 
-  const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
-    useFormik({
-      initialValues,
-      validationSchema: employerProfileValidationSchema,
-      onSubmit: (values, actions) => {
-        console.log(values);
-        if (!imageFileError.profileImage && !imageFileError.universityLogo) {
-          submitData(values);
-        }
-      },
-    });
+  const {
+    values,
+    setFieldValue,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+    errors,
+    touched,
+  } = useFormik({
+    initialValues,
+    validationSchema: employerProfileValidationSchema,
+    onSubmit: (values, actions) => {
+      console.log(values);
+      if (!imageFileError.profileImage && !imageFileError.universityLogo) {
+        submitData(values);
+      }
+    },
+  });
 
   const submitData = async (values) => {
     const formData = new FormData();
@@ -299,31 +308,42 @@ const EmployerProfileSetupForm = ({ userData }) => {
           University Name
           <sup className="fs-5 text-danger">*</sup>
         </h3>
-        <TextField
-          variant="outlined"
-          type="text"
-          label="University Name"
-          fullWidth
-          className="mt-4 mb-3"
-          name="universityname"
-          onBlur={handleBlur}
-          onChange={handleChange}
-          value={values.universityname}
-          helperText={
-            Boolean(errors.universityname) &&
-            Boolean(touched.universityname) &&
-            errors.universityname
-          }
-          error={
-            Boolean(touched.universityname) && Boolean(errors.universityname)
-          }
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <BusinessOutlinedIcon />
-              </InputAdornment>
-            ),
+        <Autocomplete
+          options={data}
+          disableClearable
+          getOptionLabel={(option) => option.label}
+          onChange={(event, newValue) => {
+            if (newValue !== "" && data.includes(newValue, 0)) {
+              setFieldValue("universityname", newValue.label);
+            }
+            console.log(newValue);
           }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              label="University Name"
+              fullWidth
+              className="mt-4 mb-3"
+              name="universityname"
+              onBlur={handleBlur}
+              onChange={(event, newValue) => {
+                if (newValue !== "" && data.includes(newValue, 0)) {
+                  setFieldValue("universityname", newValue.label);
+                }
+              }}
+              value={values.universityname}
+              helperText={
+                Boolean(errors.universityname) &&
+                Boolean(touched.universityname) &&
+                errors.universityname
+              }
+              error={
+                Boolean(touched.universityname) &&
+                Boolean(errors.universityname)
+              }
+            />
+          )}
         />
         <hr />
         <h3 className="fw-bold mt-4 mb-1">

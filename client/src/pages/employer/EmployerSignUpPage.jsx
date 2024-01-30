@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Wrapper, InitialForm, Header, Footer } from "../../components";
-import { Button, MenuItem } from "@mui/material";
+import { Button, MenuItem, Autocomplete } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import Visibility from "@mui/icons-material/Visibility";
@@ -21,7 +21,7 @@ import { useFormik } from "formik";
 import { employerSignUpValidationSchema } from "../../schemas";
 
 import http from "../../utils/http";
-
+import data from "../../utils/universities";
 const initialValues = {
   firstname: "",
   lastname: "",
@@ -67,22 +67,29 @@ const EmployerSignUpPage = () => {
     }
   };
 
-  const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
-    useFormik({
-      initialValues,
-      validationSchema: employerSignUpValidationSchema,
-      onSubmit: (values, actions) => {
-        const trimmedValues = {
-          ...values,
-          firstname: values.firstname.trim(),
-          lastname: values.lastname.trim(),
-        };
-        console.log(trimmedValues);
+  const {
+    values,
+    setFieldValue,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+    errors,
+    touched,
+  } = useFormik({
+    initialValues,
+    validationSchema: employerSignUpValidationSchema,
+    onSubmit: (values, actions) => {
+      const trimmedValues = {
+        ...values,
+        firstname: values.firstname.trim(),
+        lastname: values.lastname.trim(),
+      };
+      console.log(trimmedValues);
 
-        const role = "employer";
-        submitSignUpData({ ...trimmedValues, role }, actions);
-      },
-    });
+      const role = "employer";
+      submitSignUpData({ ...trimmedValues, role }, actions);
+    },
+  });
 
   const MessageBox = () => {
     if (alertError) {
@@ -227,32 +234,42 @@ const EmployerSignUpPage = () => {
                   label="Female"
                 />
               </RadioGroup>
-              <TextField
-                variant="outlined"
-                type="text"
-                label="University Name"
-                fullWidth
-                className="mt-4 mb-3"
-                name="universityname"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.universityname}
-                helperText={
-                  Boolean(errors.universityname) &&
-                  Boolean(touched.universityname) &&
-                  errors.universityname
-                }
-                error={
-                  Boolean(touched.universityname) &&
-                  Boolean(errors.universityname)
-                }
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <BusinessOutlinedIcon />
-                    </InputAdornment>
-                  ),
+              <Autocomplete
+                options={data}
+                disableClearable
+                getOptionLabel={(option) => option.label}
+                onChange={(event, newValue) => {
+                  if (newValue !== "" && data.includes(newValue, 0)) {
+                    setFieldValue("universityname", newValue.label);
+                  }
+                  console.log(newValue);
                 }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    label="University Name"
+                    fullWidth
+                    className="mt-4 mb-3"
+                    name="universityname"
+                    onBlur={handleBlur}
+                    onChange={(event, newValue) => {
+                      if (newValue !== "" && data.includes(newValue, 0)) {
+                        setFieldValue("universityname", newValue.label);
+                      }
+                    }}
+                    value={values.universityname}
+                    helperText={
+                      Boolean(errors.universityname) &&
+                      Boolean(touched.universityname) &&
+                      errors.universityname
+                    }
+                    error={
+                      Boolean(touched.universityname) &&
+                      Boolean(errors.universityname)
+                    }
+                  />
+                )}
               />
               <TextField
                 select

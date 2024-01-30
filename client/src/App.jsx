@@ -167,7 +167,7 @@ const App = () => {
             {
               path: "application-history",
               element:
-                token.role === "teacher" ? (
+                token?.role === "teacher" ? (
                   <AppHistory />
                 ) : (
                   <Navigate to="/dashboard" />
@@ -176,7 +176,7 @@ const App = () => {
             {
               path: "bookmarks",
               element:
-                token.role === "teacher" ? (
+                token?.role === "teacher" ? (
                   <Bookmarks />
                 ) : (
                   <Navigate to="/dashboard" />
@@ -185,10 +185,10 @@ const App = () => {
             {
               path: "profile",
               element:
-                token.role === "teacher" ? (
+                token?.role === "teacher" ? (
                   <ProfilePage />
                 ) : (
-                  token.role === "employer" && <EmployerProfilePage />
+                  token?.role === "employer" && <EmployerProfilePage />
                 ),
             },
             {

@@ -88,12 +88,16 @@ const ProfilePage = () => {
         <h4 className="text-center fw-bold">
           {userData.user.userId.firstname + " " + userData.user.userId.lastname}
         </h4>
-        <h5 className="text-center fw-bold mb-3">
-          <span> University:</span>{" "}
-          <span style={{ color: "#0a9396" }}>
-            {userData.user.universityName}
-          </span>
-        </h5>
+        <div className="d-flex align-items-center justify-content-center">
+          <div className="mt-1 mb-2 col-6">
+            <h5 className="text-center fw-bold ">
+              <span> Employer at:</span>{" "}
+              <span style={{ color: "#0a9396" }}>
+                {userData.user.universityName}
+              </span>
+            </h5>
+          </div>
+        </div>
 
         <h4 className="mt-4 fw-semibold">Description</h4>
         <div
