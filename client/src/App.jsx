@@ -26,6 +26,8 @@ import {
   AllJobs,
   AppHistory,
   Bookmarks,
+  HiringTests,
+  AddHiringTest,
   AdminManageJobsPage,
   AdminManageTeachersPage,
   AdminManageEmployersPage,
@@ -178,6 +180,25 @@ const App = () => {
               element:
                 token?.role === "teacher" ? (
                   <Bookmarks />
+                ) : (
+                  <Navigate to="/dashboard" />
+                ),
+            },
+            //Add Post jobs route
+            {
+              path: "hiring-tests",
+              element:
+                token?.role === "employer" ? (
+                  <HiringTests />
+                ) : (
+                  <Navigate to="/dashboard" />
+                ),
+            },
+            {
+              path: "hiring-tests/add",
+              element:
+                token?.role === "employer" ? (
+                  <AddHiringTest />
                 ) : (
                   <Navigate to="/dashboard" />
                 ),

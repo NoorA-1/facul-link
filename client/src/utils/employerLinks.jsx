@@ -6,6 +6,7 @@ import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined
 import PostAddOutlinedIcon from "@mui/icons-material/PostAddOutlined";
 import NoteAddOutlinedIcon from "@mui/icons-material/NoteAddOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+import ChecklistRtlOutlinedIcon from "@mui/icons-material/ChecklistRtlOutlined";
 const employerLinks = [
   {
     text: "Home",
@@ -30,6 +31,11 @@ const employerLinks = [
   {
     text: "Hiring Tests",
     path: "hiring-tests",
+    icon: <ChecklistRtlOutlinedIcon className="mb-1" />,
+  },
+  {
+    text: "Applications",
+    path: "job-applications",
     icon: <AssignmentOutlinedIcon className="mb-1" />,
   },
   {

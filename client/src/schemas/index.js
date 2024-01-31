@@ -229,3 +229,22 @@ export const employerProfileValidationSchema = Yup.object({
     .matches(lettersSpaceOnlyRegex, "Invalid department name")
     .required("Please select department name"),
 });
+
+export const employerEditProfileValidationSchema = Yup.object({
+  firstname: Yup.string()
+    .min(3, "First name must be at least 3 characters long")
+    .matches(lettersSpaceOnlyRegex, "Invalid first name")
+    .required("Please enter first name"),
+  lastname: Yup.string()
+    .min(3, "Last name must be at least 3 characters long")
+    .matches(lettersSpaceOnlyRegex, "Invalid last name")
+    .required("Please enter last name"),
+  profileDescription: Yup.string()
+    .required("Description is required")
+    .min(5, "Description must be at least 3 characters long")
+    .test(
+      "is-empty-after-trim",
+      "Description cannot be empty or only whitespace",
+      (value) => value.trim() !== ""
+    ),
+});

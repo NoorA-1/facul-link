@@ -311,7 +311,9 @@ const EmployerProfileSetupForm = ({ userData }) => {
         <Autocomplete
           options={data}
           disableClearable
-          getOptionLabel={(option) => option.label}
+          value={values.universityname}
+          // getOptionLabel={(option) => option.label}
+          isOptionEqualToValue={(option, value) => option.label === value}
           onChange={(event, newValue) => {
             if (newValue !== "" && data.includes(newValue, 0)) {
               setFieldValue("universityname", newValue.label);

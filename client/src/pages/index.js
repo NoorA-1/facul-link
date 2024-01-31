@@ -18,6 +18,8 @@ export { default as SearchJob } from "./SearchJob";
 export { default as AllJobs } from "./AllJobs";
 export { default as AppHistory } from "./teacher/AppHistory";
 export { default as Bookmarks } from "./teacher/Bookmarks";
+export { default as HiringTests } from "./employer/HiringTests";
+export { default as AddHiringTest } from "./employer/AddHiringTest";
 
 export { default as AdminDashboardLayout } from "./admin/AdminDashboardLayout";
 export { default as AdminHomePage } from "./admin//AdminHomePage";

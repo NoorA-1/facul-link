@@ -62,11 +62,11 @@ const ProfilePage = () => {
           Edit Profile
         </Button>
         <div className="d-flex align-items-center justify-content-center">
-          <div className="position-relative">
+          <div className="position-relative my-3">
             <Avatar
               src={profileImage}
               sx={{ width: 160, height: 160, border: "2px solid #0a9396" }}
-              className="mx-auto mt-3 mb-3"
+              className="mx-auto"
               variant="rounded"
             >
               {`${userData.user.userId.firstname[0]} ${userData.user.userId.lastname[0]}`}
@@ -78,24 +78,26 @@ const ProfilePage = () => {
                 width: 60,
                 height: 60,
                 position: "absolute",
-                bottom: 5,
-                right: -15,
+                bottom: 0,
+                right: -30,
               }}
               src={universityLogo}
             />
           </div>
         </div>
-        <h4 className="text-center fw-bold">
+        <h4 className="text-center fw-bold m-0">
           {userData.user.userId.firstname + " " + userData.user.userId.lastname}
         </h4>
         <div className="d-flex align-items-center justify-content-center">
-          <div className="mt-1 mb-2 col-6">
-            <h5 className="text-center fw-bold ">
-              <span> Employer at:</span>{" "}
+          <div className="mb-2 col-6">
+            <h6 className="text-center fw-semibold my-1">
               <span style={{ color: "#0a9396" }}>
                 {userData.user.universityName}
               </span>
-            </h5>
+            </h6>
+            <p style={{ color: "#404040" }} className="fw-semibold text-center">
+              {userData.user.departmentName}
+            </p>
           </div>
         </div>
 
@@ -105,14 +107,6 @@ const ProfilePage = () => {
           style={{ border: "1px solid #0a9396" }}
         >
           {userData.user.profileDescription}
-        </div>
-
-        <h4 className="mt-4 fw-semibold">Department</h4>
-        <div
-          className="bg-subtle py-3 px-4 rounded shadow-sm"
-          style={{ border: "1px solid #0a9396" }}
-        >
-          {userData.user.departmentName}
         </div>
       </div>
     </div>
