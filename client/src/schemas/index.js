@@ -248,3 +248,44 @@ export const employerEditProfileValidationSchema = Yup.object({
       (value) => value.trim() !== ""
     ),
 });
+
+export const hiringTestAddQuestionSchema = Yup.object({
+  question: Yup.string()
+    .min(3, "Question must be at least 3 characters long")
+    .required("Question is required")
+    .test(
+      "is-empty-after-trim",
+      "Question cannot be empty or only whitespace",
+      (value) => value.trim() !== ""
+    ),
+
+  optionA: Yup.string()
+    .required("Option A is required")
+    .test(
+      "is-empty-after-trim",
+      "Option A cannot be empty or only whitespace",
+      (value) => value.trim() !== ""
+    ),
+  optionB: Yup.string()
+    .required("Option B is required")
+    .test(
+      "is-empty-after-trim",
+      "Option B cannot be empty or only whitespace",
+      (value) => value.trim() !== ""
+    ),
+  optionC: Yup.string()
+    .required("Option C is required")
+    .test(
+      "is-empty-after-trim",
+      "Option C cannot be empty or only whitespace",
+      (value) => value.trim() !== ""
+    ),
+  optionD: Yup.string()
+    .required("Option D is required")
+    .test(
+      "is-empty-after-trim",
+      "Option D cannot be empty or only whitespace",
+      (value) => value.trim() !== ""
+    ),
+  correctOption: Yup.string().required("Correct option  is required"),
+});

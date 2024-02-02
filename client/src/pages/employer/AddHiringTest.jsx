@@ -18,6 +18,8 @@ import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { hiringTestAddQuestionSchema } from "../../schemas";
+import { useFormik } from "formik";
 
 const style = {
   position: "absolute",
@@ -31,12 +33,33 @@ const style = {
   p: 4,
 };
 
+const questionInitialValues = {
+  question: "",
+  optionA: "",
+  optionB: "",
+  optionC: "",
+  optionD: "",
+  correctOption: "",
+};
+
 const AddHiringTest = () => {
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    questionFormik.resetForm();
+  };
+
+  const questionFormik = useFormik({
+    initialValues: questionInitialValues,
+    validationSchema: hiringTestAddQuestionSchema,
+    onSubmit: (values, actions) => {
+      console.log(values);
+    },
+  });
+  console.log(questionFormik);
 
   const createQuestion = () => {
     return {};
@@ -100,11 +123,92 @@ const AddHiringTest = () => {
               label="Question"
               variant="outlined"
               multiline
+              name="question"
+              value={questionFormik.values.question}
+              onChange={questionFormik.handleChange}
+              onBlur={questionFormik.handleBlur}
+              helperText={
+                Boolean(questionFormik.errors.question) &&
+                Boolean(questionFormik.touched.question) &&
+                questionFormik.errors.question
+              }
+              error={
+                Boolean(questionFormik.touched.question) &&
+                Boolean(questionFormik.errors.question)
+              }
             />
-            <TextField fullWidth label="Option A" variant="outlined" />
-            <TextField fullWidth label="Option B" variant="outlined" />
-            <TextField fullWidth label="Option C" variant="outlined" />
-            <TextField fullWidth label="Option D" variant="outlined" />
+            <TextField
+              fullWidth
+              label="Option A"
+              variant="outlined"
+              name="optionA"
+              value={questionFormik.values.optionA}
+              onChange={questionFormik.handleChange}
+              onBlur={questionFormik.handleBlur}
+              helperText={
+                Boolean(questionFormik.errors.optionA) &&
+                Boolean(questionFormik.touched.optionA) &&
+                questionFormik.errors.optionA
+              }
+              error={
+                Boolean(questionFormik.touched.optionA) &&
+                Boolean(questionFormik.errors.optionA)
+              }
+            />
+            <TextField
+              fullWidth
+              label="Option B"
+              variant="outlined"
+              name="optionB"
+              value={questionFormik.values.optionB}
+              onChange={questionFormik.handleChange}
+              onBlur={questionFormik.handleBlur}
+              helperText={
+                Boolean(questionFormik.errors.optionB) &&
+                Boolean(questionFormik.touched.optionB) &&
+                questionFormik.errors.optionB
+              }
+              error={
+                Boolean(questionFormik.touched.optionB) &&
+                Boolean(questionFormik.errors.optionB)
+              }
+            />
+            <TextField
+              fullWidth
+              label="Option C"
+              variant="outlined"
+              name="optionC"
+              value={questionFormik.values.optionC}
+              onChange={questionFormik.handleChange}
+              onBlur={questionFormik.handleBlur}
+              helperText={
+                Boolean(questionFormik.errors.optionC) &&
+                Boolean(questionFormik.touched.optionC) &&
+                questionFormik.errors.optionC
+              }
+              error={
+                Boolean(questionFormik.touched.optionC) &&
+                Boolean(questionFormik.errors.optionC)
+              }
+            />
+            <TextField
+              fullWidth
+              label="Option D"
+              variant="outlined"
+              name="optionD"
+              value={questionFormik.values.optionD}
+              onChange={questionFormik.handleChange}
+              onBlur={questionFormik.handleBlur}
+              helperText={
+                Boolean(questionFormik.errors.optionD) &&
+                Boolean(questionFormik.touched.optionD) &&
+                questionFormik.errors.optionD
+              }
+              error={
+                Boolean(questionFormik.touched.optionD) &&
+                Boolean(questionFormik.errors.optionD)
+              }
+            />
           </div>
           <div className="d-flex mb-4 justify-content-center">
             <TextField
@@ -112,6 +216,19 @@ const AddHiringTest = () => {
               select
               label="Correct Answer"
               variant="outlined"
+              name="correctOption"
+              value={questionFormik.values.correctOption}
+              onChange={questionFormik.handleChange}
+              onBlur={questionFormik.handleBlur}
+              helperText={
+                Boolean(questionFormik.errors.correctOption) &&
+                Boolean(questionFormik.touched.correctOption) &&
+                questionFormik.errors.correctOption
+              }
+              error={
+                Boolean(questionFormik.touched.correctOption) &&
+                Boolean(questionFormik.errors.correctOption)
+              }
             >
               <MenuItem value="A">A</MenuItem>
               <MenuItem value="B">B</MenuItem>
