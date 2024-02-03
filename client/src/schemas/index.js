@@ -287,5 +287,18 @@ export const hiringTestAddQuestionSchema = Yup.object({
       "Option D cannot be empty or only whitespace",
       (value) => value.trim() !== ""
     ),
-  correctOption: Yup.string().required("Correct option  is required"),
+  correctOption: Yup.string().required("Correct option is required"),
+});
+
+export const hiringTestSchema = Yup.object({
+  title: Yup.string()
+    .min(3, "Title must be at least 3 characters long")
+    .required("Title is required")
+    .test(
+      "is-empty-after-trim",
+      "Title cannot be empty or only whitespace",
+      (value) => value.trim() !== ""
+    ),
+  duration: Yup.string().required("Duration is required"),
+  questions: Yup.array().required("Questions are required"),
 });
