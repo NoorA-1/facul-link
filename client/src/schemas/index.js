@@ -300,5 +300,5 @@ export const hiringTestSchema = Yup.object({
       (value) => value.trim() !== ""
     ),
   duration: Yup.string().required("Duration is required"),
-  questions: Yup.array().required("Questions are required"),
+  questions: Yup.array().required().min(1, "Questions are required"),
 });

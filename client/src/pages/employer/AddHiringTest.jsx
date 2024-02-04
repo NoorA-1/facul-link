@@ -5,6 +5,7 @@ import {
   Switch,
   Modal,
   Box,
+  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -15,6 +16,8 @@ import {
 } from "@mui/material";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -30,7 +33,7 @@ const style = {
   bgcolor: "background.paper",
   boxShadow: 24,
   borderRadius: 2,
-  p: 4,
+  // p: 4,
 };
 
 const questionInitialValues = {
@@ -82,6 +85,7 @@ const AddHiringTest = () => {
       handleClose();
     },
   });
+  console.log(testFormik.values.questions);
 
   return (
     <div className="col-8 mx-auto my-3 bg-white py-3 px-5 rounded grey-border">
@@ -100,87 +104,141 @@ const AddHiringTest = () => {
       </Button>
       <h4 className="fw-bold text-center mt-4">Add Hiring Test</h4>
       <hr className="mb-5" />
-      <div className="d-flex align-items-center justify-content-center gap-3">
-        <TextField
-          className="w-25"
-          label="Test Title"
-          variant="outlined"
-          name="title"
-          value={testFormik.values.title}
-          onChange={testFormik.handleChange}
-          onBlur={testFormik.handleBlur}
-          helperText={
-            Boolean(testFormik.errors.title) &&
-            Boolean(testFormik.touched.title) &&
-            testFormik.errors.title
-          }
-          error={
-            Boolean(testFormik.touched.title) &&
-            Boolean(testFormik.errors.title)
-          }
-        />
-        <TextField
-          className="w-25"
-          select
-          label="Duration"
-          variant="outlined"
-          name="duration"
-          value={testFormik.values.duration}
-          onChange={testFormik.handleChange}
-          onBlur={testFormik.handleBlur}
-          helperText={
-            Boolean(testFormik.errors.duration) &&
-            Boolean(testFormik.touched.duration) &&
-            testFormik.errors.duration
-          }
-          error={
-            Boolean(testFormik.touched.duration) &&
-            Boolean(testFormik.errors.duration)
-          }
-        >
-          <MenuItem value="5">5 Minutes</MenuItem>
-          <MenuItem value="10">10 Minutes</MenuItem>
-          <MenuItem value="15">15 Minutes</MenuItem>
-          <MenuItem value="20">20 Minutes</MenuItem>
-          <MenuItem value="25">25 Minutes</MenuItem>
-          <MenuItem value="30">30 Minutes</MenuItem>
-        </TextField>
-        <div className="d-flex align-items-center">
-          <Switch
-            name="shuffleQuestions"
-            checked={testFormik.values.shuffleQuestions}
+      <form onSubmit={testFormik.handleSubmit}>
+        <div className="d-flex align-items-start justify-content-center gap-3">
+          <TextField
+            className="w-25"
+            label="Test Title"
+            variant="outlined"
+            name="title"
+            value={testFormik.values.title}
             onChange={testFormik.handleChange}
+            onBlur={testFormik.handleBlur}
+            helperText={
+              Boolean(testFormik.errors.title) &&
+              Boolean(testFormik.touched.title) &&
+              testFormik.errors.title
+            }
+            error={
+              Boolean(testFormik.touched.title) &&
+              Boolean(testFormik.errors.title)
+            }
           />
-          Shuffle Questions
+          <TextField
+            className="w-25"
+            select
+            label="Duration"
+            variant="outlined"
+            name="duration"
+            value={testFormik.values.duration}
+            onChange={testFormik.handleChange}
+            onBlur={testFormik.handleBlur}
+            helperText={
+              Boolean(testFormik.errors.duration) &&
+              Boolean(testFormik.touched.duration) &&
+              testFormik.errors.duration
+            }
+            error={
+              Boolean(testFormik.touched.duration) &&
+              Boolean(testFormik.errors.duration)
+            }
+          >
+            <MenuItem value="5">5 Minutes</MenuItem>
+            <MenuItem value="10">10 Minutes</MenuItem>
+            <MenuItem value="15">15 Minutes</MenuItem>
+            <MenuItem value="20">20 Minutes</MenuItem>
+            <MenuItem value="25">25 Minutes</MenuItem>
+            <MenuItem value="30">30 Minutes</MenuItem>
+          </TextField>
+          <div className="d-flex align-items-center">
+            <Switch
+              name="shuffleQuestions"
+              checked={testFormik.values.shuffleQuestions}
+              onChange={testFormik.handleChange}
+            />
+            Shuffle Questions
+          </div>
         </div>
-      </div>
-      <hr />
-      <div className="d-flex justify-content-end">
-        <Button
-          variant="outlined"
-          startIcon={<AddOutlinedIcon />}
-          sx={{
-            border: 2,
-            ":hover": {
+        <hr />
+        <div className="d-flex justify-content-end mb-2">
+          <Button
+            variant="outlined"
+            startIcon={<AddOutlinedIcon />}
+            sx={{
               border: 2,
-            },
-          }}
-          onClick={handleOpen}
-        >
-          Add Question
-        </Button>
-      </div>
-      <div>
-        {testFormik.values.questions.length > 0 &&
-          testFormik.values.questions.map((e, i, a) => (
-            <div key={i}>{e.question}</div>
-          ))}
-      </div>
+              ":hover": {
+                border: 2,
+              },
+            }}
+            onClick={handleOpen}
+          >
+            Add Question
+          </Button>
+        </div>
+        {testFormik.touched.questions && testFormik.errors.questions && (
+          <p className="text-center" style={{ color: "#d32f2f" }}>
+            {testFormik.errors.questions}
+          </p>
+        )}
+        <div>
+          {testFormik.values.questions.length > 0 &&
+            testFormik.values.questions.map((e, index, a) => (
+              <div
+                className="bg-light-gray rounded shadow-sm px-5 py-3 mb-3"
+                style={{ border: "1px solid #0a9396" }}
+                key={index}
+              >
+                <p className="mb-2">
+                  <span className="fw-bold">Question:</span> {e.question}
+                </p>
+                <p className="mb-2">
+                  <span className="fw-medium">Option A:</span> {e.optionA}
+                </p>
+                <p className="mb-2">
+                  <span className="fw-medium">Option B:</span> {e.optionB}
+                </p>
+                <p className="mb-2">
+                  <span className="fw-medium">Option C:</span> {e.optionC}
+                </p>
+                <p className="mb-2">
+                  <span className="fw-medium">Option D:</span> {e.optionD}
+                </p>
+                <p className="mb-2">
+                  <span className="fw-bold" style={{ color: "#0A9396" }}>
+                    Correct Answer:{" "}
+                  </span>
+                  {e.correctOption}
+                </p>
+                <div className="d-flex justify-content-end">
+                  <IconButton color="secondary">
+                    <EditOutlinedIcon />
+                  </IconButton>
+                  <IconButton color="danger">
+                    <CancelOutlinedIcon />
+                  </IconButton>
+                </div>
+              </div>
+            ))}
+        </div>
+        <div className="d-flex justify-content-center mt-4">
+          <Button
+            type="submit"
+            className="w-50"
+            variant="contained"
+            color="secondary"
+            disabled={!testFormik.isValid}
+          >
+            Save
+          </Button>
+        </div>
+      </form>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
           <form onSubmit={questionFormik.handleSubmit}>
-            <h3 className="text-center mb-3">Add Question</h3>
-            <div className="d-flex flex-column gap-3 mb-5">
+            <div className="primary-bg mb-5 p-3 rounded-top-2">
+              <h3 className="text-center text-white">Add Question</h3>
+            </div>
+            <div className="d-flex flex-column gap-3 mb-5 px-4">
               <TextField
                 fullWidth
                 className="mb-4"
@@ -300,7 +358,7 @@ const AddHiringTest = () => {
                 <MenuItem value="D">D</MenuItem>
               </TextField>
             </div>
-            <div className="d-flex justify-content-center gap-3">
+            <div className="d-flex justify-content-center gap-3 px-4 py-3">
               <Button
                 type="submit"
                 fullWidth

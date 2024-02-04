@@ -120,3 +120,9 @@ input::-ms-reveal {
 .grey-border {
   border: 1px solid #bdbbbb;
 }
+.primary-bg {
+  background-color: #0a9396;
+}
+.secondary-text {
+  color: #005f73;
+}
