@@ -56,7 +56,8 @@ const AddHiringTest = () => {
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
+  const [editingIndex, setEditingIndex] = useState(null);
+
   const handleClose = () => {
     setOpen(false);
     questionFormik.resetForm();
@@ -71,11 +72,30 @@ const AddHiringTest = () => {
     initialValues: questionInitialValues,
     validationSchema: hiringTestAddQuestionSchema,
     onSubmit: (values, actions) => {
-      console.log(values);
-      setQuestionsArray((prev) => [...prev, values]);
+      if (editingIndex !== null) {
+        const updatedQuestions = questionsArray.map((item, index) =>
+          index === editingIndex ? values : item
+        );
+        setQuestionsArray(updatedQuestions);
+        testFormik.setFieldValue("questions", updatedQuestions);
+      } else {
+        const newQuestionsArray = [...questionsArray, values];
+        setQuestionsArray(newQuestionsArray);
+      }
       handleClose();
     },
   });
+  const handleOpen = (index = null) => {
+    setOpen(true);
+    if (index !== null) {
+      const questionToEdit = questionsArray[index];
+      questionFormik.setValues(questionToEdit);
+      setEditingIndex(index);
+    } else {
+      setEditingIndex(null);
+      questionFormik.resetForm();
+    }
+  };
 
   const testFormik = useFormik({
     initialValues: testInitialValues,
@@ -86,6 +106,14 @@ const AddHiringTest = () => {
     },
   });
   console.log(testFormik.values.questions);
+
+  const deleteQuestion = (indexToDelete) => {
+    const updatedQuestions = questionsArray.filter(
+      (e, index) => index !== indexToDelete
+    );
+    setQuestionsArray(updatedQuestions);
+    // testFormik.setFieldValue("questions", updatedQuestions);
+  };
 
   return (
     <div className="col-8 mx-auto my-3 bg-white py-3 px-5 rounded grey-border">
@@ -170,7 +198,7 @@ const AddHiringTest = () => {
                 border: 2,
               },
             }}
-            onClick={handleOpen}
+            onClick={() => handleOpen(null)}
           >
             Add Question
           </Button>
@@ -189,7 +217,8 @@ const AddHiringTest = () => {
                 key={index}
               >
                 <p className="mb-2">
-                  <span className="fw-bold">Question:</span> {e.question}
+                  <span className="fw-bold">Question {index + 1} :</span>{" "}
+                  {e.question}
                 </p>
                 <p className="mb-2">
                   <span className="fw-medium">Option A:</span> {e.optionA}
@@ -210,10 +239,16 @@ const AddHiringTest = () => {
                   {e.correctOption}
                 </p>
                 <div className="d-flex justify-content-end">
-                  <IconButton color="secondary">
+                  <IconButton
+                    color="secondary"
+                    onClick={() => handleOpen(index)}
+                  >
                     <EditOutlinedIcon />
                   </IconButton>
-                  <IconButton color="danger">
+                  <IconButton
+                    color="danger"
+                    onClick={() => deleteQuestion(index)}
+                  >
                     <CancelOutlinedIcon />
                   </IconButton>
                 </div>
@@ -246,7 +281,7 @@ const AddHiringTest = () => {
                 variant="outlined"
                 multiline
                 name="question"
-                value={questionFormik.values.question}
+                value={questionFormik.values?.question}
                 onChange={questionFormik.handleChange}
                 onBlur={questionFormik.handleBlur}
                 helperText={
@@ -264,7 +299,7 @@ const AddHiringTest = () => {
                 label="Option A"
                 variant="outlined"
                 name="optionA"
-                value={questionFormik.values.optionA}
+                value={questionFormik.values?.optionA}
                 onChange={questionFormik.handleChange}
                 onBlur={questionFormik.handleBlur}
                 helperText={
@@ -282,7 +317,7 @@ const AddHiringTest = () => {
                 label="Option B"
                 variant="outlined"
                 name="optionB"
-                value={questionFormik.values.optionB}
+                value={questionFormik.values?.optionB}
                 onChange={questionFormik.handleChange}
                 onBlur={questionFormik.handleBlur}
                 helperText={
@@ -300,7 +335,7 @@ const AddHiringTest = () => {
                 label="Option C"
                 variant="outlined"
                 name="optionC"
-                value={questionFormik.values.optionC}
+                value={questionFormik.values?.optionC}
                 onChange={questionFormik.handleChange}
                 onBlur={questionFormik.handleBlur}
                 helperText={
@@ -318,7 +353,7 @@ const AddHiringTest = () => {
                 label="Option D"
                 variant="outlined"
                 name="optionD"
-                value={questionFormik.values.optionD}
+                value={questionFormik.values?.optionD}
                 onChange={questionFormik.handleChange}
                 onBlur={questionFormik.handleBlur}
                 helperText={
@@ -339,7 +374,7 @@ const AddHiringTest = () => {
                 label="Correct Answer"
                 variant="outlined"
                 name="correctOption"
-                value={questionFormik.values.correctOption}
+                value={questionFormik.values?.correctOption}
                 onChange={questionFormik.handleChange}
                 onBlur={questionFormik.handleBlur}
                 helperText={
