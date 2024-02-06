@@ -38,6 +38,7 @@ import {
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
 import { loader as manageAccountLoader } from "./pages/ManageAccountPage";
 import { loader as dashboardLoader } from "./pages/DashboardLayout";
+import { loader as hiringTestsLoader } from "./pages/employer/HiringTests";
 import { loader as AdminDashboardLoader } from "./pages/admin/AdminDashboardLayout";
 // const token = Cookies.get("token");
 // if (token) {
@@ -193,6 +194,7 @@ const App = () => {
                 ) : (
                   <Navigate to="/dashboard" />
                 ),
+              loader: hiringTestsLoader,
             },
             {
               path: "hiring-tests/add",

@@ -11,6 +11,19 @@ import fs from "fs";
 import multer from "multer";
 import path from "path";
 
+router.get("/get-hiring-tests", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "employer") {
+      const allTests = await HiringTest.find({ createdBy: req.user.userId });
+      res.status(200).json(allTests);
+    } else {
+      return res.status(404).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 router.post("/add-hiring-test", authenticateUser, async (req, res) => {
   try {
     if (req.user.role === "employer") {
