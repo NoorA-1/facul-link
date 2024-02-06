@@ -26,7 +26,6 @@ export const loader = async () => {
 
 const HiringTests = () => {
   const data = useLoaderData();
-  console.log(data);
 
   return (
     <div className="container my-3 bg-white py-3 px-5 rounded grey-border">
@@ -61,41 +60,42 @@ const HiringTests = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((e, index) => (
-              <TableRow
-                key={index}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {e.title}
-                </TableCell>
-                <TableCell align="right">{e.duration} Minutes</TableCell>
-                <TableCell align="right">
-                  {e.shuffleQuestions === true ? "Yes" : "No"}
-                </TableCell>
-                <TableCell align="right">{e.questions.length}</TableCell>
-                <TableCell align="right">
-                  <div className="d-flex justify-content-end gap-3">
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="secondary"
-                      startIcon={<EditOutlinedIcon />}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="danger"
-                      sx={{ color: "#FFF" }}
-                      startIcon={<DeleteOutlinedIcon />}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+            {data.length > 0 &&
+              data.map((e, index) => (
+                <TableRow
+                  key={index}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {e.title}
+                  </TableCell>
+                  <TableCell align="right">{e.duration} Minutes</TableCell>
+                  <TableCell align="right">
+                    {e.shuffleQuestions === true ? "Yes" : "No"}
+                  </TableCell>
+                  <TableCell align="right">{e.questions.length}</TableCell>
+                  <TableCell align="right">
+                    <div className="d-flex justify-content-end gap-3">
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        color="secondary"
+                        startIcon={<EditOutlinedIcon />}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="danger"
+                        sx={{ color: "#FFF" }}
+                        startIcon={<DeleteOutlinedIcon />}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
