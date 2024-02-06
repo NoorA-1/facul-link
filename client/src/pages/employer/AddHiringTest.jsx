@@ -6,6 +6,7 @@ import {
   Modal,
   Box,
   IconButton,
+  Alert,
   Table,
   TableBody,
   TableCell,
@@ -23,6 +24,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { hiringTestAddQuestionSchema, hiringTestSchema } from "../../schemas";
 import { useFormik } from "formik";
+import http from "../../utils/http";
 
 const style = {
   position: "absolute",
@@ -97,15 +99,32 @@ const AddHiringTest = () => {
     }
   };
 
+  const submitTest = async (values) => {
+    try {
+      const response = await http.post("employer/add-hiring-test", values);
+      console.log(response);
+      if (response.status === 200) {
+        navigate("/dashboard/hiring-tests");
+        setMessage(() => ({ message: "", error: 0 }));
+      }
+    } catch (error) {
+      console.log(error);
+      if (error.response.status === 400) {
+        setMessage(() => ({ message: error.response.data.message, error: 1 }));
+      }
+    }
+  };
+
   const testFormik = useFormik({
     initialValues: testInitialValues,
     validationSchema: hiringTestSchema,
     onSubmit: (values, actions) => {
       console.log(values);
+      submitTest(values);
       handleClose();
     },
   });
-  console.log(testFormik.values.questions);
+  // console.log(testFormik.values.questions);
 
   const deleteQuestion = (indexToDelete) => {
     const updatedQuestions = questionsArray.filter(
@@ -113,6 +132,21 @@ const AddHiringTest = () => {
     );
     setQuestionsArray(updatedQuestions);
     // testFormik.setFieldValue("questions", updatedQuestions);
+  };
+
+  const [message, setMessage] = useState({
+    message: "",
+    error: 0,
+  });
+
+  const MessageBox = () => {
+    return (
+      message.error === 1 && (
+        <Alert variant="filled" severity="error">
+          {message.message}
+        </Alert>
+      )
+    );
   };
 
   return (
@@ -131,6 +165,7 @@ const AddHiringTest = () => {
         Back
       </Button>
       <h4 className="fw-bold text-center mt-4">Add Hiring Test</h4>
+      <MessageBox />
       <hr className="mb-5" />
       <form onSubmit={testFormik.handleSubmit}>
         <div className="d-flex align-items-start justify-content-center gap-3">
@@ -217,7 +252,7 @@ const AddHiringTest = () => {
                 key={index}
               >
                 <p className="mb-2">
-                  <span className="fw-bold">Question {index + 1} :</span>{" "}
+                  <span className="fw-bold">Question {index + 1}:</span>{" "}
                   {e.question}
                 </p>
                 <p className="mb-2">
