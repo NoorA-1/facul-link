@@ -21,7 +21,7 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { hiringTestAddQuestionSchema, hiringTestSchema } from "../../schemas";
 import { useFormik } from "formik";
 import http from "../../utils/http";
@@ -56,6 +56,33 @@ const testInitialValues = {
 
 const AddHiringTest = () => {
   const navigate = useNavigate();
+  const params = useParams();
+  const [editMode, setEditMode] = useState(false);
+
+  const getData = async () => {
+    try {
+      const response = await http.get(`employer/get-hiring-test/${params.id}`);
+      console.log(response);
+      const data = response.data;
+      setQuestionsArray(() => data.questions);
+      testFormik.setValues({
+        title: data.title,
+        duration: data.duration,
+        shuffleQuestions: data.shuffleQuestions,
+        questions: data.questions,
+      });
+      console.log(testFormik.values);
+      setEditMode(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (params.id) {
+      getData();
+    }
+  }, [params]);
 
   const [open, setOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -101,11 +128,19 @@ const AddHiringTest = () => {
 
   const submitTest = async (values) => {
     try {
-      const response = await http.post("employer/add-hiring-test", values);
-      console.log(response);
+      let response;
+      if (editMode) {
+        response = await http.put(
+          `employer/edit-hiring-test/${params.id}`,
+          values
+        );
+      } else {
+        response = await http.post("employer/add-hiring-test", values);
+      }
       if (response.status === 200) {
         navigate("/dashboard/hiring-tests");
         setMessage(() => ({ message: "", error: 0 }));
+        setEditMode(false);
       }
     } catch (error) {
       console.log(error);

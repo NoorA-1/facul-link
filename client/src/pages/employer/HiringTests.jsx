@@ -1,9 +1,11 @@
-import React from "react";
-import { NavLink, useLoaderData } from "react-router-dom";
+import React, { useState } from "react";
+import { NavLink, useLoaderData, useNavigate } from "react-router-dom";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import {
   Button,
   Paper,
+  Modal,
+  Box,
   Table,
   TableBody,
   TableCell,
@@ -24,8 +26,24 @@ export const loader = async () => {
   }
 };
 
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  borderRadius: 2,
+  boxShadow: 24,
+  p: 4,
+};
+
 const HiringTests = () => {
   const data = useLoaderData();
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   return (
     <div className="container my-3 bg-white py-3 px-5 rounded grey-border">
@@ -60,45 +78,69 @@ const HiringTests = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.length > 0 &&
-              data.map((e, index) => (
-                <TableRow
-                  key={index}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-                    {e.title}
-                  </TableCell>
-                  <TableCell align="right">{e.duration} Minutes</TableCell>
-                  <TableCell align="right">
-                    {e.shuffleQuestions === true ? "Yes" : "No"}
-                  </TableCell>
-                  <TableCell align="right">{e.questions.length}</TableCell>
-                  <TableCell align="right">
-                    <div className="d-flex justify-content-end gap-3">
-                      <Button
-                        type="submit"
-                        variant="contained"
-                        color="secondary"
-                        startIcon={<EditOutlinedIcon />}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="danger"
-                        sx={{ color: "#FFF" }}
-                        startIcon={<DeleteOutlinedIcon />}
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+            {data.map((e, index) => (
+              <TableRow
+                key={index}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">
+                  {e.title}
+                </TableCell>
+                <TableCell align="right">{e.duration} Minutes</TableCell>
+                <TableCell align="right">
+                  {e.shuffleQuestions === true ? "Yes" : "No"}
+                </TableCell>
+                <TableCell align="right">{e.questions.length}</TableCell>
+                <TableCell align="right">
+                  <div className="d-flex justify-content-end gap-3">
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="secondary"
+                      startIcon={<EditOutlinedIcon />}
+                      onClick={() => navigate(`edit/${e._id}`)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="danger"
+                      sx={{ color: "#FFF" }}
+                      startIcon={<DeleteOutlinedIcon />}
+                      onClick={handleOpen}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <Modal open={open} onClose={handleClose}>
+        <Box sx={style}>
+          <h3 className="text-center">Are you sure?</h3>
+          <p className="text-center">Do you want to delete this test?</p>
+          <div className="d-flex justify-content-center gap-3">
+            <Button
+              variant="contained"
+              onClick={handleClose}
+              sx={{ backgroundColor: "#737373" }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="danger"
+              sx={{ color: "#FFF" }}
+              onClick={handleOpen}
+            >
+              Delete
+            </Button>
+          </div>
+        </Box>
+      </Modal>
     </div>
   );
 };

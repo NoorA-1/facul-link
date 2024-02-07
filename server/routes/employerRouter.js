@@ -24,6 +24,20 @@ router.get("/get-hiring-tests", authenticateUser, async (req, res) => {
   }
 });
 
+router.get("/get-hiring-test/:id", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "employer") {
+      const test = await HiringTest.findById(req.params.id);
+      res.status(200).json(test);
+    } else {
+      return res.status(404).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "Test not found" });
+  }
+});
+
 router.post("/add-hiring-test", authenticateUser, async (req, res) => {
   try {
     if (req.user.role === "employer") {
@@ -50,6 +64,31 @@ router.post("/add-hiring-test", authenticateUser, async (req, res) => {
 
       await newTest.save();
       return res.status(200).json({ message: "Test added successfully" });
+    } else {
+      return res.status(404).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.put("/edit-hiring-test/:id", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "employer") {
+      let { title, duration, shuffleQuestions, questions } = req.body;
+      duration = Number(duration);
+      const test = await HiringTest.findById(req.params.id);
+
+      if (test) {
+        test.title = title;
+        test.duration = duration;
+        test.shuffleQuestions = shuffleQuestions;
+        test.questions = questions;
+        await test.save();
+        return res.status(200).json({ message: "Test edited successfully" });
+      }
+
+      return res.status(400).json({ message: "This test does not exists." });
     } else {
       return res.status(404).json({ message: "Unauthorized" });
     }

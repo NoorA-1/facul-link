@@ -206,6 +206,15 @@ const App = () => {
                 ),
             },
             {
+              path: "hiring-tests/edit/:id",
+              element:
+                token?.role === "employer" ? (
+                  <AddHiringTest />
+                ) : (
+                  <Navigate to="/dashboard" />
+                ),
+            },
+            {
               path: "profile",
               element:
                 token?.role === "teacher" ? (
