@@ -185,7 +185,7 @@ const AddHiringTest = () => {
   };
 
   return (
-    <div className="col-8 mx-auto my-3 bg-white py-3 px-5 rounded grey-border">
+    <div className="container mx-auto my-3 bg-white py-3 px-5 rounded grey-border">
       <Button
         variant="outlined"
         startIcon={<ArrowBackOutlinedIcon />}

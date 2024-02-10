@@ -10,12 +10,13 @@ import { validationResult } from "express-validator";
 import fs from "fs";
 import multer from "multer";
 import path from "path";
+import mongoose, { Schema, SchemaTypes } from "mongoose";
 
 router.get("/get-hiring-tests", authenticateUser, async (req, res) => {
   try {
     if (req.user.role === "employer") {
       const allTests = await HiringTest.find({ createdBy: req.user.userId });
-      res.status(200).json(allTests);
+      return res.status(200).json(allTests);
     } else {
       return res.status(404).json({ message: "Unauthorized" });
     }
@@ -27,8 +28,11 @@ router.get("/get-hiring-tests", authenticateUser, async (req, res) => {
 router.get("/get-hiring-test/:id", authenticateUser, async (req, res) => {
   try {
     if (req.user.role === "employer") {
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ message: "Invalid id" });
+      }
       const test = await HiringTest.findById(req.params.id);
-      res.status(200).json(test);
+      return res.status(200).json(test);
     } else {
       return res.status(404).json({ message: "Unauthorized" });
     }
@@ -77,6 +81,9 @@ router.put("/edit-hiring-test/:id", authenticateUser, async (req, res) => {
     if (req.user.role === "employer") {
       let { title, duration, shuffleQuestions, questions } = req.body;
       duration = Number(duration);
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ message: "Invalid id" });
+      }
       const test = await HiringTest.findById(req.params.id);
 
       if (test) {
@@ -91,6 +98,25 @@ router.put("/edit-hiring-test/:id", authenticateUser, async (req, res) => {
       return res.status(400).json({ message: "This test does not exists." });
     } else {
       return res.status(404).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.delete("/delete-hiring-test/:id", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "employer") {
+      const id = req.params.id;
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid id" });
+      }
+      const deleteTest = await HiringTest.findByIdAndDelete(id);
+      if (deleteTest) {
+        return res.status(200).json({ message: "Test deleted successfully" });
+      } else {
+        return res.status(404).json({ message: "Test not found" });
+      }
     }
   } catch (error) {
     console.log(error);

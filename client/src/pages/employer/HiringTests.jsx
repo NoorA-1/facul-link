@@ -16,6 +16,7 @@ import {
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import http from "../../utils/http";
+import FolderOffOutlinedIcon from "@mui/icons-material/FolderOffOutlined";
 
 export const loader = async () => {
   try {
@@ -40,10 +41,29 @@ const style = {
 
 const HiringTests = () => {
   const data = useLoaderData();
+  console.log(data);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
+  const handleOpen = (id) => {
+    setOpen(true);
+    setDeleteTestId(id);
+  };
   const handleClose = () => setOpen(false);
+  const [deleteTestId, setDeleteTestId] = useState(null);
+
+  const handleDelete = async () => {
+    try {
+      const response = await http.delete(
+        `employer/delete-hiring-test/${deleteTestId}`
+      );
+      if (response.status === 200) {
+        navigate("/dashboard/hiring-tests");
+      }
+      handleClose();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="container my-3 bg-white py-3 px-5 rounded grey-border">
@@ -60,8 +80,12 @@ const HiringTests = () => {
         </NavLink>
       </div>
       <hr className="mb-5" />
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <TableContainer
+        sx={{ border: "2px solid #0A9396" }}
+        className="mb-4"
+        component={Paper}
+      >
+        <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
               <TableCell className="fw-bold">Title</TableCell>
@@ -78,50 +102,64 @@ const HiringTests = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((e, index) => (
+            {data.length > 0 ? (
+              data.map((e, index) => (
+                <TableRow
+                  key={index}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {e.title}
+                  </TableCell>
+                  <TableCell align="right">{e.duration} Minutes</TableCell>
+                  <TableCell align="right">
+                    {e.shuffleQuestions === true ? "Yes" : "No"}
+                  </TableCell>
+                  <TableCell align="right">{e.questions.length}</TableCell>
+                  <TableCell align="right">
+                    <div className="d-flex justify-content-end gap-3">
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        color="secondary"
+                        startIcon={<EditOutlinedIcon />}
+                        onClick={() => navigate(`edit/${e._id}`)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="danger"
+                        sx={{ color: "#FFF" }}
+                        startIcon={<DeleteOutlinedIcon />}
+                        onClick={() => handleOpen(e._id)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
               <TableRow
-                key={index}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
-                <TableCell component="th" scope="row">
-                  {e.title}
-                </TableCell>
-                <TableCell align="right">{e.duration} Minutes</TableCell>
-                <TableCell align="right">
-                  {e.shuffleQuestions === true ? "Yes" : "No"}
-                </TableCell>
-                <TableCell align="right">{e.questions.length}</TableCell>
-                <TableCell align="right">
-                  <div className="d-flex justify-content-end gap-3">
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="secondary"
-                      startIcon={<EditOutlinedIcon />}
-                      onClick={() => navigate(`edit/${e._id}`)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="danger"
-                      sx={{ color: "#FFF" }}
-                      startIcon={<DeleteOutlinedIcon />}
-                      onClick={handleOpen}
-                    >
-                      Delete
-                    </Button>
-                  </div>
+                <TableCell
+                  colspan="5"
+                  style={{ "text-align": "center", padding: 35 }}
+                >
+                  <FolderOffOutlinedIcon color="disabled" fontSize="large" />
+                  <p className="text-secondary">No tests found</p>
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
           <h3 className="text-center">Are you sure?</h3>
-          <p className="text-center">Do you want to delete this test?</p>
+          <p className="text-center mb-4">Do you want to delete this test?</p>
           <div className="d-flex justify-content-center gap-3">
             <Button
               variant="contained"
@@ -134,7 +172,7 @@ const HiringTests = () => {
               variant="contained"
               color="danger"
               sx={{ color: "#FFF" }}
-              onClick={handleOpen}
+              onClick={handleDelete}
             >
               Delete
             </Button>
