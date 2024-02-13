@@ -244,7 +244,7 @@ const QualificationForm = memo(
               <TextField
                 select
                 fullWidth
-                label="Level of Study"
+                label="Qualification Title"
                 className="mb-3 bg-white"
                 name="qualification.level"
                 value={values.qualification.level}
@@ -260,8 +260,8 @@ const QualificationForm = memo(
                   Boolean(errors.qualification?.level)
                 }
               >
-                <MenuItem value={"School"}>School</MenuItem>
-                <MenuItem value={"College"}>College</MenuItem>
+                <MenuItem value={"School"}>Matriculation/O-Level</MenuItem>
+                <MenuItem value={"College"}>Intermediate/A-Level</MenuItem>
                 <MenuItem value={"Bachelors"}>Bachelors</MenuItem>
                 <MenuItem value={"Masters"}>Masters</MenuItem>
               </TextField>

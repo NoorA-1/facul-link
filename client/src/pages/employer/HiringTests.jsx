@@ -81,7 +81,7 @@ const HiringTests = () => {
       </div>
       <hr className="mb-5" />
       <TableContainer
-        sx={{ border: "2px solid #0A9396" }}
+        sx={{ border: "1px solid #0A9396" }}
         className="mb-4"
         component={Paper}
       >

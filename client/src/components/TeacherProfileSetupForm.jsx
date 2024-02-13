@@ -9,7 +9,10 @@ import {
   Chip,
   Alert,
   InputAdornment,
+  Autocomplete,
 } from "@mui/material";
+import { createFilterOptions } from "@mui/material";
+
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import UploadIcon from "@mui/icons-material/Upload";
 import IconButton from "@mui/material/IconButton";
@@ -22,6 +25,8 @@ import QualificationForm from "./QualificationForm";
 import ExperienceForm from "./ExperienceForm";
 import { teacherProfileValidationSchema } from "../schemas";
 import http from "../utils/http";
+
+import { skillsList } from "../utils/formData";
 
 const TeacherProfileSetupForm = ({ userData }) => {
   const navigate = useNavigate();
@@ -59,6 +64,7 @@ const TeacherProfileSetupForm = ({ userData }) => {
   const [experiencesArray, setExperiencesArray] = useState(
     Boolean(userData.experience.length > 0) ? userData.experience : []
   );
+  const [inputValue, setInputValue] = useState("");
 
   const [skillsArray, setSkillsArray] = useState(
     userData.skills.length > 0 ? userData.skills : []
@@ -219,7 +225,11 @@ const TeacherProfileSetupForm = ({ userData }) => {
       },
     });
 
-  // console.log(skillsArray);
+  const filterOptions = createFilterOptions({
+    ignoreCase: true,
+    matchFrom: "start",
+    limit: 10,
+  });
 
   return (
     <InitialForm noColoredLine={true} className="w-100 px-5 mt-3 mb-5">
@@ -350,19 +360,39 @@ const TeacherProfileSetupForm = ({ userData }) => {
         <h3 className="fw-bold mt-4 mb-1">Skills</h3>
         <h6 className="text-secondary">Add your skills.</h6>
         <div className="d-flex justify-content-center mt-4 mb-3">
-          <TextField label="Skill Name" fullWidth inputRef={skillRef} />
+          <Autocomplete
+            freeSolo
+            fullWidth
+            options={skillsList.filter((skill) => !skillsArray.includes(skill))}
+            disableClearable
+            filterOptions={filterOptions}
+            // getOptionLabel={(option) => option}
+            inputValue={inputValue}
+            onInputChange={(event, newInputValue) => {
+              setInputValue(newInputValue);
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Skill Name"
+                fullWidth
+                inputRef={skillRef}
+              />
+            )}
+          />
           <IconButton
             size="large"
             color="primary"
             onClick={() => {
               addSkill(skillRef.current.value);
               skillRef.current.value = "";
+              setInputValue("");
             }}
           >
             <AddOutlinedIcon />
           </IconButton>
         </div>
-        <div className="d-flex gap-3 mb-5">
+        <div className="d-flex gap-3 mb-5 flex-wrap">
           {skillsArray.map((skill, index) => {
             return (
               <Chip

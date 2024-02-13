@@ -226,7 +226,7 @@ const ProfilePage = () => {
               className="bg-subtle py-3 px-4 rounded shadow-sm"
               style={{ border: "1px solid #0a9396" }}
             >
-              <div className="d-flex gap-3">
+              <div className="d-flex gap-3 flex-wrap">
                 {userData.user.skills.map((skill, index) => {
                   return (
                     <Chip

@@ -120,7 +120,7 @@ export const teacherQualificationValidationSchema = Yup.object({
         "Field of Study cannot be empty or only whitespace",
         (value) => value.trim() !== ""
       ),
-    level: Yup.string().required("Level of Study is required"),
+    level: Yup.string().required("Qualification Title is required"),
     grade: Yup.string()
       .required("Grade is required")
       .min(1, "Grade or GPA must be at least 1 character long")
