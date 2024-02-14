@@ -29,6 +29,9 @@ const EmployerEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
     profileDescription: Boolean(userData.profileDescription)
       ? userData.profileDescription
       : "",
+    universityURL: Boolean(userData.universityURL)
+      ? userData.universityURL
+      : "",
     // universityname: Boolean(userData.universityName)
     //   ? userData.universityName
     //   : "",
@@ -85,6 +88,7 @@ const EmployerEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
       formData.append("firstname", values.firstname);
       formData.append("lastname", values.lastname);
       formData.append("profileDescription", values.profileDescription);
+      formData.append("universityURL", values.universityURL);
       // formData.append("universityName", values.universityname);
       // formData.append("departmentName", values.departmentname);
 
@@ -306,6 +310,28 @@ const EmployerEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
             error={
               Boolean(touched.profileDescription) &&
               Boolean(errors.profileDescription)
+            }
+          />
+          <hr />
+          <h3 className="fw-bold mt-4 mb-1">
+            University Website
+            <sup className="fs-5 text-danger">*</sup>
+          </h3>
+          <TextField
+            label="Website"
+            fullWidth
+            className="my-3"
+            name="universityURL"
+            value={values.universityURL}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            helperText={
+              Boolean(errors.universityURL) &&
+              Boolean(touched.universityURL) &&
+              errors.universityURL
+            }
+            error={
+              Boolean(touched.universityURL) && Boolean(errors.universityURL)
             }
           />
 

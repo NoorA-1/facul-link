@@ -5,6 +5,7 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import IconButton from "@mui/material/IconButton";
+import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 
 import dayjs from "dayjs";
 import { EmployerEditProfileForm } from "../../components";
@@ -21,6 +22,12 @@ const ProfilePage = () => {
     : null;
   const universityLogo =
     serverURL + userData.user.universityLogo?.split("public\\")[1];
+
+  const websiteURL =
+    userData.user.universityURL.startsWith("http://") ||
+    userData.user.universityURL.startsWith("https://")
+      ? userData.user.universityURL
+      : `https://${userData.user.universityURL}`;
 
   const updateUserData = async () => {
     const { data } = await http.get("/users/current-user");
@@ -98,6 +105,19 @@ const ProfilePage = () => {
             <p style={{ color: "#404040" }} className="fw-semibold text-center">
               {userData.user.departmentName}
             </p>
+            <div className="d-flex justify-content-center">
+              <a href={websiteURL} target="_blank">
+                <Button
+                  size="large"
+                  startIcon={<LinkOutlinedIcon />}
+                  variant="text"
+                  className="fw-bold text-lowercase"
+                  color="alternate"
+                >
+                  {userData.user.universityURL}
+                </Button>
+              </a>
+            </div>
           </div>
         </div>
 

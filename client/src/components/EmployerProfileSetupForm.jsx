@@ -33,6 +33,9 @@ const EmployerProfileSetupForm = ({ userData }) => {
     universityname: Boolean(userData.universityName)
       ? userData.universityName
       : "",
+    universityURL: Boolean(userData.universityURL)
+      ? userData.universityURL
+      : "",
     departmentname: Boolean(userData.departmentName)
       ? userData.departmentName
       : "",
@@ -87,6 +90,7 @@ const EmployerProfileSetupForm = ({ userData }) => {
       formData.append("profileDescription", values.profileDescription);
       formData.append("universityName", values.universityname);
       formData.append("departmentName", values.departmentname);
+      formData.append("universityURL", values.universityURL);
 
       const response = await http.put("/users/employer-profile", formData);
       console.log(response);
@@ -346,6 +350,28 @@ const EmployerProfileSetupForm = ({ userData }) => {
               }
             />
           )}
+        />
+        <hr />
+        <h3 className="fw-bold mt-4 mb-1">
+          University Website
+          <sup className="fs-5 text-danger">*</sup>
+        </h3>
+        <TextField
+          label="Website"
+          fullWidth
+          className="my-3"
+          name="universityURL"
+          value={values.universityURL}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          helperText={
+            Boolean(errors.universityURL) &&
+            Boolean(touched.universityURL) &&
+            errors.universityURL
+          }
+          error={
+            Boolean(touched.universityURL) && Boolean(errors.universityURL)
+          }
         />
         <hr />
         <h3 className="fw-bold mt-4 mb-1">

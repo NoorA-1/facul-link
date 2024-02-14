@@ -8,9 +8,10 @@ const uniEmployerSchema = new Schema({
   },
   profileImage: { type: String, default: null },
   universityLogo: { type: String, default: null },
-  profileDescription: { type: String, default: null },
-  universityName: { type: String, default: null },
-  departmentName: { type: String, default: null },
+  profileDescription: { type: String, default: null, trim: true },
+  universityName: { type: String, default: null, trim: true },
+  departmentName: { type: String, default: null, trim: true },
+  universityURL: { type: String, default: null, trim: true },
   // universityLocation: { type: String, default: null },
 });
 

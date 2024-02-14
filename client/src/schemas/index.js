@@ -8,6 +8,8 @@ const passwordRegex = new RegExp(
 );
 
 const onlyWhiteSpaceRegex = new RegExp("^(?!\\s*$).+");
+const URLRegex =
+  /^((http|https):\/\/)?(www.)?(?!.*(http|https|www.))[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+(\/)?.([\w\?[a-zA-Z-_%\/@?]+)*([^\/\w\?[a-zA-Z0-9_-]+=\w+(&[a-zA-Z0-9_]+=\w+)*)?$/;
 
 export const signInValidationSchema = Yup.object({
   email: Yup.string()
@@ -225,6 +227,22 @@ export const employerProfileValidationSchema = Yup.object({
     .min(5, "University name must be at least 5 characters long")
     // .matches(lettersSpaceOnlyRegex, "Invalid university name")
     .required("Please enter university name"),
+  universityURL: Yup.string()
+    .url("Must be a valid URL")
+    .transform((currentValue) => {
+      const notStartsWithHTTP =
+        currentValue &&
+        !(
+          currentValue.startsWith("http://") ||
+          currentValue.startsWith("https://")
+        );
+
+      if (notStartsWithHTTP) {
+        return `http://${currentValue}`;
+      }
+      return currentValue;
+    })
+    .required("Please provide university website"),
   departmentname: Yup.string()
     .matches(lettersSpaceOnlyRegex, "Invalid department name")
     .required("Please select department name"),
@@ -247,6 +265,22 @@ export const employerEditProfileValidationSchema = Yup.object({
       "Description cannot be empty or only whitespace",
       (value) => value.trim() !== ""
     ),
+  universityURL: Yup.string()
+    .url()
+    .transform((currentValue) => {
+      const notStartsWithHTTP =
+        currentValue &&
+        !(
+          currentValue.startsWith("http://") ||
+          currentValue.startsWith("https://")
+        );
+
+      if (notStartsWithHTTP) {
+        return `http://${currentValue}`;
+      }
+      return currentValue;
+    })
+    .required("Please provide university website"),
 });
 
 export const hiringTestAddQuestionSchema = Yup.object({
