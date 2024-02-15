@@ -1,7 +1,8 @@
-import { Router } from "express";
+import { Router, response } from "express";
 const router = Router();
 import User from "../models/userModel.js";
 import { authenticateUser } from "../middlewares/authMiddleware.js";
+import UniEmployer from "../models/uniEmployerModel.js";
 
 router.get("/stats", authenticateUser, async (req, res) => {
   try {
@@ -30,6 +31,19 @@ router.get("/stats", authenticateUser, async (req, res) => {
       ]);
       const totalUsers = await User.countDocuments();
       res.status(200).json({ userCount, totalUsers });
+    } else {
+      res.status(401).json({ message: "Unauthorized Access. Not Admin." });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.get("/all-employers", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "admin") {
+      const users = await UniEmployer.find().populate("userId");
+      res.json(users);
     } else {
       res.status(401).json({ message: "Unauthorized Access. Not Admin." });
     }

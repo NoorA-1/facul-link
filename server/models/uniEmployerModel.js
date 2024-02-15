@@ -12,6 +12,7 @@ const uniEmployerSchema = new Schema({
   universityName: { type: String, default: null, trim: true },
   departmentName: { type: String, default: null, trim: true },
   universityURL: { type: String, default: null, trim: true },
+  status: { type: String, enum: ["active", "pending"], default: "pending" },
   // universityLocation: { type: String, default: null },
 });
 

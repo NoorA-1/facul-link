@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, useLoaderData, useNavigate } from "react-router-dom";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import {
   Button,
+  IconButton,
   Paper,
   Modal,
   Box,
@@ -15,8 +16,8 @@ import {
 } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
-import http from "../../utils/http";
 import FolderOffOutlinedIcon from "@mui/icons-material/FolderOffOutlined";
+import http from "../../utils/http";
 
 export const loader = async () => {
   try {
@@ -117,25 +118,20 @@ const HiringTests = () => {
                   </TableCell>
                   <TableCell align="right">{e.questions.length}</TableCell>
                   <TableCell align="right">
-                    <div className="d-flex justify-content-end gap-3">
-                      <Button
+                    <div className="d-flex justify-content-end ">
+                      <IconButton
                         type="submit"
-                        variant="contained"
                         color="secondary"
-                        startIcon={<EditOutlinedIcon />}
                         onClick={() => navigate(`edit/${e._id}`)}
                       >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="contained"
+                        <EditOutlinedIcon />
+                      </IconButton>
+                      <IconButton
                         color="danger"
-                        sx={{ color: "#FFF" }}
-                        startIcon={<DeleteOutlinedIcon />}
                         onClick={() => handleOpen(e._id)}
                       >
-                        Delete
-                      </Button>
+                        <DeleteOutlinedIcon />
+                      </IconButton>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -145,8 +141,8 @@ const HiringTests = () => {
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell
-                  colspan="5"
-                  style={{ "text-align": "center", padding: 35 }}
+                  colSpan="5"
+                  style={{ textAlign: "center", padding: 35 }}
                 >
                   <FolderOffOutlinedIcon color="disabled" fontSize="large" />
                   <p className="text-secondary">No tests found</p>
