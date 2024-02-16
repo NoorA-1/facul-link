@@ -34,6 +34,7 @@ import {
   AdminManageEmployersPage,
   AdminManageHiringTestsPage,
   EmployerProfilePage,
+  AdminViewEmployerProfilePage,
 } from "./pages";
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
@@ -272,6 +273,10 @@ const App = () => {
               path: "manage-employers",
               element: <AdminManageEmployersPage />,
               loader: AdminEmployersLoader,
+            },
+            {
+              path: "employer-profile/:id",
+              element: <AdminViewEmployerProfilePage />,
             },
             {
               path: "manage-tests",

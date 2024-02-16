@@ -27,4 +27,5 @@ export { default as AdminHomePage } from "./admin//AdminHomePage";
 export { default as AdminManageJobsPage } from "./admin/AdminManageJobsPage";
 export { default as AdminManageTeachersPage } from "./admin/AdminManageTeachersPage";
 export { default as AdminManageEmployersPage } from "./admin/AdminManageEmployersPage";
+export { default as AdminViewEmployerProfilePage } from "./admin/AdminViewEmployerProfilePage";
 export { default as AdminManageHiringTestsPage } from "./admin/AdminManageHiringTestsPage";

@@ -266,7 +266,40 @@ export const employerEditProfileValidationSchema = Yup.object({
       (value) => value.trim() !== ""
     ),
   universityURL: Yup.string()
-    .url()
+    .url("Must be a valid URL")
+    .transform((currentValue) => {
+      const notStartsWithHTTP =
+        currentValue &&
+        !(
+          currentValue.startsWith("http://") ||
+          currentValue.startsWith("https://")
+        );
+
+      if (notStartsWithHTTP) {
+        return `http://${currentValue}`;
+      }
+      return currentValue;
+    })
+    .required("Please provide university website"),
+});
+
+export const adminEditEmployerValidationSchema = Yup.object({
+  firstname: Yup.string()
+    .min(3, "First name must be at least 3 characters long")
+    .matches(lettersSpaceOnlyRegex, "Invalid first name")
+    .required("Please enter first name"),
+  lastname: Yup.string()
+    .min(3, "Last name must be at least 3 characters long")
+    .matches(lettersSpaceOnlyRegex, "Invalid last name")
+    .required("Please enter last name"),
+  email: Yup.string()
+    .matches(emailRegex, "Please enter valid email.")
+    .required("Please enter email"),
+  departmentname: Yup.string()
+    .matches(lettersSpaceOnlyRegex, "Invalid department name")
+    .required("Please select department name"),
+  universityURL: Yup.string()
+    .url("Must be a valid URL")
     .transform((currentValue) => {
       const notStartsWithHTTP =
         currentValue &&

@@ -11,6 +11,7 @@ const theme = createTheme({
     secondary: { main: "#005F73" },
     danger: { main: "#AE2012" },
     alternate: { main: "#0077B6" },
+    grey: { main: "#737373" },
   },
   typography: {
     fontFamily: "Inter, sans-serif",
