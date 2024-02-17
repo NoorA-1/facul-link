@@ -1,8 +1,16 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { BigSidebar, Header } from "../components";
-import { NavLink, Outlet, useLoaderData, useNavigate } from "react-router-dom";
+import {
+  NavLink,
+  Outlet,
+  useLoaderData,
+  useNavigate,
+  Link,
+} from "react-router-dom";
 import { Button, Menu, MenuItem, useMediaQuery, Avatar } from "@mui/material";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import PendingOutlinedIcon from "@mui/icons-material/PendingOutlined";
+import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
 import http from "../utils/http";
 
 const DashboardContext = createContext();
@@ -41,8 +49,14 @@ const DashboardLayout = () => {
       console.log(error);
     }
   };
+  // useEffect(() => {
+  //   console.log(userData);
+  // }, []);
+
   useEffect(() => {
-    console.log(userData);
+    if (!userData.user.userId.isProfileSetup) {
+      navigate("/profile-setup");
+    }
   }, []);
 
   const serverURL = "http://localhost:3000/";
@@ -50,6 +64,101 @@ const DashboardLayout = () => {
     ? serverURL + userData.user.profileImage?.split("public\\")[1]
     : null;
 
+  if (
+    userData.user.userId.role === "employer" &&
+    userData.user.status === "pending"
+  ) {
+    return (
+      <div className="min-vh-100 sign-up-bg">
+        <Header homeDisabled={true}>
+          <Button
+            onClick={handleClick}
+            variant="contained"
+            sx={{
+              textTransform: "capitalize",
+              fontWeight: "bold",
+            }}
+            endIcon={<KeyboardArrowDownOutlinedIcon />}
+            size={buttonSize}
+          >
+            My Account
+          </Button>
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              "aria-labelledby": "basic-button",
+            }}
+          >
+            <Link
+              to="/manage-account"
+              style={{ color: "unset", textDecoration: "unset" }}
+            >
+              <MenuItem>Manage Account Details</MenuItem>
+            </Link>
+
+            <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
+          </Menu>
+        </Header>
+        <div
+          style={{ height: "90vh" }}
+          className="d-flex flex-column align-items-center justify-content-center gap-2"
+        >
+          <PendingOutlinedIcon color="warning" sx={{ fontSize: "4em" }} />
+          <h4>Your account is currently under verification.</h4>
+        </div>
+      </div>
+    );
+  } else if (
+    userData.user.userId.role === "employer" &&
+    userData.user.status === "rejected"
+  ) {
+    return (
+      <div className="min-vh-100 sign-up-bg">
+        <Header homeDisabled={true}>
+          <Button
+            onClick={handleClick}
+            variant="contained"
+            sx={{
+              textTransform: "capitalize",
+              fontWeight: "bold",
+            }}
+            endIcon={<KeyboardArrowDownOutlinedIcon />}
+            size={buttonSize}
+          >
+            My Account
+          </Button>
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              "aria-labelledby": "basic-button",
+            }}
+          >
+            <Link
+              to="/manage-account"
+              style={{ color: "unset", textDecoration: "unset" }}
+            >
+              <MenuItem>Manage Account Details</MenuItem>
+            </Link>
+
+            <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
+          </Menu>
+        </Header>
+        <div
+          style={{ height: "90vh" }}
+          className="d-flex flex-column align-items-center justify-content-center gap-2"
+        >
+          <BlockOutlinedIcon color="danger" sx={{ fontSize: "4em" }} />
+          <h4>Your account is suspended.</h4>
+        </div>
+      </div>
+    );
+  }
   return (
     <DashboardContext.Provider value={{ userData }}>
       <div className="sign-up-bg">

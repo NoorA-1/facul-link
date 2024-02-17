@@ -78,7 +78,12 @@ router.post("/sign-in", validateSignIn, async (req, res) => {
 
     res
       .status(200)
-      .json({ message: "Log In successful", error: false, role: user.role });
+      .json({
+        message: "Log In successful",
+        error: false,
+        role: user.role,
+        isProfileSetup: user.isProfileSetup,
+      });
   } catch (error) {
     console.log(error);
   }

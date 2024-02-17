@@ -32,7 +32,7 @@ const SignInPage = () => {
   const submitSignInData = async (data, actions) => {
     try {
       const { data: responseData } = await http.post("/auth/sign-in", data);
-      console.log(responseData);
+      // console.log(responseData);
       setAlertError("");
       setIsSuccess(true);
       actions.resetForm();
@@ -40,7 +40,11 @@ const SignInPage = () => {
         if (responseData.role === "admin") {
           navigate("/admin-dashboard");
         } else {
-          navigate("/profile-setup");
+          if (responseData.isProfileSetup === true) {
+            navigate("/dashboard");
+          } else {
+            navigate("/profile-setup");
+          }
         }
       }, 1000);
     } catch (error) {
