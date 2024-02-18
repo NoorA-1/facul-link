@@ -26,12 +26,17 @@ const ProfileSetup = () => {
   const navigate = useNavigate();
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("xl"));
   const buttonSize = isSmallScreen ? "small" : "medium";
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     console.log(data);
     if (data && data.user.userId.isProfileSetup) {
       // navigate route here
       navigate("/dashboard");
     }
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
   }, [data]);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -53,6 +58,16 @@ const ProfileSetup = () => {
       console.log(error);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="vh-100 d-flex align-items-center justify-content-center">
+        <div class="spinner-border m-5" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Wrapper>

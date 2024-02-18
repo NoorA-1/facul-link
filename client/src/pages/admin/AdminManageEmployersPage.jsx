@@ -202,7 +202,7 @@ const AdminManageEmployersPage = () => {
   const handleDeleteOpen = (name, id) => {
     setOpen((prev) => ({ ...prev, [name]: true }));
     setUser(() => {
-      data.filter((data) => data.userId._id === id);
+      return data.find((data) => data.userId._id === id);
     });
   };
   const handleClose = (name) => setOpen((prev) => ({ ...prev, [name]: false }));
@@ -239,6 +239,19 @@ const AdminManageEmployersPage = () => {
       updateUserData(user.userId._id, trimmedValues);
     },
   });
+
+  const handleDelete = async () => {
+    try {
+      console.log(user);
+      const response = await http.delete(`/admin/employer/${user.userId._id}`);
+      if (response.status === 200) {
+        navigate("/admin-dashboard/manage-employers");
+      }
+      handleClose("deleteModal");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="container my-3 bg-white py-3 px-2 rounded grey-border">
@@ -289,7 +302,7 @@ const AdminManageEmployersPage = () => {
               variant="contained"
               color="danger"
               sx={{ color: "#FFF" }}
-              // onClick={handleDelete}
+              onClick={handleDelete}
             >
               Delete
             </Button>

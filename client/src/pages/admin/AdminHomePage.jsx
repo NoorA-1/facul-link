@@ -1,31 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { useDashboardContext } from "./AdminDashboardLayout";
-import { HomePageCard } from "../../components";
-import CasesOutlinedIcon from "@mui/icons-material/CasesOutlined";
-import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import AssignmentTurnedInOutlinedIcon from "@mui/icons-material/AssignmentTurnedInOutlined";
+import CasesOutlinedIcon from "@mui/icons-material/CasesOutlined";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
-import http from "../../utils/http";
+import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
+import { MenuItem, TextField } from "@mui/material";
+import dayjs from "dayjs";
+import React, { useEffect, useState } from "react";
 import {
-  LineChart,
-  Line,
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Area,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  AreaChart,
 } from "recharts";
-import dayjs from "dayjs";
+import { HomePageCard } from "../../components";
+import http from "../../utils/http";
+import { useDashboardContext } from "./AdminDashboardLayout";
 
 const AdminHomePage = () => {
   const { userData } = useDashboardContext();
   const [statsData, setStatsData] = useState({});
   const [totalStatsData, setTotalStatsData] = useState({
-    userCount: null,
+    totalUsers: null,
   });
+  const [chartType, setChartType] = useState("User Chart");
   const options = {
     weekday: "long",
     year: "numeric",
@@ -37,7 +36,6 @@ const AdminHomePage = () => {
   const getStats = async () => {
     try {
       const { data } = await http.get("/admin/stats");
-      console.log(data.totalUsers);
       const transformedData = data.userCount.map((item) => {
         const formattedMonth = dayjs(
           new Date(item._id.year, item._id.month - 1)
@@ -47,15 +45,32 @@ const AdminHomePage = () => {
           count: item.count,
         };
       });
-      setStatsData(transformedData);
+      const transformedTestData = data.testCount.map((item) => {
+        const formattedMonth = dayjs(
+          new Date(item._id.year, item._id.month - 1)
+        ).format("MMMM YYYY");
+        return {
+          month: formattedMonth,
+          count: item.count,
+        };
+      });
+      setStatsData({
+        userCount: transformedData,
+        testCount: transformedTestData,
+      });
       setTotalStatsData(() => {
         return {
-          userCount: data.totalUsers,
+          totalUsers: data.totalUsers,
+          totalTests: data.totalTests,
         };
       });
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleChartTypeChange = (event) => {
+    setChartType(event.target.value);
   };
 
   useEffect(() => {
@@ -69,7 +84,7 @@ const AdminHomePage = () => {
       <div className="d-flex flex-column flex-md-row gap-5">
         <HomePageCard
           cardText="Total Users"
-          digit={totalStatsData.userCount}
+          digit={totalStatsData.totalUsers}
           color="#BB3E03"
         >
           <PersonOutlineOutlinedIcon
@@ -86,16 +101,39 @@ const AdminHomePage = () => {
             sx={{ color: "#00733D" }}
           />
         </HomePageCard>
-        <HomePageCard cardText="Total Hiring Tests" digit={0} color="#EE9B00">
+        <HomePageCard
+          cardText="Total Hiring Tests"
+          digit={totalStatsData.totalTests}
+          color="#EE9B00"
+        >
           <EditNoteOutlinedIcon
             className="mt-2 mb-3"
             sx={{ color: "#EE9B00" }}
           />
         </HomePageCard>
       </div>
-      <h4 className="fw-bold text-center mt-5">Monthly User Count</h4>
+
+      <div className="d-flex align-items-center justify-content-center mt-5">
+        <h4 className="fw-bold text-center flex-grow-1">
+          Monthly {chartType.split(" ")[0]} Count
+        </h4>
+        <TextField
+          select
+          label="Chart Type"
+          value={chartType}
+          onChange={handleChartTypeChange}
+          variant="outlined"
+          sx={{ backgroundColor: "#FFF" }}
+        >
+          <MenuItem value="User Chart">User Chart</MenuItem>
+          <MenuItem value="Test Chart">Test Chart</MenuItem>
+        </TextField>
+      </div>
       <ResponsiveContainer width={"100%"} height={350}>
-        <AreaChart data={statsData} margin={{ top: 20 }}>
+        <AreaChart
+          data={statsData[chartType.split(" ")[0].toLowerCase() + "Count"]}
+          margin={{ top: 20 }}
+        >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="month" />
           <YAxis allowDecimals={false} />
