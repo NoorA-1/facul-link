@@ -369,3 +369,42 @@ export const hiringTestSchema = Yup.object({
   duration: Yup.string().required("Duration is required"),
   questions: Yup.array().required().min(1, "Questions are required"),
 });
+
+export const jobPostValidationSchema = Yup.object({
+  title: Yup.string()
+    .min(3, "Title must be at least 3 characters long")
+    .required("Title is required")
+    .test(
+      "is-empty-after-trim",
+      "Title cannot be empty or only whitespace",
+      (value) => value.trim() !== ""
+    ),
+  description: Yup.string()
+    .required("Description is required")
+    .min(5, "Description must be at least 5 characters long")
+    .test(
+      "is-empty-after-trim",
+      "Description cannot be empty or only whitespace",
+      (value) => value.trim() !== ""
+    ),
+  location: Yup.string()
+    .min(3, "Title must be at least 3 characters long")
+    .required("Location is required")
+    .test(
+      "is-empty-after-trim",
+      "Title cannot be empty or only whitespace",
+      (value) => value.trim() !== ""
+    ),
+  requiredQualification: Yup.string().required(
+    "Qualification must be provided"
+  ),
+  requiredExperience: Yup.string().required("Experience must be provided"),
+  skills: Yup.array().required().min(1, "Skills are required"),
+  isTestEnabled: Yup.boolean(),
+  hiringTest: Yup.string().when("isTestEnabled", {
+    is: (isTestEnabled) => isTestEnabled === true,
+    then: () => Yup.string().required("Hiring Test is required"),
+    otherwise: () => Yup.string().nullable(),
+  }),
+  endDate: Yup.date().required("End date must be provided"),
+});
