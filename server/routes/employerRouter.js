@@ -11,6 +11,7 @@ import fs from "fs";
 import multer from "multer";
 import path from "path";
 import mongoose, { Schema, SchemaTypes } from "mongoose";
+import Job from "../models/jobModel.js";
 
 router.get("/get-hiring-tests", authenticateUser, async (req, res) => {
   try {
@@ -117,6 +118,44 @@ router.delete("/delete-hiring-test/:id", authenticateUser, async (req, res) => {
       } else {
         return res.status(404).json({ message: "Test not found" });
       }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.post("/post-job", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "employer") {
+      const jobInfo = { ...req.body };
+      let hiringTestId = null;
+      if (jobInfo.hiringTest !== "") {
+        hiringTestId = jobInfo.hiringTest;
+      }
+      const newJob = new Job({
+        ...jobInfo,
+        hiringTest: hiringTestId,
+        createdBy: req.user.userId,
+      });
+      newJob.save();
+      return res.status(200).json({ message: "Job saved successfully" });
+    } else {
+      return res.status(404).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.get("/jobs", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "employer") {
+      const allJobs = await Job.find({ createdBy: req.user.userId }).populate(
+        "hiringTest"
+      );
+      return res.status(200).json(allJobs);
+    } else {
+      return res.status(404).json({ message: "Unauthorized" });
     }
   } catch (error) {
     console.log(error);

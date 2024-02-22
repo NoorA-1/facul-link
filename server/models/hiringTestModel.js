@@ -4,42 +4,42 @@ const Schema = mongoose.Schema;
 const hiringTestSchema = new Schema(
   {
     title: {
-      type: "string",
+      type: String,
       required: true,
       trim: true,
     },
     duration: {
-      type: "number",
+      type: Number,
       required: true,
     },
     shuffleQuestions: {
-      type: "boolean",
+      type: Boolean,
       required: true,
     },
     questions: [
       {
         question: {
-          type: "string",
+          type: String,
           trim: true,
         },
         optionA: {
-          type: "string",
+          type: String,
           trim: true,
         },
         optionB: {
-          type: "string",
+          type: String,
           trim: true,
         },
         optionC: {
-          type: "string",
+          type: String,
           trim: true,
         },
         optionD: {
-          type: "string",
+          type: String,
           trim: true,
         },
         correctOption: {
-          type: "string",
+          type: String,
         },
       },
     ],
