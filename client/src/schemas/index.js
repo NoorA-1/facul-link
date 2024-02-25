@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import * as Yup from "yup";
 
 const emailRegex = new RegExp("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
@@ -325,35 +326,21 @@ export const hiringTestAddQuestionSchema = Yup.object({
       "Question cannot be empty or only whitespace",
       (value) => value.trim() !== ""
     ),
-
-  optionA: Yup.string()
-    .required("Option A is required")
-    .test(
-      "is-empty-after-trim",
-      "Option A cannot be empty or only whitespace",
-      (value) => value.trim() !== ""
-    ),
-  optionB: Yup.string()
-    .required("Option B is required")
-    .test(
-      "is-empty-after-trim",
-      "Option B cannot be empty or only whitespace",
-      (value) => value.trim() !== ""
-    ),
-  optionC: Yup.string()
-    .required("Option C is required")
-    .test(
-      "is-empty-after-trim",
-      "Option C cannot be empty or only whitespace",
-      (value) => value.trim() !== ""
-    ),
-  optionD: Yup.string()
-    .required("Option D is required")
-    .test(
-      "is-empty-after-trim",
-      "Option D cannot be empty or only whitespace",
-      (value) => value.trim() !== ""
-    ),
+  options: Yup.array()
+    .of(
+      Yup.object().shape({
+        optionLabel: Yup.string().required("Option label is required"),
+        optionValue: Yup.string()
+          .required("Option value is required")
+          .test(
+            "is-empty-after-trim",
+            "Option cannot be empty or only whitespace",
+            (value) => value.trim() !== ""
+          ),
+      })
+    )
+    .min(2, "At least two options are required")
+    .max(5, "No more than five options are allowed"),
   correctOption: Yup.string().required("Correct option is required"),
 });
 
@@ -406,5 +393,14 @@ export const jobPostValidationSchema = Yup.object({
     then: () => Yup.string().required("Hiring Test is required"),
     otherwise: () => Yup.string().nullable(),
   }),
-  endDate: Yup.date().required("End date must be provided"),
+  totalPositions: Yup.number()
+    .typeError("Total positions must be numeric (e.g. 1, 2, 3 etc.)")
+    .min(1, "Minimum position must be 1")
+    .required("Total positions are required"),
+  endDate: Yup.date()
+    .required("End date must be provided")
+    .min(
+      dayjs().toDate(),
+      `End date cannot be before ${dayjs().add(1, "day").format("DD-MM-YYYY")}`
+    ),
 });

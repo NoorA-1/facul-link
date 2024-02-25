@@ -43,7 +43,7 @@ import { loader as profileSetupLoader } from "./pages/ProfileSetup";
 import { loader as manageAccountLoader } from "./pages/ManageAccountPage";
 import { loader as dashboardLoader } from "./pages/DashboardLayout";
 import { loader as hiringTestsLoader } from "./pages/employer/HiringTests";
-import { loader as jobsLoader } from "./pages/employer/PostJobHome";
+import { loader as postJobsLoader } from "./pages/employer/PostJobHome";
 import { loader as postJobTestsLoader } from "./pages/employer/PostJob";
 import { loader as AdminDashboardLoader } from "./pages/admin/AdminDashboardLayout";
 import { loader as AdminEmployersLoader } from "./pages/admin/AdminManageEmployersPage";
@@ -201,10 +201,20 @@ const App = () => {
                 ) : (
                   <Navigate to="/dashboard" />
                 ),
-              loader: jobsLoader,
+              loader: postJobsLoader,
             },
             {
               path: "post-job/add",
+              element:
+                token?.role === "employer" ? (
+                  <PostJob />
+                ) : (
+                  <Navigate to="/dashboard" />
+                ),
+              loader: postJobTestsLoader,
+            },
+            {
+              path: "post-job/edit/:id",
               element:
                 token?.role === "employer" ? (
                   <PostJob />

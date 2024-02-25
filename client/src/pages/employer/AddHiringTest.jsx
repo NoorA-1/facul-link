@@ -40,10 +40,10 @@ const style = {
 
 const questionInitialValues = {
   question: "",
-  optionA: "",
-  optionB: "",
-  optionC: "",
-  optionD: "",
+  options: [
+    { optionLabel: "A", optionValue: "" },
+    { optionLabel: "B", optionValue: "" },
+  ],
   correctOption: "",
 };
 
@@ -184,6 +184,24 @@ const AddHiringTest = () => {
     );
   };
 
+  const handleAddOption = () => {
+    const nextLabel = "ABCDE"[questionFormik.values.options.length];
+    if (questionFormik.values.options.length < 5) {
+      const newOption = { optionLabel: nextLabel, optionValue: "" };
+      questionFormik.setFieldValue("options", [
+        ...questionFormik.values.options,
+        newOption,
+      ]);
+    }
+  };
+
+  const handleRemoveOption = (index) => {
+    const updatedOptions = questionFormik.values.options.filter(
+      (e, i) => i !== index
+    );
+    questionFormik.setFieldValue("options", updatedOptions);
+  };
+
   return (
     <div className="container mx-auto my-3 bg-white py-3 px-5 rounded grey-border">
       <Button
@@ -290,18 +308,14 @@ const AddHiringTest = () => {
                   <span className="fw-bold">Question {index + 1}:</span>{" "}
                   {e.question}
                 </p>
-                <p className="mb-2">
-                  <span className="fw-medium">Option A:</span> {e.optionA}
-                </p>
-                <p className="mb-2">
-                  <span className="fw-medium">Option B:</span> {e.optionB}
-                </p>
-                <p className="mb-2">
-                  <span className="fw-medium">Option C:</span> {e.optionC}
-                </p>
-                <p className="mb-2">
-                  <span className="fw-medium">Option D:</span> {e.optionD}
-                </p>
+                {e.options.map((option, optionIndex) => (
+                  <p className="mb-2" key={optionIndex}>
+                    <span className="fw-medium">
+                      Option {option.optionLabel}:
+                    </span>{" "}
+                    {option.optionValue}
+                  </p>
+                ))}
                 <p className="mb-2">
                   <span className="fw-bold" style={{ color: "#0A9396" }}>
                     Correct Answer:{" "}
@@ -351,7 +365,7 @@ const AddHiringTest = () => {
                 variant="outlined"
                 multiline
                 name="question"
-                value={questionFormik.values?.question}
+                value={questionFormik.values.question}
                 onChange={questionFormik.handleChange}
                 onBlur={questionFormik.handleBlur}
                 helperText={
@@ -364,78 +378,41 @@ const AddHiringTest = () => {
                   Boolean(questionFormik.errors.question)
                 }
               />
-              <TextField
-                fullWidth
-                label="Option A"
-                variant="outlined"
-                name="optionA"
-                value={questionFormik.values?.optionA}
-                onChange={questionFormik.handleChange}
-                onBlur={questionFormik.handleBlur}
-                helperText={
-                  Boolean(questionFormik.errors.optionA) &&
-                  Boolean(questionFormik.touched.optionA) &&
-                  questionFormik.errors.optionA
-                }
-                error={
-                  Boolean(questionFormik.touched.optionA) &&
-                  Boolean(questionFormik.errors.optionA)
-                }
-              />
-              <TextField
-                fullWidth
-                label="Option B"
-                variant="outlined"
-                name="optionB"
-                value={questionFormik.values?.optionB}
-                onChange={questionFormik.handleChange}
-                onBlur={questionFormik.handleBlur}
-                helperText={
-                  Boolean(questionFormik.errors.optionB) &&
-                  Boolean(questionFormik.touched.optionB) &&
-                  questionFormik.errors.optionB
-                }
-                error={
-                  Boolean(questionFormik.touched.optionB) &&
-                  Boolean(questionFormik.errors.optionB)
-                }
-              />
-              <TextField
-                fullWidth
-                label="Option C"
-                variant="outlined"
-                name="optionC"
-                value={questionFormik.values?.optionC}
-                onChange={questionFormik.handleChange}
-                onBlur={questionFormik.handleBlur}
-                helperText={
-                  Boolean(questionFormik.errors.optionC) &&
-                  Boolean(questionFormik.touched.optionC) &&
-                  questionFormik.errors.optionC
-                }
-                error={
-                  Boolean(questionFormik.touched.optionC) &&
-                  Boolean(questionFormik.errors.optionC)
-                }
-              />
-              <TextField
-                fullWidth
-                label="Option D"
-                variant="outlined"
-                name="optionD"
-                value={questionFormik.values?.optionD}
-                onChange={questionFormik.handleChange}
-                onBlur={questionFormik.handleBlur}
-                helperText={
-                  Boolean(questionFormik.errors.optionD) &&
-                  Boolean(questionFormik.touched.optionD) &&
-                  questionFormik.errors.optionD
-                }
-                error={
-                  Boolean(questionFormik.touched.optionD) &&
-                  Boolean(questionFormik.errors.optionD)
-                }
-              />
+              {questionFormik.values.options.map((option, index) => (
+                <div key={index}>
+                  <TextField
+                    fullWidth
+                    label={`Option ${option.optionLabel}`}
+                    variant="outlined"
+                    name={`options[${index}].optionValue`}
+                    value={option.optionValue}
+                    onChange={questionFormik.handleChange}
+                    onBlur={questionFormik.handleBlur}
+                    error={
+                      Boolean(
+                        questionFormik.touched.options?.[index]?.optionValue
+                      ) &&
+                      Boolean(
+                        questionFormik.errors.options?.[index]?.optionValue
+                      )
+                    }
+                    helperText={
+                      questionFormik.errors.options?.[index]?.optionValue &&
+                      questionFormik.touched.options?.[index]?.optionValue &&
+                      questionFormik.errors.options[index].optionValue
+                    }
+                  />
+                  {index === questionFormik.values.options.length - 1 &&
+                    questionFormik.values.options.length > 2 && (
+                      <Button onClick={() => handleRemoveOption(index)}>
+                        Remove Option
+                      </Button>
+                    )}
+                </div>
+              ))}
+              {questionFormik.values.options.length < 5 && (
+                <Button onClick={handleAddOption}>Add Option</Button>
+              )}
             </div>
             <div className="d-flex mb-4 justify-content-center">
               <TextField
@@ -444,7 +421,7 @@ const AddHiringTest = () => {
                 label="Correct Answer"
                 variant="outlined"
                 name="correctOption"
-                value={questionFormik.values?.correctOption}
+                value={questionFormik.values.correctOption}
                 onChange={questionFormik.handleChange}
                 onBlur={questionFormik.handleBlur}
                 helperText={
@@ -457,10 +434,11 @@ const AddHiringTest = () => {
                   Boolean(questionFormik.errors.correctOption)
                 }
               >
-                <MenuItem value="A">A</MenuItem>
-                <MenuItem value="B">B</MenuItem>
-                <MenuItem value="C">C</MenuItem>
-                <MenuItem value="D">D</MenuItem>
+                {questionFormik.values.options.map((option, index) => (
+                  <MenuItem key={index} value={option.optionLabel}>
+                    {option.optionLabel}
+                  </MenuItem>
+                ))}
               </TextField>
             </div>
             <div className="d-flex justify-content-center gap-3 px-4 py-3">

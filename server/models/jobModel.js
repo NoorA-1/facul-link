@@ -41,6 +41,10 @@ const jobSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "HiringTest",
     },
+    totalPositions: {
+      type: Number,
+      required: true,
+    },
     endDate: {
       type: Date,
       required: true,
@@ -48,7 +52,7 @@ const jobSchema = new Schema(
     createdBy: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "User",
+      ref: "UniEmployer",
     },
   },
   {

@@ -22,22 +22,15 @@ const hiringTestSchema = new Schema(
           type: String,
           trim: true,
         },
-        optionA: {
-          type: String,
-          trim: true,
-        },
-        optionB: {
-          type: String,
-          trim: true,
-        },
-        optionC: {
-          type: String,
-          trim: true,
-        },
-        optionD: {
-          type: String,
-          trim: true,
-        },
+        options: [
+          {
+            optionLabel: String,
+            optionValue: {
+              type: String,
+              trim: true,
+            },
+          },
+        ],
         correctOption: {
           type: String,
         },
@@ -46,7 +39,7 @@ const hiringTestSchema = new Schema(
     createdBy: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "User",
+      ref: "UniEmployer",
     },
   },
   {

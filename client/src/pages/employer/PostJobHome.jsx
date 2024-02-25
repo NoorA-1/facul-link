@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { NavLink, useLoaderData, useNavigate } from "react-router-dom";
+import {
+  NavLink,
+  useLoaderData,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import {
   Button,
@@ -20,7 +25,6 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import FolderOffOutlinedIcon from "@mui/icons-material/FolderOffOutlined";
 import http from "../../utils/http";
-import { useDashboardContext } from "../DashboardLayout";
 import dayjs from "dayjs";
 
 export const loader = async () => {
@@ -32,17 +36,57 @@ export const loader = async () => {
   }
 };
 
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  borderRadius: 2,
+  boxShadow: 24,
+  p: 4,
+};
+
 const PostJobHome = () => {
+  const navigate = useNavigate();
   const jobsData = useLoaderData();
-  console.log(jobsData);
-  const { successMessage } = useDashboardContext();
+  // console.log(jobsData);
+
+  const [open, setOpen] = useState(false);
+
+  const [deleteJobId, setDeleteJobId] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const status = searchParams.get("status");
+
+  const handleOpen = (id) => {
+    setOpen(true);
+    setDeleteJobId(id);
+  };
+  const handleClose = () => setOpen(false);
+
+  const handleDelete = async () => {
+    try {
+      const response = await http.delete(`employer/delete-job/${deleteJobId}`);
+      if (response.status === 200) {
+        navigate("/dashboard/post-job?status=deleted");
+      }
+      console.log(response);
+      handleClose();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const MessageBox = () => {
     return (
-      successMessage && (
-        <Alert variant="filled" severity="success">
-          {successMessage}
-        </Alert>
-      )
+      <Alert variant="filled" severity="success">
+        {status === "posted"
+          ? "Job Posted successfully"
+          : status === "updated"
+          ? "Job updated successfully"
+          : status === "deleted" && "Job deleted successfully"}
+      </Alert>
     );
   };
   return (
@@ -59,7 +103,7 @@ const PostJobHome = () => {
           </Button>
         </NavLink>
       </div>
-      <MessageBox />
+      {status && <MessageBox />}
       <hr className="mb-5" />
       <TableContainer
         sx={{ border: "1px solid #0A9396" }}
@@ -83,9 +127,12 @@ const PostJobHome = () => {
                 Hiring Test
               </TableCell>
               <TableCell align="right" className="fw-bold">
+                Positions
+              </TableCell>
+              <TableCell align="center" className="fw-bold">
                 End Date
               </TableCell>
-              <TableCell align="right" className="fw-bold">
+              <TableCell align="center" className="fw-bold">
                 Status
               </TableCell>
               <TableCell align="right"></TableCell>
@@ -115,6 +162,7 @@ const PostJobHome = () => {
                       {"None"}
                     </TableCell>
                   )}
+                  <TableCell align="right">{e.totalPositions}</TableCell>
                   <TableCell align="right">
                     {dayjs(e.endDate).format("YYYY-MM-DD")}
                   </TableCell>
@@ -140,10 +188,17 @@ const PostJobHome = () => {
                   </TableCell>
                   <TableCell align="right">
                     <div className="d-flex justify-content-end ">
-                      <IconButton type="submit" color="secondary">
+                      <IconButton
+                        type="submit"
+                        color="secondary"
+                        onClick={() => navigate(`edit/${e._id}`)}
+                      >
                         <EditOutlinedIcon />
                       </IconButton>
-                      <IconButton color="danger">
+                      <IconButton
+                        color="danger"
+                        onClick={() => handleOpen(e._id)}
+                      >
                         <DeleteOutlinedIcon />
                       </IconButton>
                     </div>
@@ -166,6 +221,30 @@ const PostJobHome = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Modal open={open} onClose={handleClose}>
+        <Box sx={style}>
+          <h3 className="text-center">Are you sure?</h3>
+          <p className="text-center mb-4">Do you want to delete this job?</p>
+          <div className="d-flex justify-content-center gap-3">
+            <Button
+              variant="contained"
+              onClick={handleClose}
+              sx={{ backgroundColor: "#737373" }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="danger"
+              sx={{ color: "#FFF" }}
+              onClick={handleDelete}
+            >
+              Delete
+            </Button>
+          </div>
+        </Box>
+      </Modal>
     </div>
   );
 };

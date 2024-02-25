@@ -22,9 +22,8 @@ import dayjs from "dayjs";
 import { skillsList } from "../../utils/formData";
 import { useFormik } from "formik";
 import { jobPostValidationSchema } from "../../schemas";
-import { Link, useLoaderData, useNavigate } from "react-router-dom";
+import { Link, useLoaderData, useNavigate, useParams } from "react-router-dom";
 import http from "../../utils/http";
-import { useDashboardContext } from "../DashboardLayout";
 
 const initialValues = {
   title: "",
@@ -36,6 +35,7 @@ const initialValues = {
   isTestEnabled: false,
   hiringTest: "",
   endDate: null,
+  totalPositions: 1,
 };
 
 export const loader = async () => {
@@ -49,9 +49,10 @@ export const loader = async () => {
 
 const PostJob = () => {
   const navigate = useNavigate();
-  const { setSuccessMessage } = useDashboardContext();
-
   const testsData = useLoaderData();
+  const params = useParams();
+  const [editMode, setEditMode] = useState(false);
+
   const [startDate, setStartDate] = useState(dayjs().add(1, "day"));
   const [skillsArray, setSkillsArray] = useState([]);
   const skillRef = useRef(null);
@@ -62,9 +63,9 @@ const PostJob = () => {
   };
 
   const deleteSkill = (index) => {
-    setSkillsArray((skillArr) => {
-      return skillArr.filter((skill, i) => i !== index);
-    });
+    const newSkillsArray = values.skills.filter((_, i) => i !== index);
+    setFieldValue("skills", newSkillsArray);
+    setSkillsArray(newSkillsArray);
   };
   const [inputValue, setInputValue] = useState("");
 
@@ -73,6 +74,34 @@ const PostJob = () => {
     matchFrom: "start",
     limit: 10,
   });
+  const getData = async () => {
+    try {
+      const response = await http.get(`employer/jobs/${params.id}`);
+      const data = response.data;
+      setValues({
+        title: data.title,
+        description: data.description,
+        location: data.location,
+        requiredQualification: data.requiredQualification,
+        requiredExperience: data.requiredExperience,
+        skills: data.skills,
+        isTestEnabled: data.isTestEnabled,
+        hiringTest: data.hiringTest !== null ? data.hiringTest._id : "",
+        totalPositions: data.totalPositions,
+        endDate: dayjs(data.endDate),
+      });
+
+      setEditMode(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (params.id) {
+      getData();
+    }
+  }, [params]);
 
   const {
     values,
@@ -80,6 +109,7 @@ const PostJob = () => {
     handleChange,
     handleSubmit,
     setFieldValue,
+    setValues,
     setFieldError,
     setFieldTouched,
     errors,
@@ -94,17 +124,24 @@ const PostJob = () => {
       console.log(values);
       saveFormData(values);
       actions.resetForm();
-      handleClose();
     },
   });
 
   const saveFormData = async (values) => {
     try {
-      const response = await http.post("/employer/post-job", values);
+      let response;
+      if (editMode) {
+        response = await http.put(`/employer/jobs/${params.id}`, values);
+      } else {
+        response = await http.post("/employer/post-job", values);
+      }
       console.log(response);
-      if (response.status === 200) {
-        setSuccessMessage("Job posted successfully");
-        navigate("/dashboard/post-job");
+      if (editMode && response.status === 200) {
+        // setSuccessMessage("Job updated successfully");
+        navigate("/dashboard/post-job?status=updated");
+        setEditMode(false);
+      } else {
+        navigate("/dashboard/post-job?status=posted");
       }
     } catch (error) {
       console.log(error);
@@ -239,7 +276,7 @@ const PostJob = () => {
             </TextField>
             <div className="d-flex">
               <Autocomplete
-                value={skillsArray}
+                value={values.skills}
                 multiple
                 freeSolo
                 fullWidth
@@ -256,9 +293,7 @@ const PostJob = () => {
                   const filteredValue = newValue.filter(
                     (item) => item.trim() !== ""
                   );
-                  if (filteredValue.length !== 0) {
-                    setSkillsArray(filteredValue);
-                  }
+                  setFieldValue("skills", filteredValue);
                 }}
                 renderTags={(value, getTagProps) =>
                   value.map((option, index) => (
@@ -341,6 +376,24 @@ const PostJob = () => {
                 </Link>
               </p>
             )}
+            <TextField
+              fullWidth
+              label="Number of Positions"
+              className="my-3"
+              name="totalPositions"
+              value={values.totalPositions}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              helperText={
+                Boolean(errors.totalPositions) &&
+                Boolean(touched.totalPositions) &&
+                errors.totalPositions
+              }
+              error={
+                Boolean(touched.totalPositions) &&
+                Boolean(errors.totalPositions)
+              }
+            />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="End Date"
@@ -357,6 +410,11 @@ const PostJob = () => {
                     },
                   });
                 }}
+                slotProps={{
+                  textField: {
+                    helperText: errors.endDate,
+                  },
+                }}
               />
             </LocalizationProvider>
             <div className="d-flex justify-content-center mt-4">
@@ -367,7 +425,7 @@ const PostJob = () => {
                 color="secondary"
                 disabled={!isValid}
               >
-                Post
+                {editMode ? "Update" : "Post"}
               </Button>
             </div>
           </form>

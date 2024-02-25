@@ -160,11 +160,8 @@ const DashboardLayout = () => {
     );
   }
 
-  const [successMessage, setSuccessMessage] = useState(null);
   return (
-    <DashboardContext.Provider
-      value={{ userData, successMessage, setSuccessMessage }}
-    >
+    <DashboardContext.Provider value={{ userData }}>
       <div className="sign-up-bg">
         <Header homeDisabled={true}>
           <div className="d-flex align-items-center gap-3">
