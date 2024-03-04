@@ -164,7 +164,7 @@ const PostJobHome = () => {
                   )}
                   <TableCell align="right">{e.totalPositions}</TableCell>
                   <TableCell align="right">
-                    {dayjs(e.endDate).format("YYYY-MM-DD")}
+                    {dayjs(e.endDate).format("DD-MM-YYYY")}
                   </TableCell>
                   <TableCell align="right">
                     <Chip

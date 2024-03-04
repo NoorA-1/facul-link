@@ -6,8 +6,11 @@ import React, { useEffect, useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import { HomePageCard, JobPostCard } from "../../components";
 import http from "../../utils/http";
+import { serverURL } from "../../utils/formData";
 import { useDashboardContext } from "../DashboardLayout";
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 
 const EmployerHomePage = () => {
   const [jobsData, setJobsData] = useState(null);
@@ -29,8 +32,6 @@ const EmployerHomePage = () => {
   useEffect(() => {
     console.log(statsData);
   }, [statsData]);
-
-  const serverURL = "http://localhost:3000/";
 
   useEffect(() => {
     getJobsData();
@@ -91,8 +92,10 @@ const EmployerHomePage = () => {
               title={e.title}
               universityName={e.createdBy.universityName}
               location={e.location}
-              postedDate={dayjs(e.createdAt).format("DD-MM-YYYY")}
+              postedDate={dayjs(e.createdAt).fromNow()}
               endDate={dayjs(e.endDate).format("DD-MM-YYYY")}
+              role="employer"
+              jobId={e._id}
             />
           ))
         ) : (

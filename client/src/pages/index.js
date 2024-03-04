@@ -21,6 +21,7 @@ export { default as Bookmarks } from "./teacher/Bookmarks";
 export { default as EmployerHomePage } from "./employer/EmployerHomePage";
 export { default as PostJobHome } from "./employer/PostJobHome";
 export { default as PostJob } from "./employer/PostJob";
+export { default as JobPage } from "./JobPage";
 export { default as HiringTests } from "./employer/HiringTests";
 export { default as AddHiringTest } from "./employer/AddHiringTest";
 

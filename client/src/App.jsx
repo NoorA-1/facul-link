@@ -37,6 +37,7 @@ import {
   AdminManageHiringTestsPage,
   EmployerProfilePage,
   AdminViewEmployerProfilePage,
+  JobPage,
 } from "./pages";
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
@@ -222,6 +223,10 @@ const App = () => {
                   <Navigate to="/dashboard" />
                 ),
               loader: postJobTestsLoader,
+            },
+            {
+              path: "jobs/:id",
+              element: <JobPage />,
             },
             {
               path: "hiring-tests",

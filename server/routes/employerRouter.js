@@ -204,19 +204,24 @@ router.get("/jobs", authenticateUser, async (req, res) => {
 
 router.get("/jobs/:id", authenticateUser, async (req, res) => {
   try {
-    if (req.user.role === "employer") {
-      const id = req.params.id;
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ message: "Invalid id" });
-      }
-      const job = await Job.findById(id).populate("hiringTest");
-      if (job) {
-        return res.status(200).json(job);
-      } else {
-        return res.status(404).json({ message: "Job not found" });
-      }
+    const id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid id" });
+    }
+    const job = await Job.findById(id).populate([
+      "hiringTest",
+      {
+        path: "createdBy",
+        populate: {
+          path: "userId",
+          model: "User",
+        },
+      },
+    ]);
+    if (job) {
+      return res.status(200).json(job);
     } else {
-      return res.status(404).json({ message: "Unauthorized" });
+      return res.status(404).json({ message: "Job not found" });
     }
   } catch (error) {
     console.log(error);
@@ -282,7 +287,7 @@ router.get("/all-jobs/:num", authenticateUser, async (req, res) => {
     today.setHours(0, 0, 0, 0);
     const num = Number(req.params.num);
 
-    const allJobs = await Job.find({ endDate: { $gt: today } })
+    const allJobs = await Job.find({ endDate: { $gte: today } })
       .sort({ createdAt: -1 })
       .limit(num)
       .populate("createdBy");
