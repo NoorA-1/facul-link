@@ -42,10 +42,10 @@ const JobPage = () => {
   }
 
   return (
-    <div className="container mx-auto my-3 ">
+    <div className="container mx-auto my-3">
       <div className="bg-white py-4 rounded grey-border px-5">
         <div className="row">
-          <div className="col-8">
+          <div className="col-lg-8 col-12">
             <h4 className="fw-bold mt-3">{jobData.title}</h4>
             <div className="d-flex align-items-center mt-3 mb-4 flex-wrap">
               <div className="d-flex align-items-center gap-2 me-5">
@@ -106,7 +106,7 @@ const JobPage = () => {
               </h6>
             </div>
           </div>
-          <div className="offset-1 col-3">
+          <div className="col-lg-3 col-12 offset-lg-1 mt-3 mt-lg-0">
             <div
               className="bg-white mt-5 p-3 w-100 rounded shadow d-flex flex-column align-items-center justify-content-center"
               style={{ border: "1px solid #0A9396" }}
@@ -149,19 +149,23 @@ const JobPage = () => {
             </div>
           </div>
         </div>
-        {userData.user.userId.role !== "employer" && (
-          <div className="d-flex align-items-center justify-content-center">
-            <Button variant="contained" className="w-25">
-              Apply Now
-            </Button>
+        <div className="row">
+          <div className="col-12 d-flex justify-content-center mt-3">
+            {userData.user.userId.role !== "employer" && (
+              <Button variant="contained" className="w-25 w-lg-50">
+                Apply Now
+              </Button>
+            )}
           </div>
-        )}
+        </div>
         {jobData.isTestEnabled && (
-          <div className="d-flex align-items-center justify-content-center mt-2">
-            <ListAltIcon sx={{ fontSize: 25 }} color="primary" />
-            <span className="fw-medium">
-              This job requires online hiring test
-            </span>
+          <div className="row">
+            <div className="col-12 d-flex justify-content-center mt-2">
+              <ListAltIcon sx={{ fontSize: 25 }} color="primary" />
+              <span className="fw-medium">
+                This job requires an online hiring test
+              </span>
+            </div>
           </div>
         )}
       </div>

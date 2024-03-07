@@ -118,16 +118,18 @@ const AdminManageEmployersPage = () => {
                   </TableCell>
                   <TableCell align="right">
                     <div className="d-flex justify-content-start ">
-                      <IconButton
-                        color="primary"
-                        onClick={() =>
-                          navigate(
-                            `/admin-dashboard/employer-profile/${e.userId._id}`
-                          )
-                        }
-                      >
-                        <VisibilityOutlinedIcon />
-                      </IconButton>
+                      {e.userId.isProfileSetup && (
+                        <IconButton
+                          color="primary"
+                          onClick={() =>
+                            navigate(
+                              `/admin-dashboard/employer-profile/${e.userId._id}`
+                            )
+                          }
+                        >
+                          <VisibilityOutlinedIcon />
+                        </IconButton>
+                      )}
                       <IconButton
                         color="secondary"
                         onClick={() =>
