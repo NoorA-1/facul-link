@@ -19,7 +19,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 
-import { skillsList } from "../../utils/formData";
+import { programNamesList, skillsList } from "../../utils/formData";
 import { useFormik } from "formik";
 import { jobPostValidationSchema } from "../../schemas";
 import { Link, useLoaderData, useNavigate, useParams } from "react-router-dom";
@@ -29,7 +29,10 @@ const initialValues = {
   title: "",
   description: "",
   location: "",
-  requiredQualification: "",
+  requiredQualification: {
+    degree: "",
+    field: [],
+  },
   requiredExperience: "",
   skills: [],
   isTestEnabled: false,
@@ -54,6 +57,7 @@ const PostJob = () => {
   const [editMode, setEditMode] = useState(false);
 
   const [startDate, setStartDate] = useState(dayjs().add(1, "day"));
+  const [qualificationFieldsArray, setQualificationFieldsArray] = useState([]);
   const [skillsArray, setSkillsArray] = useState([]);
   const skillRef = useRef(null);
   const addSkill = (skill) => {
@@ -68,6 +72,20 @@ const PostJob = () => {
     setSkillsArray(newSkillsArray);
   };
   const [inputValue, setInputValue] = useState("");
+  const [fieldInputValue, setFieldInputValue] = useState("");
+
+  const handleQualificationFieldChange = (event, newValue) => {
+    const filteredValue = newValue.filter((item) => item.trim() !== "");
+    setFieldValue("requiredQualification.field", filteredValue);
+  };
+
+  const deleteQualificationField = (index) => {
+    const newFieldsArray = values.requiredQualification.field.filter(
+      (_, i) => i !== index
+    );
+    setFieldValue("requiredQualification.field", newFieldsArray);
+    setQualificationFieldsArray(newFieldsArray);
+  };
 
   const filterOptions = createFilterOptions({
     ignoreCase: true,
@@ -82,7 +100,10 @@ const PostJob = () => {
         title: data.title,
         description: data.description,
         location: data.location,
-        requiredQualification: data.requiredQualification,
+        requiredQualification: {
+          degree: data.requiredQualification.degree,
+          field: data.requiredQualification.field,
+        },
         requiredExperience: data.requiredExperience,
         skills: data.skills,
         isTestEnabled: data.isTestEnabled,
@@ -150,7 +171,13 @@ const PostJob = () => {
 
   useEffect(() => {
     setFieldValue("skills", skillsArray);
+    console.log(skillsArray);
   }, [skillsArray]);
+
+  useEffect(() => {
+    setFieldValue("requiredQualification.field", qualificationFieldsArray);
+  }, [qualificationFieldsArray]);
+
   return (
     <div className="container my-3 bg-white py-3 px-5 rounded grey-border">
       <Button
@@ -223,25 +250,72 @@ const PostJob = () => {
               fullWidth
               select
               variant="outlined"
-              label="Required Qualification"
+              label="Required Qualification "
               className="mb-3"
-              name="requiredQualification"
-              value={values.requiredQualification}
+              name="requiredQualification.degree"
+              value={values.requiredQualification?.degree}
               onChange={handleChange}
               onBlur={handleBlur}
               helperText={
-                Boolean(errors.requiredQualification) &&
-                Boolean(touched.requiredQualification) &&
-                errors.requiredQualification
+                Boolean(errors.requiredQualification?.degree) &&
+                Boolean(touched.requiredQualification?.degree) &&
+                errors.requiredQualification?.degree
               }
               error={
-                Boolean(touched.requiredQualification) &&
-                Boolean(errors.requiredQualification)
+                Boolean(touched.requiredQualification?.degree) &&
+                Boolean(errors.requiredQualification?.degree)
               }
             >
               <MenuItem value="Bachelors">Bachelors</MenuItem>
               <MenuItem value="Masters">Masters</MenuItem>
             </TextField>
+
+            <Autocomplete
+              fullWidth
+              disableClearable
+              multiple
+              freeSolo
+              options={programNamesList.filter(
+                (field) => !values.requiredQualification.field.includes(field)
+              )}
+              value={values.requiredQualification.field}
+              onChange={handleQualificationFieldChange}
+              inputValue={fieldInputValue}
+              onInputChange={(event, newInputValue) => {
+                setFieldInputValue(newInputValue);
+              }}
+              filterOptions={filterOptions}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    className="me-1"
+                    key={index}
+                    label={option}
+                    onDelete={() => {
+                      deleteQualificationField(index);
+                    }}
+                  />
+                ))
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  label="Qualification Programs"
+                  placeholder="Required qualification programs"
+                  helperText={
+                    Boolean(errors.qualification?.field) &&
+                    Boolean(touched.qualification?.field) &&
+                    errors.qualification.field
+                  }
+                  error={
+                    Boolean(touched.qualification?.field) &&
+                    Boolean(errors.qualification?.field)
+                  }
+                  className="mb-2"
+                />
+              )}
+            />
             <TextField
               fullWidth
               select
@@ -281,7 +355,7 @@ const PostJob = () => {
                 freeSolo
                 fullWidth
                 options={skillsList.filter(
-                  (skill) => !skillsArray.includes(skill)
+                  (skill) => !values.skills.includes(skill)
                 )}
                 disableClearable
                 filterOptions={filterOptions}

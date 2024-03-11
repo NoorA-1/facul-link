@@ -149,7 +149,9 @@ const PostJobHome = () => {
                     {e.title}
                   </TableCell>
                   <TableCell align="right">{e.location}</TableCell>
-                  <TableCell align="right">{e.requiredQualification}</TableCell>
+                  <TableCell align="right">
+                    {e.requiredQualification.degree}
+                  </TableCell>
                   <TableCell align="right">
                     {e.requiredExperience > 1
                       ? `${e.requiredExperience} Years`

@@ -19,9 +19,16 @@ const jobSchema = new Schema(
       trim: true,
     },
     requiredQualification: {
-      type: String,
-      required: true,
-      trim: true,
+      degree: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      field: {
+        type: [String],
+        required: true,
+        trim: true,
+      },
     },
     requiredExperience: {
       type: String,

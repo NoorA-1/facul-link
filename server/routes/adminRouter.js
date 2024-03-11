@@ -103,6 +103,7 @@ router.put("/employer/:id", authenticateUser, async (req, res) => {
     let user = await UniEmployer.findOne({
       userId: req.params.id,
     });
+    userInfo.departmentName = userInfo.departmentname;
     console.log(userInfo);
     await UniEmployer.findOneAndUpdate({ userId: user.userId }, userInfo);
     await User.findOneAndUpdate({ _id: user.userId }, userInfo);

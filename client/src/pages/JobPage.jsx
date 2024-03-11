@@ -73,7 +73,19 @@ const JobPage = () => {
               <p>{jobData.description}</p>
               <h6 className="fw-semibold mt-4">Required Qualification:</h6>
               <ul>
-                <li>{jobData.requiredQualification}</li>
+                <li>
+                  {jobData.requiredQualification.degree} in{" "}
+                  {jobData.requiredQualification.field.map((e, index) => {
+                    if (
+                      index ===
+                      jobData.requiredQualification.field.length - 1
+                    ) {
+                      return e;
+                    } else {
+                      return e.trim() + ", ";
+                    }
+                  })}
+                </li>
               </ul>
               <h6 className="fw-semibold mt-4">Required Experience:</h6>
               <ul>

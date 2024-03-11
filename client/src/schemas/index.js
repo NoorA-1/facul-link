@@ -294,7 +294,7 @@ export const adminEditEmployerValidationSchema = Yup.object({
     .matches(emailRegex, "Please enter valid email.")
     .required("Please enter email"),
   departmentname: Yup.string()
-    .matches(lettersSpaceOnlyRegex, "Invalid department name")
+    // .matches(lettersSpaceOnlyRegex, "Invalid department name")
     .required("Please select department name"),
   universityURL: Yup.string()
     .url("Must be a valid URL")
@@ -379,9 +379,10 @@ export const jobPostValidationSchema = Yup.object({
       "Title cannot be empty or only whitespace",
       (value) => value.trim() !== ""
     ),
-  requiredQualification: Yup.string().required(
-    "Qualification must be provided"
-  ),
+  requiredQualification: Yup.object({
+    degree: Yup.string().required("Degree is required"),
+    field: Yup.array().required().min(1, "Field is required"),
+  }),
   requiredExperience: Yup.string().required("Experience must be provided"),
   skills: Yup.array().required().min(1, "Skills are required"),
   isTestEnabled: Yup.boolean(),
