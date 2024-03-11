@@ -65,8 +65,7 @@ export const employerSignUpValidationSchema = new Yup.object({
     .required("Please enter university name"),
   departmentname: Yup.string()
     // .min(3, "Department name must be at least 3 characters long")
-    .matches(lettersSpaceOnlyRegex, "Invalid department name")
-    .required("Please select department name"),
+    .required("Please enter department name"),
   email: Yup.string()
     .matches(emailRegex, "Please enter valid email.")
     .required("Please enter email"),
@@ -244,9 +243,7 @@ export const employerProfileValidationSchema = Yup.object({
       return currentValue;
     })
     .required("Please provide university website"),
-  departmentname: Yup.string()
-    .matches(lettersSpaceOnlyRegex, "Invalid department name")
-    .required("Please select department name"),
+  departmentname: Yup.string().required("Please select department name"),
 });
 
 export const employerEditProfileValidationSchema = Yup.object({

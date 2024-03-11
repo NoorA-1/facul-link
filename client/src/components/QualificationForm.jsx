@@ -1,7 +1,15 @@
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { useFormik } from "formik";
 import Modal from "@mui/material/Modal";
-import { Avatar, Button, TextField, MenuItem, Box } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  TextField,
+  MenuItem,
+  Box,
+  createFilterOptions,
+  Autocomplete,
+} from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import IconButton from "@mui/material/IconButton";
@@ -11,6 +19,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { teacherQualificationValidationSchema } from "../schemas";
+import { programNamesList } from "../utils/formData";
 import dayjs from "dayjs";
 
 const modalStyle = {
@@ -60,6 +69,13 @@ const QualificationForm = memo(
       index: null,
     });
 
+    const filterOptions = createFilterOptions({
+      ignoreCase: true,
+      matchFrom: "start",
+      limit: 5,
+    });
+    const [inputValue, setInputValue] = useState("");
+
     // console.log("Start Date" + startDate + ", End Date" + minEndDate);
     const {
       values,
@@ -68,6 +84,7 @@ const QualificationForm = memo(
       handleSubmit,
       errors,
       touched,
+      setFieldValue,
       resetForm,
     } = useFormik({
       initialValues,
@@ -100,6 +117,7 @@ const QualificationForm = memo(
 
     const newQualification = () => {
       resetForm();
+      setInputValue("");
       setStartDate(dayjs());
       setMinEndDate(startDate.add(1, "month"));
       setEditMode({
@@ -130,6 +148,7 @@ const QualificationForm = memo(
         isEditMode: true,
         index,
       });
+      setInputValue(values.qualification.field);
       values.qualification = qualificationsArray[index];
       values.qualification.date.startDate = dayjs(
         values.qualification.date.startDate
@@ -222,24 +241,44 @@ const QualificationForm = memo(
                   Boolean(errors.qualification?.instituteName)
                 }
               />
-              <TextField
-                fullWidth
-                label="Field of Study"
-                variant="outlined"
-                className="mb-3 bg-white"
-                name="qualification.field"
+              <Autocomplete
+                freeSolo
+                options={programNamesList}
                 value={values.qualification.field}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                helperText={
-                  Boolean(errors.qualification?.field) &&
-                  Boolean(touched.qualification?.field) &&
-                  errors.qualification?.field
-                }
-                error={
-                  Boolean(touched.qualification?.field) &&
-                  Boolean(errors.qualification?.field)
-                }
+                disableClearable
+                filterOptions={filterOptions}
+                inputValue={inputValue}
+                onChange={(event, newValue) => {
+                  if (newValue !== "") {
+                    setFieldValue("qualification.field", newValue);
+                  }
+                }}
+                onInputChange={(event, newInputValue) => {
+                  setInputValue(() => newInputValue);
+                  setFieldValue("qualification.field", newInputValue);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    label="Field of Study"
+                    fullWidth
+                    className="mb-3"
+                    name="qualification.field"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.qualification?.field}
+                    helperText={
+                      Boolean(errors.qualification?.field) &&
+                      Boolean(touched.qualification?.field) &&
+                      errors.qualification?.field
+                    }
+                    error={
+                      Boolean(touched.qualification?.field) &&
+                      Boolean(errors.qualification?.field)
+                    }
+                  />
+                )}
               />
               <TextField
                 select

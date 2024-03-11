@@ -1,16 +1,21 @@
 import React, { useState } from "react";
 import { Wrapper, InitialForm, Header, Footer } from "../../components";
-import { Button, MenuItem, Autocomplete } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-import TextField from "@mui/material/TextField";
+import {
+  Button,
+  MenuItem,
+  Autocomplete,
+  createFilterOptions,
+  IconButton,
+  TextField,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormLabel,
+  Alert,
+  InputAdornment,
+} from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormLabel from "@mui/material/FormLabel";
-import Alert from "@mui/material/Alert";
-import InputAdornment from "@mui/material/InputAdornment";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
@@ -22,6 +27,7 @@ import { employerSignUpValidationSchema } from "../../schemas";
 
 import http from "../../utils/http";
 import data from "../../utils/universities";
+import { programNamesList } from "../../utils/formData";
 const initialValues = {
   firstname: "",
   lastname: "",
@@ -73,6 +79,7 @@ const EmployerSignUpPage = () => {
     handleBlur,
     handleChange,
     handleSubmit,
+    validateField,
     errors,
     touched,
   } = useFormik({
@@ -107,6 +114,16 @@ const EmployerSignUpPage = () => {
       );
     }
   };
+
+  const filterOptions = createFilterOptions({
+    ignoreCase: true,
+    matchFrom: "start",
+    limit: 5,
+  });
+
+  console.log(values.departmentname);
+
+  const [inputValue, setInputValue] = useState("");
 
   return (
     <Wrapper>
@@ -271,40 +288,46 @@ const EmployerSignUpPage = () => {
                   />
                 )}
               />
-              <TextField
-                select
-                variant="outlined"
-                label="Department"
-                fullWidth
-                className="mb-3"
-                name="departmentname"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.departmentname}
-                helperText={
-                  Boolean(errors.departmentname) &&
-                  Boolean(touched.departmentname) &&
-                  errors.departmentname
-                }
-                error={
-                  Boolean(touched.departmentname) &&
-                  Boolean(errors.departmentname)
-                }
-                // InputProps={{
-                //   endAdornment: (
-                //     <InputAdornment position="end">
-                //       <BusinessOutlinedIcon />
-                //     </InputAdornment>
-                //   ),
-                // }}
-              >
-                <MenuItem value={"Computer Science"}>Computer Science</MenuItem>
-                <MenuItem value={"Media Science"}>Media Science</MenuItem>
-                <MenuItem value={"Management Science"}>
-                  Management Science
-                </MenuItem>
-                <MenuItem value={"Engineering"}>Engineering</MenuItem>
-              </TextField>
+
+              <Autocomplete
+                freeSolo
+                options={programNamesList}
+                disableClearable
+                filterOptions={filterOptions}
+                inputValue={inputValue}
+                onChange={(event, newValue) => {
+                  if (newValue !== "") {
+                    setFieldValue("departmentname", newValue);
+                  }
+                }}
+                onInputChange={(event, newInputValue) => {
+                  setInputValue(() => newInputValue);
+                  setFieldValue("departmentname", newInputValue);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    label="Department"
+                    fullWidth
+                    className="mb-3"
+                    name="departmentname"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.departmentname}
+                    helperText={
+                      Boolean(errors.departmentname) &&
+                      Boolean(touched.departmentname) &&
+                      errors.departmentname
+                    }
+                    error={
+                      Boolean(touched.departmentname) &&
+                      Boolean(errors.departmentname)
+                    }
+                  />
+                )}
+              />
+
               <TextField
                 variant="outlined"
                 type="email"
