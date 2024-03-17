@@ -291,7 +291,7 @@ const AdminManageEmployersPage = () => {
         <Box sx={style}>
           <h3 className="text-center">Are you sure?</h3>
           <p className="text-center mb-4">
-            Do you want to delete this employer? This will also delete all jobs
+            Do you want to delete this employer? This will also delete any jobs
             posted by the employer
           </p>
           <div className="d-flex justify-content-center gap-3">

@@ -158,7 +158,7 @@ const JobPage = () => {
               <h4 className="fw-semibold">{`${jobData.createdBy.userId.firstname} ${jobData.createdBy.userId.lastname}`}</h4>
               <p>{jobData.createdBy.departmentName} Department</p>
               <hr className="w-100" />
-              <div className="d-flex align-items-start gap-2">
+              <div className="d-flex align-items-center gap-2">
                 <Avatar
                   src={`${serverURL}${
                     jobData.createdBy.universityLogo &&
