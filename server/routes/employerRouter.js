@@ -164,6 +164,7 @@ router.post("/post-job", authenticateUser, async (req, res) => {
       if (jobInfo.hiringTest !== "") {
         hiringTestId = jobInfo.hiringTest;
       }
+      jobInfo.requiredExperience = Number(jobInfo.requiredExperience);
       const employerData = await UniEmployer.findOne({
         userId: req.user.userId,
       });
@@ -240,6 +241,8 @@ router.put("/jobs/:id", authenticateUser, async (req, res) => {
       if (jobInfo.hiringTest !== "") {
         hiringTestId = jobInfo.hiringTest;
       }
+      jobInfo.requiredExperience = Number(jobInfo.requiredExperience);
+
       const job = await Job.findById(id);
       if (job) {
         Object.keys(jobInfo).forEach((key) => {

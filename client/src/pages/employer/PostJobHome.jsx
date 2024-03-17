@@ -22,6 +22,8 @@ import {
   Chip,
 } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import FolderOffOutlinedIcon from "@mui/icons-material/FolderOffOutlined";
 import http from "../../utils/http";
@@ -114,9 +116,9 @@ const PostJobHome = () => {
           <TableHead>
             <TableRow>
               <TableCell className="fw-bold">Title</TableCell>
-              <TableCell align="right" className="fw-bold">
+              {/* <TableCell align="right" className="fw-bold">
                 Location
-              </TableCell>
+              </TableCell> */}
               <TableCell align="right" className="fw-bold">
                 Qualification
               </TableCell>
@@ -148,13 +150,15 @@ const PostJobHome = () => {
                   <TableCell component="th" scope="row">
                     {e.title}
                   </TableCell>
-                  <TableCell align="right">{e.location}</TableCell>
+                  {/* <TableCell align="right">{e.location}</TableCell> */}
                   <TableCell align="right">
                     {e.requiredQualification.degree}
                   </TableCell>
                   <TableCell align="right">
                     {e.requiredExperience > 1
-                      ? `${e.requiredExperience} Years`
+                      ? e.requiredExperience >= 6
+                        ? "More than 5 years"
+                        : `${e.requiredExperience} Years`
                       : `${e.requiredExperience} Year`}
                   </TableCell>
                   {e.hiringTest !== null ? (
@@ -190,6 +194,12 @@ const PostJobHome = () => {
                   </TableCell>
                   <TableCell align="right">
                     <div className="d-flex justify-content-end ">
+                      <IconButton
+                        color="primary"
+                        onClick={() => navigate(`/dashboard/jobs/${e._id}`)}
+                      >
+                        <VisibilityOutlinedIcon />
+                      </IconButton>
                       <IconButton
                         type="submit"
                         color="secondary"

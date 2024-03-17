@@ -20,6 +20,8 @@ export const loader = async () => {
     const { data } = await http.get("/users/current-user");
     return data;
   } catch (error) {
+    const { data } = await http.get("/auth/sign-out");
+
     return null;
   }
 };

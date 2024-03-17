@@ -31,7 +31,7 @@ const jobSchema = new Schema(
       },
     },
     requiredExperience: {
-      type: String,
+      type: Number,
       required: true,
       trim: true,
     },

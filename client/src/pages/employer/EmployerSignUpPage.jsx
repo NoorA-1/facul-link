@@ -121,7 +121,7 @@ const EmployerSignUpPage = () => {
     limit: 5,
   });
 
-  console.log(values.departmentname);
+  // console.log(values.departmentname);
 
   const [inputValue, setInputValue] = useState("");
 

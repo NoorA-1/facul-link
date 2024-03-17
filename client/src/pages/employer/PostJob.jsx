@@ -148,6 +148,12 @@ const PostJob = () => {
     },
   });
 
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+    }
+  };
+
   const saveFormData = async (values) => {
     try {
       let response;
@@ -178,6 +184,8 @@ const PostJob = () => {
     setFieldValue("requiredQualification.field", qualificationFieldsArray);
   }, [qualificationFieldsArray]);
 
+  console.log(errors?.requiredQualification?.field);
+
   return (
     <div className="container my-3 bg-white py-3 px-5 rounded grey-border">
       <Button
@@ -197,7 +205,7 @@ const PostJob = () => {
       <hr />
       <div className="row flex-column align-items-center justify-content-start">
         <div className="col-6">
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} onKeyPress={handleKeyPress}>
             <TextField
               fullWidth
               variant="outlined"
@@ -275,14 +283,21 @@ const PostJob = () => {
               disableClearable
               multiple
               freeSolo
-              options={programNamesList.filter(
-                (field) => !values.requiredQualification.field.includes(field)
-              )}
+              options={
+                values.requiredQualification.field.length >= 5
+                  ? []
+                  : programNamesList.filter(
+                      (field) =>
+                        !values.requiredQualification.field.includes(field)
+                    )
+              }
               value={values.requiredQualification.field}
               onChange={handleQualificationFieldChange}
               inputValue={fieldInputValue}
               onInputChange={(event, newInputValue) => {
-                setFieldInputValue(newInputValue);
+                if (values.requiredQualification.field.length < 5) {
+                  setFieldInputValue(newInputValue);
+                }
               }}
               filterOptions={filterOptions}
               renderTags={(value, getTagProps) =>
@@ -304,14 +319,10 @@ const PostJob = () => {
                   label="Qualification Programs"
                   placeholder="Required qualification programs"
                   helperText={
-                    Boolean(errors.qualification?.field) &&
-                    Boolean(touched.qualification?.field) &&
-                    errors.qualification.field
+                    Boolean(errors.requiredQualification?.field) &&
+                    errors.requiredQualification?.field
                   }
-                  error={
-                    Boolean(touched.qualification?.field) &&
-                    Boolean(errors.qualification?.field)
-                  }
+                  error={Boolean(errors.requiredQualification?.field)}
                   className="mb-2"
                 />
               )}
@@ -336,17 +347,13 @@ const PostJob = () => {
                 Boolean(errors.requiredExperience)
               }
             >
-              <MenuItem value="0">Less than 1 Year</MenuItem>
+              {/* <MenuItem value="0">Less than 1 Year</MenuItem> */}
               <MenuItem value="1">1 Year</MenuItem>
               <MenuItem value="2">2 Years</MenuItem>
               <MenuItem value="3">3 Years</MenuItem>
               <MenuItem value="4">4 Years</MenuItem>
               <MenuItem value="5">5 Years</MenuItem>
-              <MenuItem value="6">6 Years</MenuItem>
-              <MenuItem value="7">7 Years</MenuItem>
-              <MenuItem value="8">8 Years</MenuItem>
-              <MenuItem value="9">9 Years</MenuItem>
-              <MenuItem value="10">10 Years</MenuItem>
+              <MenuItem value="6">More than 5 Years</MenuItem>
             </TextField>
             <div className="d-flex">
               <Autocomplete
@@ -354,14 +361,20 @@ const PostJob = () => {
                 multiple
                 freeSolo
                 fullWidth
-                options={skillsList.filter(
-                  (skill) => !values.skills.includes(skill)
-                )}
+                options={
+                  values.skills.length >= 8
+                    ? []
+                    : skillsList.filter(
+                        (skill) => !values.skills.includes(skill)
+                      )
+                }
                 disableClearable
                 filterOptions={filterOptions}
                 inputValue={inputValue}
                 onInputChange={(event, newInputValue) => {
-                  setInputValue(newInputValue);
+                  if (values.skills.length < 8) {
+                    setInputValue(newInputValue);
+                  }
                 }}
                 onChange={(event, newValue) => {
                   const filteredValue = newValue.filter(
@@ -381,12 +394,8 @@ const PostJob = () => {
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    helperText={
-                      Boolean(errors.skills) &&
-                      Boolean(touched.skills) &&
-                      errors.skills
-                    }
-                    error={Boolean(touched.skills) && Boolean(errors.skills)}
+                    helperText={Boolean(errors.skills) && errors.skills}
+                    error={Boolean(errors.skills)}
                     label="Required Skills"
                     inputRef={skillRef}
                     className="mb-2"
@@ -470,7 +479,7 @@ const PostJob = () => {
             />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-                label="End Date"
+                label="Closing Date"
                 className="my-2 w-100"
                 minDate={startDate}
                 name="endDate"

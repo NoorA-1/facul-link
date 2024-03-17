@@ -5,10 +5,11 @@ import {
   Avatar,
   Button,
   TextField,
+  Autocomplete,
+  createFilterOptions,
   Alert,
   InputAdornment,
   MenuItem,
-  Autocomplete,
 } from "@mui/material";
 import UploadIcon from "@mui/icons-material/Upload";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
@@ -19,6 +20,7 @@ import { employerProfileValidationSchema } from "../schemas";
 import http from "../utils/http";
 import data from "../utils/universities";
 import { useNavigate } from "react-router-dom";
+import { programNamesList } from "../utils/formData";
 
 const EmployerProfileSetupForm = ({ userData }) => {
   const navigate = useNavigate();
@@ -163,6 +165,16 @@ const EmployerProfileSetupForm = ({ userData }) => {
       );
     }
   };
+
+  const filterOptions = createFilterOptions({
+    ignoreCase: true,
+    matchFrom: "start",
+    limit: 5,
+  });
+
+  const [inputValue, setInputValue] = useState(
+    Boolean(userData.departmentName) ? userData.departmentName : ""
+  );
 
   return (
     <InitialForm noColoredLine={true} className="w-100 px-5 mt-3 mb-5">
@@ -378,30 +390,44 @@ const EmployerProfileSetupForm = ({ userData }) => {
           Department Name
           <sup className="fs-5 text-danger">*</sup>
         </h3>
-        <TextField
-          select
-          variant="outlined"
-          label="Department"
-          fullWidth
-          className="mt-4 mb-3"
-          name="departmentname"
-          onBlur={handleBlur}
-          onChange={handleChange}
-          value={values.departmentname}
-          helperText={
-            Boolean(errors.departmentname) &&
-            Boolean(touched.departmentname) &&
-            errors.departmentname
-          }
-          error={
-            Boolean(touched.departmentname) && Boolean(errors.departmentname)
-          }
-        >
-          <MenuItem value={"Computer Science"}>Computer Science</MenuItem>
-          <MenuItem value={"Media Science"}>Media Science</MenuItem>
-          <MenuItem value={"Management Science"}>Management Science</MenuItem>
-          <MenuItem value={"Engineering"}>Engineering</MenuItem>
-        </TextField>
+        <Autocomplete
+          freeSolo
+          options={programNamesList}
+          disableClearable
+          filterOptions={filterOptions}
+          inputValue={inputValue}
+          onChange={(event, newValue) => {
+            if (newValue !== "") {
+              setFieldValue("departmentname", newValue);
+            }
+          }}
+          onInputChange={(event, newInputValue) => {
+            setInputValue(() => newInputValue);
+            setFieldValue("departmentname", newInputValue);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              label="Department"
+              fullWidth
+              className="mb-3"
+              name="departmentname"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.departmentname}
+              helperText={
+                Boolean(errors.departmentname) &&
+                Boolean(touched.departmentname) &&
+                errors.departmentname
+              }
+              error={
+                Boolean(touched.departmentname) &&
+                Boolean(errors.departmentname)
+              }
+            />
+          )}
+        />
         <div className="d-flex justify-content-center mt-5 mb-3 gap-3">
           <Button
             variant="contained"

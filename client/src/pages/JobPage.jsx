@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import http from "../utils/http";
 import { Avatar, Button, Chip } from "@mui/material";
 import { serverURL } from "../utils/formData";
@@ -11,7 +11,8 @@ import { useDashboardContext } from "./DashboardLayout";
 const JobPage = () => {
   const params = useParams();
   const { userData } = useDashboardContext();
-  console.log(userData);
+  const navigate = useNavigate();
+  // console.log(userData);
   const [jobData, setJobData] = useState();
   const [loading, setLoading] = useState(true);
 
@@ -51,6 +52,7 @@ const JobPage = () => {
               <div className="d-flex align-items-center gap-2 me-5">
                 <Avatar
                   src={`${serverURL}${
+                    jobData.createdBy.universityLogo &&
                     jobData.createdBy.universityLogo.split("public\\")[1]
                   }`}
                   variant="rounded"
@@ -74,22 +76,45 @@ const JobPage = () => {
               <h6 className="fw-semibold mt-4">Required Qualification:</h6>
               <ul>
                 <li>
-                  {jobData.requiredQualification.degree} in{" "}
+                  {jobData.requiredQualification.field.length === 1
+                    ? `${jobData.requiredQualification.degree} in `
+                    : `${jobData.requiredQualification.degree} in any of the following fields:`}
                   {jobData.requiredQualification.field.map((e, index) => {
                     if (
                       index ===
-                      jobData.requiredQualification.field.length - 1
+                        jobData.requiredQualification.field.length - 1 &&
+                      jobData.requiredQualification.field.length === 1
                     ) {
                       return e;
+                    } else if (
+                      index ===
+                        jobData.requiredQualification.field.length - 1 &&
+                      jobData.requiredQualification.field.length > 1
+                    ) {
+                      return (
+                        <ul key={index}>
+                          <li>{e}</li>
+                        </ul>
+                      );
                     } else {
-                      return e.trim() + ", ";
+                      return (
+                        <ul key={index}>
+                          <li>{e}</li>
+                        </ul>
+                      );
                     }
                   })}
                 </li>
               </ul>
               <h6 className="fw-semibold mt-4">Required Experience:</h6>
               <ul>
-                <li>{jobData.requiredExperience}</li>
+                <li>
+                  {jobData.requiredExperience > 1
+                    ? jobData.requiredExperience >= 6
+                      ? "More than 5 years"
+                      : `${jobData.requiredExperience} Years`
+                    : `${jobData.requiredExperience} Year`}
+                </li>
               </ul>
               <h6 className="fw-semibold mt-4">Required Skills:</h6>
               <div className="d-flex gap-2 flex-wrap">
@@ -111,7 +136,7 @@ const JobPage = () => {
                 </span>
               </h6>
               <h6 className="fw-semibold">
-                Last Date to Apply:{" "}
+                Closing Date:{" "}
                 <span className="fw-normal">
                   {dayjs(jobData.endDate).format("DD MMMM YYYY")}
                 </span>
@@ -125,6 +150,7 @@ const JobPage = () => {
             >
               <Avatar
                 src={`${serverURL}${
+                  jobData.createdBy.profileImage &&
                   jobData.createdBy.profileImage.split("public\\")[1]
                 }`}
                 sx={{ width: 80, height: 80 }}
@@ -135,6 +161,7 @@ const JobPage = () => {
               <div className="d-flex align-items-start gap-2">
                 <Avatar
                   src={`${serverURL}${
+                    jobData.createdBy.universityLogo &&
                     jobData.createdBy.universityLogo.split("public\\")[1]
                   }`}
                   variant="rounded"
@@ -155,8 +182,15 @@ const JobPage = () => {
                     border: 2,
                   },
                 }}
+                onClick={() =>
+                  jobData.createdBy._id === userData.user._id
+                    ? navigate("/dashboard/profile")
+                    : navigate(`/dashboard/profile/${jobData.createdBy._id}`)
+                }
               >
-                View Employer Profile
+                {jobData.createdBy._id === userData.user._id
+                  ? "My Profile"
+                  : "View Employer Profile"}
               </Button>
             </div>
           </div>

@@ -5,6 +5,7 @@ import HiringTest from "../models/hiringTestModel.js";
 import { authenticateUser } from "../middlewares/authMiddleware.js";
 import mongoose from "mongoose";
 import UniEmployer from "../models/uniEmployerModel.js";
+import Job from "../models/jobModel.js";
 
 router.get("/stats", authenticateUser, async (req, res) => {
   try {
@@ -122,6 +123,7 @@ router.delete("/employer/:id", authenticateUser, async (req, res) => {
     if (employer) {
       await User.findByIdAndDelete(req.params.id);
       await UniEmployer.findByIdAndDelete(employer._id);
+      await Job.deleteMany({ createdBy: employer._id });
       return res.status(200).json({ message: "User deleted successfully" });
     } else {
       return res.status(404).json({ message: "User not found" });

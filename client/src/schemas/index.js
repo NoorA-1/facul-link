@@ -381,10 +381,16 @@ export const jobPostValidationSchema = Yup.object({
     ),
   requiredQualification: Yup.object({
     degree: Yup.string().required("Degree is required"),
-    field: Yup.array().required().min(1, "Field is required"),
+    field: Yup.array()
+      .required()
+      .min(1, "Field is required")
+      .max(5, "Maximum 5 fields are allowed"),
   }),
   requiredExperience: Yup.string().required("Experience must be provided"),
-  skills: Yup.array().required().min(1, "Skills are required"),
+  skills: Yup.array()
+    .required()
+    .min(3, "Minimum 3 skills are required")
+    .max(8, "Maximum 8 skills are allowed"),
   isTestEnabled: Yup.boolean(),
   hiringTest: Yup.string().when("isTestEnabled", {
     is: (isTestEnabled) => isTestEnabled === true,
@@ -396,9 +402,11 @@ export const jobPostValidationSchema = Yup.object({
     .min(1, "Minimum position must be 1")
     .required("Total positions are required"),
   endDate: Yup.date()
-    .required("End date must be provided")
+    .required("Closing date must be provided")
     .min(
       dayjs().toDate(),
-      `End date cannot be before ${dayjs().add(1, "day").format("DD-MM-YYYY")}`
+      `Closing date cannot be before ${dayjs()
+        .add(1, "day")
+        .format("DD-MM-YYYY")}`
     ),
 });

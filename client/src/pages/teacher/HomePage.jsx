@@ -1,10 +1,30 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useDashboardContext } from "../DashboardLayout";
 import { HomePageCard, JobPostCard } from "../../components";
 import CasesOutlinedIcon from "@mui/icons-material/CasesOutlined";
 import AssignmentTurnedInOutlinedIcon from "@mui/icons-material/AssignmentTurnedInOutlined";
 import FolderOffOutlinedIcon from "@mui/icons-material/FolderOffOutlined";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import http from "../../utils/http";
+import { serverURL } from "../../utils/formData";
+dayjs.extend(relativeTime);
 const HomePage = () => {
+  const [jobsData, setJobsData] = useState(null);
+
+  const getJobsData = async () => {
+    try {
+      const { data } = await http.get(`/employer/all-jobs/${3}`);
+      setJobsData(data);
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getJobsData();
+  }, []);
   const { userData } = useDashboardContext();
   const options = {
     weekday: "long",
@@ -36,25 +56,32 @@ const HomePage = () => {
       </div>
       <div className="mt-5 bg-white p-3 px-5 rounded grey-border">
         <h5 className="fw-bold mb-3">Recently Posted Jobs</h5>
-        {/* <JobPostCard
-          title="Example"
-          universityName="Example"
-          location="Karachi"
-        />
-        <JobPostCard
-          title="Example"
-          universityName="Example"
-          location="Karachi"
-        />
-        <JobPostCard
-          title="Example"
-          universityName="Example"
-          location="Karachi"
-        /> */}
-        <div className="d-flex align-items-center justify-content-center flex-column">
-          <FolderOffOutlinedIcon color="disabled" />
-          <p className="text-secondary">No jobs found</p>
-        </div>
+        {jobsData && jobsData.length > 0 ? (
+          jobsData.map(
+            (e, index) =>
+              e.createdBy.status === "active" && (
+                <JobPostCard
+                  key={index}
+                  logo={`${serverURL}${
+                    e.createdBy.universityLogo &&
+                    e.createdBy.universityLogo.split("public\\")[1]
+                  }`}
+                  title={e.title}
+                  universityName={e.createdBy.universityName}
+                  location={e.location}
+                  postedDate={dayjs(e.createdAt).fromNow()}
+                  endDate={dayjs(e.endDate).format("DD-MM-YYYY")}
+                  role="employer"
+                  jobId={e._id}
+                />
+              )
+          )
+        ) : (
+          <div className="d-flex align-items-center justify-content-center flex-column">
+            <FolderOffOutlinedIcon color="disabled" />
+            <p className="text-secondary">No jobs found</p>
+          </div>
+        )}
       </div>
 
       <div className="mt-5 bg-white p-3 px-5 rounded grey-border">

@@ -290,7 +290,10 @@ const AdminManageEmployersPage = () => {
       <Modal open={open.deleteModal} onClose={() => handleClose("deleteModal")}>
         <Box sx={style}>
           <h3 className="text-center">Are you sure?</h3>
-          <p className="text-center mb-4">Do you want to delete this user?</p>
+          <p className="text-center mb-4">
+            Do you want to delete this employer? This will also delete all jobs
+            posted by the employer
+          </p>
           <div className="d-flex justify-content-center gap-3">
             <Button
               variant="contained"
@@ -383,7 +386,6 @@ const AdminManageEmployersPage = () => {
               error={Boolean(touched.email) && Boolean(errors.email)}
             />
             <TextField
-              select
               variant="outlined"
               label="Department"
               fullWidth
@@ -401,14 +403,7 @@ const AdminManageEmployersPage = () => {
                 Boolean(touched.departmentname) &&
                 Boolean(errors.departmentname)
               }
-            >
-              <MenuItem value={"Computer Science"}>Computer Science</MenuItem>
-              <MenuItem value={"Media Science"}>Media Science</MenuItem>
-              <MenuItem value={"Management Science"}>
-                Management Science
-              </MenuItem>
-              <MenuItem value={"Engineering"}>Engineering</MenuItem>
-            </TextField>
+            />
             <TextField
               label="Website"
               fullWidth
