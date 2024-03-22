@@ -182,10 +182,11 @@ const JobPage = () => {
                     border: 2,
                   },
                 }}
-                onClick={() =>
-                  jobData.createdBy._id === userData.user._id
-                    ? navigate("/dashboard/profile")
-                    : navigate(`/dashboard/profile/${jobData.createdBy._id}`)
+                onClick={
+                  () =>
+                    jobData.createdBy._id === userData.user._id &&
+                    navigate("/dashboard/profile")
+                  // : navigate(`/dashboard/profile/${jobData.createdBy._id}`)
                 }
               >
                 {jobData.createdBy._id === userData.user._id

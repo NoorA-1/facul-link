@@ -184,7 +184,7 @@ const PostJob = () => {
     setFieldValue("requiredQualification.field", qualificationFieldsArray);
   }, [qualificationFieldsArray]);
 
-  console.log(errors?.requiredQualification?.field);
+  console.log(touched?.requiredQualification?.field);
 
   return (
     <div className="container my-3 bg-white py-3 px-5 rounded grey-border">
@@ -283,6 +283,9 @@ const PostJob = () => {
               disableClearable
               multiple
               freeSolo
+              onBlur={() =>
+                setFieldTouched("requiredQualification.field", true)
+              }
               options={
                 values.requiredQualification.field.length >= 5
                   ? []
@@ -320,9 +323,13 @@ const PostJob = () => {
                   placeholder="Required qualification programs"
                   helperText={
                     Boolean(errors.requiredQualification?.field) &&
+                    Boolean(touched.requiredQualification?.field) &&
                     errors.requiredQualification?.field
                   }
-                  error={Boolean(errors.requiredQualification?.field)}
+                  error={
+                    Boolean(touched.requiredQualification?.field) &&
+                    Boolean(errors.requiredQualification?.field)
+                  }
                   className="mb-2"
                 />
               )}
@@ -361,6 +368,7 @@ const PostJob = () => {
                 multiple
                 freeSolo
                 fullWidth
+                onBlur={() => setFieldTouched("skills", true)}
                 options={
                   values.skills.length >= 8
                     ? []
@@ -394,8 +402,12 @@ const PostJob = () => {
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    helperText={Boolean(errors.skills) && errors.skills}
-                    error={Boolean(errors.skills)}
+                    helperText={
+                      Boolean(errors.skills) &&
+                      Boolean(touched.skills) &&
+                      errors.skills
+                    }
+                    error={Boolean(touched.skills) && Boolean(errors.skills)}
                     label="Required Skills"
                     inputRef={skillRef}
                     className="mb-2"

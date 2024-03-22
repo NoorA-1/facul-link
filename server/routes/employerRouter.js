@@ -7,9 +7,6 @@ import HiringTest from "../models/hiringTestModel.js";
 
 import { authenticateUser } from "../middlewares/authMiddleware.js";
 import { validationResult } from "express-validator";
-import fs from "fs";
-import multer from "multer";
-import path from "path";
 import mongoose, { Schema, SchemaTypes } from "mongoose";
 import Job from "../models/jobModel.js";
 

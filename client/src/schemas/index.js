@@ -383,7 +383,7 @@ export const jobPostValidationSchema = Yup.object({
     degree: Yup.string().required("Degree is required"),
     field: Yup.array()
       .required()
-      .min(1, "Field is required")
+      .min(1, "Minimum 1 qualification program is required")
       .max(5, "Maximum 5 fields are allowed"),
   }),
   requiredExperience: Yup.string().required("Experience must be provided"),

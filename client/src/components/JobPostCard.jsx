@@ -50,16 +50,16 @@ const JobPostCard = ({
             </div>
           </div>
           <div className="d-flex align-items-center">
-            {role === "employer" && (
-              <Button
-                fullWidth
-                variant="contained"
-                className="mt-3 mt-lg-0"
-                onClick={() => navigate(`/dashboard/jobs/${jobId}`)}
-              >
-                View Details
-              </Button>
-            )}
+            <Button
+              fullWidth
+              variant="contained"
+              className="mt-3 mt-lg-0"
+              onClick={() => navigate(`/dashboard/jobs/${jobId}`)}
+            >
+              {role === "employer"
+                ? "View Details"
+                : role === "teacher" && "Apply"}
+            </Button>
           </div>
         </div>
       </div>

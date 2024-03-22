@@ -11,12 +11,14 @@ import { serverURL } from "../../utils/formData";
 dayjs.extend(relativeTime);
 const HomePage = () => {
   const [jobsData, setJobsData] = useState(null);
+  const [statsData, setStatsData] = useState(null);
 
   const getJobsData = async () => {
     try {
       const { data } = await http.get(`/employer/all-jobs/${3}`);
       setJobsData(data);
-      console.log(data);
+      const { data: newStatsData } = await http.get("/teacher/stats");
+      setStatsData(newStatsData);
     } catch (error) {
       console.log(error);
     }
@@ -40,7 +42,11 @@ const HomePage = () => {
       </h2>
       <h6 className="ps-1 mb-3">{date}</h6>
       <div className="d-flex flex-column flex-md-row gap-5">
-        <HomePageCard cardText="Total Jobs" digit={0} color="#005F73">
+        <HomePageCard
+          cardText="Total Jobs"
+          digit={Boolean(statsData) ? statsData : 0}
+          color="#005F73"
+        >
           <CasesOutlinedIcon className="mt-2 mb-3" sx={{ color: "#005F73" }} />
         </HomePageCard>
         <HomePageCard
@@ -71,7 +77,7 @@ const HomePage = () => {
                   location={e.location}
                   postedDate={dayjs(e.createdAt).fromNow()}
                   endDate={dayjs(e.endDate).format("DD-MM-YYYY")}
-                  role="employer"
+                  role="teacher"
                   jobId={e._id}
                 />
               )

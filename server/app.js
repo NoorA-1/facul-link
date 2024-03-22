@@ -11,6 +11,7 @@ const app = express();
 import userAuthRouter from "./routes/userAuthRouter.js";
 import userRouter from "./routes/userRouter.js";
 import adminRouter from "./routes/adminRouter.js";
+import teacherRouter from "./routes/teacherRouter.js";
 import employerRouter from "./routes/employerRouter.js";
 
 //public folder
@@ -34,6 +35,7 @@ app.get("/api/v1/", (req, res) => {
 app.use("/api/v1/auth", userAuthRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/teacher", teacherRouter);
 app.use("/api/v1/employer", employerRouter);
 
 app.use("*", (req, res) => {
