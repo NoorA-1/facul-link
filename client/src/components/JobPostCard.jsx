@@ -2,9 +2,12 @@ import React from "react";
 import CorporateFareOutlinedIcon from "@mui/icons-material/CorporateFareOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
+import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
+import BookmarkOutlinedIcon from "@mui/icons-material/BookmarkOutlined";
 import Avatar from "@mui/material/Avatar";
-import { Button } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import http from "../utils/http";
 
 const JobPostCard = ({
   logo,
@@ -14,9 +17,32 @@ const JobPostCard = ({
   postedDate,
   role,
   jobId,
+  isBookmarked,
+  updateUserData,
   endDate,
 }) => {
   const navigate = useNavigate();
+
+  const bookmarkJob = async (jobId) => {
+    try {
+      const response = await http.post(`/teacher/bookmark/${jobId}`);
+      console.log(response);
+      updateUserData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const unBookmarkJob = async (jobId) => {
+    try {
+      const response = await http.delete(`/teacher/bookmark/${jobId}`);
+      console.log(response);
+      updateUserData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="bg-light-gray border border-dark-subtle rounded shadow-sm p-3 mb-3 d-flex flex-column flex-sm-row align-items-center">
       <Avatar
@@ -50,6 +76,15 @@ const JobPostCard = ({
             </div>
           </div>
           <div className="d-flex align-items-center">
+            {role === "teacher" && !isBookmarked ? (
+              <IconButton onClick={() => bookmarkJob(jobId)}>
+                <BookmarkBorderOutlinedIcon />
+              </IconButton>
+            ) : (
+              <IconButton onClick={() => unBookmarkJob(jobId)}>
+                <BookmarkOutlinedIcon />
+              </IconButton>
+            )}
             <Button
               fullWidth
               variant="contained"

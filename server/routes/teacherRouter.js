@@ -22,4 +22,53 @@ router.get("/stats", authenticateUser, async (req, res) => {
   }
 });
 
+router.post("/bookmark/:jobId", authenticateUser, async (req, res) => {
+  try {
+    const jobId = req.params.jobId;
+
+    const teacher = await Teacher.findOne({ userId: req.user.userId });
+
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    if (teacher.bookmarks.includes(jobId)) {
+      return res.status(400).json({ message: "Job already bookmarked" });
+    }
+
+    teacher.bookmarks.push(jobId);
+
+    await teacher.save();
+
+    res.status(200).json({ message: "Job bookmarked successfully" });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.delete("/bookmark/:jobId", authenticateUser, async (req, res) => {
+  try {
+    const jobId = req.params.jobId;
+
+    const teacher = await Teacher.findOne({ userId: req.user.userId });
+
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    const index = teacher.bookmarks.indexOf(jobId);
+    if (index === -1) {
+      return res.status(400).json({ message: "Job is not bookmarked" });
+    }
+
+    teacher.bookmarks.splice(index, 1);
+
+    await teacher.save();
+
+    res.status(200).json({ message: "Job unbookmarked successfully" });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 export default router;

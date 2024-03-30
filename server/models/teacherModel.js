@@ -41,6 +41,12 @@ const teacherSchema = new Schema({
       },
     },
   ],
+  bookmarks: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Job",
+    },
+  ],
 });
 
 const Teacher = mongoose.model("Teacher", teacherSchema, "teacher");

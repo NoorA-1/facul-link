@@ -12,6 +12,9 @@ dayjs.extend(relativeTime);
 const HomePage = () => {
   const [jobsData, setJobsData] = useState(null);
   const [statsData, setStatsData] = useState(null);
+  const { userData: initialUserData } = useDashboardContext();
+  const [userData, setUserData] = useState(initialUserData);
+  console.log(userData);
 
   const getJobsData = async () => {
     try {
@@ -27,7 +30,13 @@ const HomePage = () => {
   useEffect(() => {
     getJobsData();
   }, []);
-  const { userData } = useDashboardContext();
+
+  const updateUserData = async () => {
+    const { data } = await http.get("/users/current-user");
+    console.log(data);
+    setUserData(() => data);
+  };
+
   const options = {
     weekday: "long",
     year: "numeric",
@@ -78,6 +87,12 @@ const HomePage = () => {
                   postedDate={dayjs(e.createdAt).fromNow()}
                   endDate={dayjs(e.endDate).format("DD-MM-YYYY")}
                   role="teacher"
+                  isBookmarked={
+                    Boolean(userData?.user?.bookmarks.includes(e._id))
+                      ? true
+                      : false
+                  }
+                  updateUserData={updateUserData}
                   jobId={e._id}
                 />
               )
