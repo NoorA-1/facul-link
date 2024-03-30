@@ -27,7 +27,8 @@ export const loader = async () => {
 };
 
 const DashboardLayout = () => {
-  const userData = useLoaderData();
+  const userLoaderData = useLoaderData();
+  const [userData, setUserData] = useState(userLoaderData);
   const navigate = useNavigate();
 
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("xl"));
@@ -163,7 +164,7 @@ const DashboardLayout = () => {
   }
 
   return (
-    <DashboardContext.Provider value={{ userData }}>
+    <DashboardContext.Provider value={{ userData, setUserData }}>
       <div className="sign-up-bg">
         <Header homeDisabled={true}>
           <div className="d-flex align-items-center gap-3">

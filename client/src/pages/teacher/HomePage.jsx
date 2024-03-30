@@ -12,8 +12,8 @@ dayjs.extend(relativeTime);
 const HomePage = () => {
   const [jobsData, setJobsData] = useState(null);
   const [statsData, setStatsData] = useState(null);
-  const { userData: initialUserData } = useDashboardContext();
-  const [userData, setUserData] = useState(initialUserData);
+  const { userData, setUserData } = useDashboardContext();
+  // const [userData, setUserData] = useState(initialUserData);
   console.log(userData);
 
   const getJobsData = async () => {
