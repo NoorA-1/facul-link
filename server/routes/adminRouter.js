@@ -60,6 +60,7 @@ router.get("/stats", authenticateUser, async (req, res) => {
   }
 });
 
+//get all employers
 router.get("/employers", authenticateUser, async (req, res) => {
   try {
     if (req.user.role === "admin") {
@@ -73,9 +74,14 @@ router.get("/employers", authenticateUser, async (req, res) => {
   }
 });
 
+//get single employer
 router.get("/employer/:id", authenticateUser, async (req, res) => {
   try {
-    if (req.user.role === "admin") {
+    if (
+      req.user.role === "admin" ||
+      req.user.role === "teacher" ||
+      req.user.role === "employer"
+    ) {
       if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
         return res.status(400).json({ message: "Invalid id" });
       }

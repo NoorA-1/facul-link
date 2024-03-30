@@ -24,11 +24,11 @@ export { default as PostJob } from "./employer/PostJob";
 export { default as JobPage } from "./JobPage";
 export { default as HiringTests } from "./employer/HiringTests";
 export { default as AddHiringTest } from "./employer/AddHiringTest";
+export { default as ViewEmployerProfilePage } from "./ViewEmployerProfilePage";
 
 export { default as AdminDashboardLayout } from "./admin/AdminDashboardLayout";
 export { default as AdminHomePage } from "./admin//AdminHomePage";
 export { default as AdminManageJobsPage } from "./admin/AdminManageJobsPage";
 export { default as AdminManageTeachersPage } from "./admin/AdminManageTeachersPage";
 export { default as AdminManageEmployersPage } from "./admin/AdminManageEmployersPage";
-export { default as AdminViewEmployerProfilePage } from "./admin/AdminViewEmployerProfilePage";
 export { default as AdminManageHiringTestsPage } from "./admin/AdminManageHiringTestsPage";

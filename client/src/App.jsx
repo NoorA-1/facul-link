@@ -36,7 +36,7 @@ import {
   AdminManageEmployersPage,
   AdminManageHiringTestsPage,
   EmployerProfilePage,
-  AdminViewEmployerProfilePage,
+  ViewEmployerProfilePage,
   JobPage,
 } from "./pages";
 
@@ -266,6 +266,10 @@ const App = () => {
                 ),
             },
             {
+              path: "employer-profile/:id",
+              element: <ViewEmployerProfilePage />,
+            },
+            {
               path: "manage-account",
               element: (
                 <ManageAccountPage
@@ -307,7 +311,7 @@ const App = () => {
             },
             {
               path: "employer-profile/:id",
-              element: <AdminViewEmployerProfilePage />,
+              element: <ViewEmployerProfilePage />,
             },
             {
               path: "manage-tests",

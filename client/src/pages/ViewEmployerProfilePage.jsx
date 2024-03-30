@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Avatar, Button } from "@mui/material";
 import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
-import http from "../../utils/http";
+import http from "../utils/http";
 import { useNavigate, useParams } from "react-router-dom";
 
-const AdminViewEmployerProfilePage = () => {
+const ViewEmployerProfilePage = () => {
   const [userData, setUserData] = useState(null);
   const serverURL = "http://localhost:3000/";
   const params = useParams();
@@ -56,9 +56,9 @@ const AdminViewEmployerProfilePage = () => {
               border: 2,
             },
           }}
-          onClick={() => navigate("/admin-dashboard/manage-employers")}
+          onClick={() => navigate(-1)}
         >
-          Back to Employers List
+          Go Back
         </Button>
         <h3 className="fw-semibold text-center">Employer Profile</h3>
         <hr />
@@ -127,4 +127,4 @@ const AdminViewEmployerProfilePage = () => {
   );
 };
 
-export default AdminViewEmployerProfilePage;
+export default ViewEmployerProfilePage;
