@@ -53,7 +53,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="col-8 mt-3 mx-auto">
+    <div className="col-lg-8 mt-3 mx-auto">
       <div className="bg-white p-3 px-5 rounded grey-border">
         <h3 className="fw-semibold text-center">Your Profile</h3>
         <hr />

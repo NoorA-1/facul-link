@@ -1,8 +1,16 @@
 import React, { createContext, useContext, useState } from "react";
-import { AdminBigSidebar, Header } from "../../components";
+import { AdminBigSidebar, AdminSmallSidebar, Header } from "../../components";
 import { NavLink, Outlet, useLoaderData, useNavigate } from "react-router-dom";
-import { Button, Menu, MenuItem, useMediaQuery, Avatar } from "@mui/material";
+import {
+  Button,
+  Menu,
+  MenuItem,
+  useMediaQuery,
+  Avatar,
+  IconButton,
+} from "@mui/material";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import MenuIcon from "@mui/icons-material/Menu";
 import http from "../../utils/http";
 
 const DashboardContext = createContext();
@@ -12,6 +20,8 @@ export const loader = async () => {
     const { data } = await http.get("/users/current-user");
     return data;
   } catch (error) {
+    const { data } = await http.get("/auth/sign-out");
+
     return null;
   }
 };
@@ -21,6 +31,7 @@ const AdminDashboardLayout = () => {
 
   const userData = useLoaderData();
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("xl"));
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const buttonSize = isSmallScreen ? "small" : "medium";
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -29,6 +40,10 @@ const AdminDashboardLayout = () => {
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
   };
 
   const handleSignOut = async () => {
@@ -46,6 +61,15 @@ const AdminDashboardLayout = () => {
     <DashboardContext.Provider value={{ userData }}>
       <div className="sign-up-bg">
         <Header homeDisabled={true}>
+          {isSmallScreen && (
+            <IconButton
+              color="inherit"
+              onClick={toggleSidebar}
+              className="order-first"
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
           <div className="d-flex align-items-center gap-3">
             <Avatar sx={{ border: "2px solid #0a9396" }}>{`A`}</Avatar>
             <Button
@@ -86,11 +110,18 @@ const AdminDashboardLayout = () => {
           </Menu>
         </Header>
         <div className="row w-100">
-          <div className="col-2 admin-sidebar sidebar">
-            <AdminBigSidebar />
-          </div>
+          {isSmallScreen ? (
+            <AdminSmallSidebar
+              open={sidebarOpen}
+              onClose={() => setSidebarOpen(false)}
+            />
+          ) : (
+            <div className="col-2 admin-sidebar sidebar">
+              <AdminBigSidebar />
+            </div>
+          )}
           <div
-            className="col-10 px-5 py-4 dashboard-page"
+            className="col-12 col-xl-10 px-lg-5 ps-5 py-4 dashboard-page"
             // style={{ overflowY: "auto" }}
           >
             <Outlet />

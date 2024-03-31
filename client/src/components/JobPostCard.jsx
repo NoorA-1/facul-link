@@ -77,11 +77,17 @@ const JobPostCard = ({
           </div>
           <div className="d-flex align-items-center">
             {role === "teacher" && !isBookmarked ? (
-              <IconButton onClick={() => bookmarkJob(jobId)}>
+              <IconButton
+                onClick={() => bookmarkJob(jobId)}
+                className="mt-3 mt-lg-0"
+              >
                 <BookmarkBorderOutlinedIcon />
               </IconButton>
             ) : (
-              <IconButton onClick={() => unBookmarkJob(jobId)}>
+              <IconButton
+                onClick={() => unBookmarkJob(jobId)}
+                className="mt-3 mt-lg-0"
+              >
                 <BookmarkOutlinedIcon />
               </IconButton>
             )}

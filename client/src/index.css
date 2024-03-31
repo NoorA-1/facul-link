@@ -106,6 +106,17 @@ input::-ms-reveal {
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
 }
+
+.sidebar-100 {
+  width: 50vw;
+  height: 100%;
+  overflow-y: auto;
+  position: sticky;
+  background-color: #0a9396;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
 .admin-sidebar {
   background-color: #001219;
 }

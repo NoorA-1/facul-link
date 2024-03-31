@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { BigSidebar, Header } from "../components";
+import { BigSidebar, SmallSidebar, Header } from "../components";
 import {
   NavLink,
   Outlet,
@@ -7,10 +7,18 @@ import {
   useNavigate,
   Link,
 } from "react-router-dom";
-import { Button, Menu, MenuItem, useMediaQuery, Avatar } from "@mui/material";
+import {
+  Button,
+  Menu,
+  MenuItem,
+  Avatar,
+  useMediaQuery,
+  IconButton,
+} from "@mui/material";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import PendingOutlinedIcon from "@mui/icons-material/PendingOutlined";
 import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
+import MenuIcon from "@mui/icons-material/Menu";
 import http from "../utils/http";
 
 const DashboardContext = createContext();
@@ -32,6 +40,7 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
 
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("xl"));
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const buttonSize = isSmallScreen ? "small" : "medium";
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -61,6 +70,10 @@ const DashboardLayout = () => {
       navigate("/profile-setup");
     }
   }, []);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
 
   const serverURL = "http://localhost:3000/";
   const profileImage = Boolean(userData.user.profileImage)
@@ -167,6 +180,16 @@ const DashboardLayout = () => {
     <DashboardContext.Provider value={{ userData, setUserData }}>
       <div className="sign-up-bg">
         <Header homeDisabled={true}>
+          {isSmallScreen && (
+            <IconButton
+              color="inherit"
+              // edge="start"
+              onClick={toggleSidebar}
+              className="order-first"
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
           <div className="d-flex align-items-center gap-3">
             <Avatar src={profileImage} sx={{ border: "2px solid #0a9396" }}>
               {`${userData.user.userId.firstname[0]} ${userData.user.userId.lastname[0]}`}
@@ -209,11 +232,18 @@ const DashboardLayout = () => {
           </Menu>
         </Header>
         <div className="row w-100">
-          <div className="col-2 sidebar">
-            <BigSidebar />
-          </div>
+          {isSmallScreen ? (
+            <SmallSidebar
+              open={sidebarOpen}
+              onClose={() => setSidebarOpen(false)}
+            />
+          ) : (
+            <div className="col-2 sidebar">
+              <BigSidebar />
+            </div>
+          )}
           <div
-            className="col-10 px-5 py-4 dashboard-page"
+            className="col-12 col-xl-10 px-lg-5 ps-5 py-4 dashboard-page"
             // style={{ overflowY: "auto" }}
           >
             <Outlet />
