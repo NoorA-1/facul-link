@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import http from "../utils/http";
-import { Avatar, Button, Chip } from "@mui/material";
+import { Avatar, Button, Chip, IconButton } from "@mui/material";
 import { serverURL } from "../utils/formData";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
+import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
+import BookmarkOutlinedIcon from "@mui/icons-material/BookmarkOutlined";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import dayjs from "dayjs";
 import { useDashboardContext } from "./DashboardLayout";
 
 const JobPage = () => {
   const params = useParams();
-  const { userData } = useDashboardContext();
+  const { userData, setUserData } = useDashboardContext();
   const navigate = useNavigate();
   // console.log(userData);
   const [jobData, setJobData] = useState();
   const [loading, setLoading] = useState(true);
+  console.log(jobData);
 
   const getData = async () => {
     try {
@@ -34,6 +37,31 @@ const JobPage = () => {
     }
   }, [params]);
 
+  const updateUserData = async () => {
+    const { data } = await http.get("/users/current-user");
+    setUserData(() => data);
+  };
+
+  const bookmarkJob = async (jobId) => {
+    try {
+      const response = await http.post(`/teacher/bookmark/${jobId}`);
+      console.log(response);
+      updateUserData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const unBookmarkJob = async (jobId) => {
+    try {
+      const response = await http.delete(`/teacher/bookmark/${jobId}`);
+      console.log(response);
+      updateUserData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="spinner-border m-5" role="status">
@@ -47,7 +75,43 @@ const JobPage = () => {
       <div className="bg-white py-4 rounded grey-border px-5">
         <div className="row">
           <div className="col-lg-8 col-12">
-            <h4 className="fw-bold mt-3">{jobData.title}</h4>
+            <div className="d-flex flex-sm-row flex-column align-items-center justify-content-between">
+              <h4 className="fw-bold mt-3">{jobData.title}</h4>
+              {userData.user.userId.role === "teacher" &&
+              !userData.user.bookmarks.includes(jobData._id) ? (
+                <Button
+                  startIcon={<BookmarkBorderOutlinedIcon />}
+                  onClick={() => bookmarkJob(jobData._id)}
+                  className="mt-3 mt-lg-0 "
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    border: 2,
+                    ":hover": {
+                      border: 2,
+                    },
+                  }}
+                >
+                  Bookmark
+                </Button>
+              ) : (
+                <Button
+                  startIcon={<BookmarkOutlinedIcon />}
+                  onClick={() => unBookmarkJob(jobData._id)}
+                  className="mt-3 mt-lg-0 "
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    border: 2,
+                    ":hover": {
+                      border: 2,
+                    },
+                  }}
+                >
+                  Unbookmark
+                </Button>
+              )}
+            </div>
             <div className="d-flex align-items-center mt-3 mb-4 flex-wrap">
               <div className="d-flex align-items-center gap-2 me-5">
                 <Avatar
@@ -198,7 +262,7 @@ const JobPage = () => {
           </div>
         </div>
         <div className="row">
-          <div className="col-12 d-flex justify-content-center mt-3">
+          <div className="col-12 d-flex justify-content-center mt-3 ">
             {userData.user.userId.role !== "employer" && (
               <Button variant="contained" className="w-25 w-lg-50">
                 Apply Now
