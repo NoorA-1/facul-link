@@ -429,7 +429,7 @@ const PostJob = () => {
                     setFieldTouched("hiringTest", false);
                   }}
                   onBlur={handleBlur}
-                  disabled={!testsData.length > 0}
+                  disabled={!testsData.length > 0 || editMode === true}
                 />
               }
               label="Conduct Hiring Test"
@@ -450,7 +450,7 @@ const PostJob = () => {
                 errors.hiringTest
               }
               error={Boolean(touched.hiringTest) && Boolean(errors.hiringTest)}
-              disabled={!values.isTestEnabled}
+              disabled={!values.isTestEnabled || editMode === true}
             >
               {testsData.map((e, index) => {
                 return (

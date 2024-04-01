@@ -333,69 +333,84 @@ const JobPage = () => {
             </div>
             <div className="mb-4">
               <h5 className="fw-semibold">Resume</h5>
-              {userData.user.resumeFile && (
-                <div className="border border-1 border-secondary-subtle rounded p-2 px-4">
-                  <FormControlLabel
-                    control={
-                      <Radio
-                        checked={selectedValue === "a"}
-                        onChange={handleRadioChange}
-                        value="a"
-                        name="radio-buttons"
-                        color="primary"
-                      />
-                    }
-                    label={
-                      userData.user.resumeFile &&
-                      userData.user.resumeFile.split("documents\\")[1]
-                    }
-                  />
-                  <p
-                    style={{
-                      color: "gray",
-                      fontSize: "0.875rem",
-                      // marginTop: "0.5rem",
-                    }}
-                    className="m-0"
+              {userData.user.resumeFile ? (
+                <>
+                  <div className="border border-1 border-secondary-subtle rounded p-2 px-4">
+                    <FormControlLabel
+                      control={
+                        <Radio
+                          checked={selectedValue === "a"}
+                          onChange={handleRadioChange}
+                          value="a"
+                          name="radio-buttons"
+                          color="primary"
+                        />
+                      }
+                      label={
+                        userData.user.resumeFile &&
+                        userData.user.resumeFile.split("documents\\")[1]
+                      }
+                    />
+                    <p
+                      style={{
+                        color: "gray",
+                        fontSize: "0.875rem",
+                        // marginTop: "0.5rem",
+                      }}
+                      className="m-0"
+                    >
+                      Use existing resume
+                    </p>
+                  </div>
+                  <p className="text-center my-3 text-secondary">or</p>
+                  <div className="border border-1 border-secondary-subtle rounded p-2 px-4 mt-3">
+                    <FormControlLabel
+                      control={
+                        <Radio
+                          checked={selectedValue === "b"}
+                          onChange={handleRadioChange}
+                          value="b"
+                          name="radio-buttons"
+                          color="primary"
+                        />
+                      }
+                      label="Upload new resume"
+                    />
+                    {selectedValue === "b" && (
+                      <div className="d-flex justify-content-center">
+                        <Button
+                          className="my-1 w-50"
+                          variant="outlined"
+                          component="label"
+                          sx={{ border: 2, ":hover": { border: 2 } }}
+                          startIcon={<UploadIcon />}
+                        >
+                          Upload Resume
+                          <input
+                            type="file"
+                            hidden
+                            name="resumeFile"
+                            accept=".pdf"
+                          />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="d-flex justify-content-center">
+                  <Button
+                    className="my-1 w-50"
+                    variant="outlined"
+                    component="label"
+                    sx={{ border: 2, ":hover": { border: 2 } }}
+                    startIcon={<UploadIcon />}
                   >
-                    Use existing resume
-                  </p>
+                    Upload Resume
+                    <input type="file" hidden name="resumeFile" accept=".pdf" />
+                  </Button>
                 </div>
               )}
-              <p className="text-center my-3 text-secondary">or</p>
-              <div className="border border-1 border-secondary-subtle rounded p-2 px-4 mt-3">
-                <FormControlLabel
-                  control={
-                    <Radio
-                      checked={selectedValue === "b"}
-                      onChange={handleRadioChange}
-                      value="b"
-                      name="radio-buttons"
-                      color="primary"
-                    />
-                  }
-                  label="Upload new resume"
-                />
-                {selectedValue === "b" && (
-                  <div className="d-flex justify-content-center">
-                    <Button
-                      className="my-1 w-50"
-                      variant="outlined"
-                      component="label"
-                      sx={{ border: 2, ":hover": { border: 2 } }}
-                      startIcon={<UploadIcon />}
-                    >
-                      Upload Resume
-                      <input
-                        type="file"
-                        hidden
-                        name="resumeFile"
-                        accept=".pdf"
-                      />
-                    </Button>
-                  </div>
-                )}
-              </div>
             </div>
             <div className="mt-5 d-flex justify-content-center">
               <Button variant="contained" type="submit" color="secondary">
