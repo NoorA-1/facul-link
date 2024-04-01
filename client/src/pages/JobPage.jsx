@@ -1,14 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import http from "../utils/http";
-import { Avatar, Button, Chip, IconButton } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  Chip,
+  IconButton,
+  Modal,
+  Box,
+  Radio,
+  FormControlLabel,
+} from "@mui/material";
 import { serverURL } from "../utils/formData";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
 import BookmarkOutlinedIcon from "@mui/icons-material/BookmarkOutlined";
+import UploadIcon from "@mui/icons-material/Upload";
+
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import dayjs from "dayjs";
 import { useDashboardContext } from "./DashboardLayout";
+import { PhoneInput } from "../components";
+
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 500,
+  bgcolor: "background.paper",
+  borderRadius: 2,
+  boxShadow: 24,
+  p: 4,
+};
 
 const JobPage = () => {
   const params = useParams();
@@ -17,6 +41,10 @@ const JobPage = () => {
   // console.log(userData);
   const [jobData, setJobData] = useState();
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const [selectedValue, setSelectedValue] = useState("a");
   console.log(jobData);
 
   const getData = async () => {
@@ -35,6 +63,7 @@ const JobPage = () => {
     if (params.id) {
       getData();
     }
+    updateUserData();
   }, [params]);
 
   const updateUserData = async () => {
@@ -69,6 +98,10 @@ const JobPage = () => {
       </div>
     );
   }
+
+  const handleRadioChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
 
   return (
     <div className="container mx-auto my-3">
@@ -264,7 +297,11 @@ const JobPage = () => {
         <div className="row">
           <div className="col-12 d-flex justify-content-center mt-3 ">
             {userData.user.userId.role !== "employer" && (
-              <Button variant="contained" className="w-25 w-lg-50">
+              <Button
+                variant="contained"
+                className="w-25 w-lg-50"
+                onClick={handleOpen}
+              >
                 Apply Now
               </Button>
             )}
@@ -281,6 +318,93 @@ const JobPage = () => {
           </div>
         )}
       </div>
+      <Modal open={open} onClose={handleClose}>
+        <Box sx={modalStyle}>
+          <form>
+            <h3 className="text-center fw-bold">Apply</h3>
+            <hr className="mb-5" />
+            <div className="mb-4">
+              <h5 className="fw-semibold">Email</h5>
+              <p>{userData.user.userId.email}</p>
+            </div>
+            <div className="mb-4">
+              <h5 className="fw-semibold">Phone Number</h5>
+              <PhoneInput />
+            </div>
+            <div className="mb-4">
+              <h5 className="fw-semibold">Resume</h5>
+              {userData.user.resumeFile && (
+                <div className="border border-1 border-secondary-subtle rounded p-2 px-4">
+                  <FormControlLabel
+                    control={
+                      <Radio
+                        checked={selectedValue === "a"}
+                        onChange={handleRadioChange}
+                        value="a"
+                        name="radio-buttons"
+                        color="primary"
+                      />
+                    }
+                    label={
+                      userData.user.resumeFile &&
+                      userData.user.resumeFile.split("documents\\")[1]
+                    }
+                  />
+                  <p
+                    style={{
+                      color: "gray",
+                      fontSize: "0.875rem",
+                      // marginTop: "0.5rem",
+                    }}
+                    className="m-0"
+                  >
+                    Use existing resume
+                  </p>
+                </div>
+              )}
+              <p className="text-center my-3 text-secondary">or</p>
+              <div className="border border-1 border-secondary-subtle rounded p-2 px-4 mt-3">
+                <FormControlLabel
+                  control={
+                    <Radio
+                      checked={selectedValue === "b"}
+                      onChange={handleRadioChange}
+                      value="b"
+                      name="radio-buttons"
+                      color="primary"
+                    />
+                  }
+                  label="Upload new resume"
+                />
+                {selectedValue === "b" && (
+                  <div className="d-flex justify-content-center">
+                    <Button
+                      className="my-1 w-50"
+                      variant="outlined"
+                      component="label"
+                      sx={{ border: 2, ":hover": { border: 2 } }}
+                      startIcon={<UploadIcon />}
+                    >
+                      Upload Resume
+                      <input
+                        type="file"
+                        hidden
+                        name="resumeFile"
+                        accept=".pdf"
+                      />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="mt-5 d-flex justify-content-center">
+              <Button variant="contained" type="submit" color="secondary">
+                Submit Application
+              </Button>
+            </div>
+          </form>
+        </Box>
+      </Modal>
     </div>
   );
 };
