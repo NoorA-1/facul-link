@@ -3,12 +3,12 @@ const Schema = mongoose.Schema;
 
 const jobApplicationSchema = new Schema(
   {
-    applicant: {
+    applicantId: {
       type: Schema.Types.ObjectId,
       required: true,
       ref: "User",
     },
-    job: {
+    jobId: {
       type: Schema.Types.ObjectId,
       required: true,
       ref: "Job",
@@ -17,7 +17,7 @@ const jobApplicationSchema = new Schema(
       type: String,
       required: true,
     },
-    phoneNumber: {
+    contactNumber: {
       type: String,
       required: false,
     },
@@ -49,8 +49,8 @@ const jobApplicationSchema = new Schema(
     status: {
       type: String,
       required: true,
-      enum: ["applied", "shortlisted", "rejected"],
-      default: "applied",
+      enum: ["pending", "shortlisted", "rejected"],
+      default: "pending",
     },
     applicationDate: {
       type: Date,
@@ -65,7 +65,7 @@ const jobApplicationSchema = new Schema(
 const JobApplication = mongoose.model(
   "JobApplication",
   jobApplicationSchema,
-  "jobApplications"
+  "jobApplication"
 );
 
 export default JobApplication;

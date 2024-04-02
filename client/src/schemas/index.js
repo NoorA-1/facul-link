@@ -410,3 +410,12 @@ export const jobPostValidationSchema = Yup.object({
         .format("DD-MM-YYYY")}`
     ),
 });
+
+export const submitJobApplicationValidationSchema = Yup.object({
+  contactNumber: Yup.string()
+    .required("Contact Number is required")
+    .matches(
+      /^\+92\s?\d{3}\s?\d{7}$/,
+      "Contact Number must be exactly 10 digits excluding (+92)"
+    ),
+});

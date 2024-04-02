@@ -10,17 +10,22 @@ import {
   Box,
   Radio,
   FormControlLabel,
+  Alert,
 } from "@mui/material";
 import { serverURL } from "../utils/formData";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
 import BookmarkOutlinedIcon from "@mui/icons-material/BookmarkOutlined";
+import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import UploadIcon from "@mui/icons-material/Upload";
 
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import dayjs from "dayjs";
 import { useDashboardContext } from "./DashboardLayout";
 import { PhoneInput } from "../components";
+import { useFormik } from "formik";
+import { submitJobApplicationValidationSchema } from "../schemas";
 
 const modalStyle = {
   position: "absolute",
@@ -34,6 +39,10 @@ const modalStyle = {
   p: 4,
 };
 
+const initialValues = {
+  contactNumber: "",
+};
+
 const JobPage = () => {
   const params = useParams();
   const { userData, setUserData } = useDashboardContext();
@@ -42,10 +51,38 @@ const JobPage = () => {
   const [jobData, setJobData] = useState();
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
+  const handleOpen = () => {
+    setOpen(true);
+    resetForm();
+  };
   const handleClose = () => setOpen(false);
   const [selectedValue, setSelectedValue] = useState("a");
-  console.log(jobData);
+
+  const [resume, setResume] = useState({
+    file: "",
+    URL: "",
+    filename: "",
+    isRemoved: false,
+  });
+  const [resumeFileError, setResumeFileError] = useState(false);
+
+  const {
+    values,
+    errors,
+    touched,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+    setFieldValue,
+    resetForm,
+  } = useFormik({
+    initialValues,
+    validationSchema: submitJobApplicationValidationSchema,
+    onSubmit: (values, actions) => {
+      console.log(values);
+      submitApplication(values);
+    },
+  });
 
   const getData = async () => {
     try {
@@ -101,6 +138,91 @@ const JobPage = () => {
 
   const handleRadioChange = (event) => {
     setSelectedValue(event.target.value);
+    if (event.target.value === "a") {
+      setResume({
+        file: "",
+        URL: "",
+        value: "",
+        filename: "",
+        isRemoved: false,
+      });
+      setResumeFileError(false);
+    }
+  };
+
+  const handleResumeChange = (event) => {
+    const file = event.target.files[0];
+    if (file?.type === "application/pdf") {
+      setResumeFileError("");
+      const resumeURL = URL.createObjectURL(file);
+      setResume({
+        file,
+        URL: resumeURL,
+        value: event.target.value,
+        filename: file.name,
+        isRemoved: false,
+      });
+    } else {
+      setResumeFileError("Resume file must be PDF");
+    }
+  };
+
+  const ResumeFileMessageBox = () => {
+    if (resumeFileError) {
+      return (
+        <Alert variant="filled" severity="error">
+          {resumeFileError}
+        </Alert>
+      );
+    }
+  };
+
+  const deleteResumeFile = () => {
+    setResume(() => {
+      return {
+        file: "",
+        URL: "",
+        value: "",
+        filename: "",
+        isRemoved: true,
+      };
+    });
+  };
+
+  const submitApplication = async (values) => {
+    try {
+      if (!userData.user.resumeFile && !resume.file) {
+        setResumeFileError("A resume is required to submit the application.");
+        return;
+      }
+      const formData = new FormData();
+      const contactNumber = values.contactNumber.replace(/\s+/g, "");
+      formData.append("applicantId", userData.user._id);
+      formData.append("jobId", jobData._id);
+      if (resume.file) {
+        formData.append("newResumeFile", resume.file);
+      } else if (userData.user.resumeFile) {
+        formData.append("resumeFile", userData.user.resumeFile);
+      }
+      formData.append("contactNumber", contactNumber);
+      if (!jobData.hiringTest) {
+        const test = {
+          status: "no test",
+        };
+        formData.append("test", JSON.stringify(test));
+      } else {
+        const test = {
+          status: "pending",
+        };
+        formData.append("test", JSON.stringify(test));
+      }
+      formData.append("status", "pending");
+
+      const response = await http.post("/teacher/job-application", formData);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -320,7 +442,7 @@ const JobPage = () => {
       </div>
       <Modal open={open} onClose={handleClose}>
         <Box sx={modalStyle}>
-          <form>
+          <form onSubmit={handleSubmit}>
             <h3 className="text-center fw-bold">Apply</h3>
             <hr className="mb-5" />
             <div className="mb-4">
@@ -328,8 +450,22 @@ const JobPage = () => {
               <p>{userData.user.userId.email}</p>
             </div>
             <div className="mb-4">
-              <h5 className="fw-semibold">Phone Number</h5>
-              <PhoneInput />
+              <h5 className="fw-semibold">Contact Number</h5>
+              <PhoneInput
+                name="contactNumber"
+                value={values.contactNumber}
+                onChange={(value) => {
+                  setFieldValue("contactNumber", value);
+                }}
+                onBlur={handleBlur}
+                helperText={
+                  Boolean(touched.contactNumber) && errors.contactNumber
+                }
+                error={
+                  Boolean(touched.contactNumber) &&
+                  Boolean(errors.contactNumber)
+                }
+              />
             </div>
             <div className="mb-4">
               <h5 className="fw-semibold">Resume</h5>
@@ -347,8 +483,9 @@ const JobPage = () => {
                         />
                       }
                       label={
-                        userData.user.resumeFile &&
-                        userData.user.resumeFile.split("documents\\")[1]
+                        userData.user.resumeFile
+                          ? userData.user.resumeFile.split("documents\\")[1]
+                          : ""
                       }
                     />
                     <p
@@ -374,8 +511,13 @@ const JobPage = () => {
                           color="primary"
                         />
                       }
-                      label="Upload new resume"
+                      label={
+                        Boolean(resume.value)
+                          ? resume.filename
+                          : "Upload new resume"
+                      }
                     />
+
                     {selectedValue === "b" && (
                       <div className="d-flex justify-content-center">
                         <Button
@@ -391,6 +533,7 @@ const JobPage = () => {
                             hidden
                             name="resumeFile"
                             accept=".pdf"
+                            onChange={handleResumeChange}
                           />
                         </Button>
                       </div>
@@ -398,23 +541,50 @@ const JobPage = () => {
                   </div>
                 </>
               ) : (
-                <div className="d-flex justify-content-center">
+                <div className="d-flex flex-column">
+                  {Boolean(resume.value) && (
+                    <div className="border border-1 border-secondary-subtle rounded p-2 px-4 d-flex align-items-center justify-content-between mb-3">
+                      <p className="m-0">{resume.filename}</p>
+                      <IconButton color="danger" onClick={deleteResumeFile}>
+                        <CancelOutlinedIcon />
+                      </IconButton>
+                    </div>
+                  )}
                   <Button
-                    className="my-1 w-50"
+                    className="my-1"
                     variant="outlined"
                     component="label"
+                    fullWidth
                     sx={{ border: 2, ":hover": { border: 2 } }}
                     startIcon={<UploadIcon />}
                   >
                     Upload Resume
-                    <input type="file" hidden name="resumeFile" accept=".pdf" />
+                    <input
+                      key={resume.isRemoved}
+                      type="file"
+                      hidden
+                      name="resumeFile"
+                      accept=".pdf"
+                      onChange={handleResumeChange}
+                    />
                   </Button>
                 </div>
               )}
             </div>
+            <ResumeFileMessageBox />
+
             <div className="mt-5 d-flex justify-content-center">
-              <Button variant="contained" type="submit" color="secondary">
-                Submit Application
+              <Button
+                variant="contained"
+                type="submit"
+                color="secondary"
+                endIcon={
+                  Boolean(jobData.hiringTest) && <ArrowForwardOutlinedIcon />
+                }
+              >
+                {Boolean(jobData.hiringTest)
+                  ? "Proceed to Test"
+                  : "Submit Application"}
               </Button>
             </div>
           </form>

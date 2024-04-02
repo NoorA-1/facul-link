@@ -1,13 +1,22 @@
 import React, { useState } from "react";
 import { MuiTelInput } from "mui-tel-input";
+import { FormControl, FormHelperText } from "@mui/material";
 
-const PhoneInput = ({ className }) => {
-  const [phone, setPhone] = useState("");
+const PhoneInput = ({
+  name,
+  value,
+  onChange,
+  onBlur,
+  helperText,
+  error,
+  className,
+}) => {
+  // const [phone, setPhone] = useState("");
 
-  const handleChange = (newPhone) => {
-    setPhone(newPhone);
-    //Todo: Add validation
-  };
+  // const handleChange = (newPhone) => {
+  //   setPhone(newPhone);
+  //   //Todo: Add validation
+  // };
 
   return (
     <MuiTelInput
@@ -16,8 +25,12 @@ const PhoneInput = ({ className }) => {
       disableDropdown
       fullWidth
       forceCallingCode
-      value={phone}
-      onChange={handleChange}
+      onBlur={onBlur}
+      error={error}
+      helperText={helperText}
+      name={name}
+      value={value}
+      onChange={onChange}
       className={className}
     />
   );
