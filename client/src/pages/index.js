@@ -18,6 +18,7 @@ export { default as SearchJob } from "./SearchJob";
 export { default as AllJobs } from "./AllJobs";
 export { default as AppHistory } from "./teacher/AppHistory";
 export { default as Bookmarks } from "./teacher/Bookmarks";
+export { default as GiveHiringTest } from "./teacher/GiveHiringTest";
 export { default as EmployerHomePage } from "./employer/EmployerHomePage";
 export { default as PostJobHome } from "./employer/PostJobHome";
 export { default as PostJob } from "./employer/PostJob";

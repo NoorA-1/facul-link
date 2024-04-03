@@ -38,6 +38,7 @@ import {
   EmployerProfilePage,
   ViewEmployerProfilePage,
   JobPage,
+  GiveHiringTest,
 } from "./pages";
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
@@ -227,6 +228,15 @@ const App = () => {
             {
               path: "jobs/:id",
               element: <JobPage />,
+            },
+            {
+              path: "job-application/hiring-test/:jobId",
+              element:
+                token?.role === "teacher" ? (
+                  <GiveHiringTest />
+                ) : (
+                  <Navigate to="/dashboard" />
+                ),
             },
             {
               path: "hiring-tests",

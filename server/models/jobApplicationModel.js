@@ -34,7 +34,9 @@ const jobApplicationSchema = new Schema(
       endTime: {
         type: Date,
       },
-
+      score: {
+        type: Number,
+      },
       answers: [
         {
           questionId: {

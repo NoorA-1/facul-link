@@ -37,6 +37,7 @@ export const loader = async () => {
 const DashboardLayout = () => {
   const userLoaderData = useLoaderData();
   const [userData, setUserData] = useState(userLoaderData);
+  const [isTestMode, setIsTestMode] = useState(false);
   const navigate = useNavigate();
 
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("xl"));
@@ -177,7 +178,9 @@ const DashboardLayout = () => {
   }
 
   return (
-    <DashboardContext.Provider value={{ userData, setUserData }}>
+    <DashboardContext.Provider
+      value={{ userData, setUserData, isTestMode, setIsTestMode }}
+    >
       <div className="sign-up-bg">
         <Header homeDisabled={true}>
           {isSmallScreen && (
@@ -238,12 +241,14 @@ const DashboardLayout = () => {
               onClose={() => setSidebarOpen(false)}
             />
           ) : (
-            <div className="col-2 sidebar">
+            <div className={`col-2 sidebar ${isTestMode ? "d-none" : ""}`}>
               <BigSidebar />
             </div>
           )}
           <div
-            className="col-12 col-xl-10 px-lg-5 ps-5 py-4 dashboard-page"
+            className={`col-12 col-xl-10 px-lg-5 ps-5 py-4 ${
+              isTestMode ? "col-xl-12 dashboard-page" : "dashboard-page"
+            }`}
             // style={{ overflowY: "auto" }}
           >
             <Outlet />

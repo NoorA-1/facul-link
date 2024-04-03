@@ -45,10 +45,10 @@ const initialValues = {
 
 const JobPage = () => {
   const params = useParams();
-  const { userData, setUserData } = useDashboardContext();
+  const { userData, setUserData, setIsTestMode } = useDashboardContext();
   const navigate = useNavigate();
   // console.log(userData);
-  const [jobData, setJobData] = useState();
+  const [jobData, setJobData] = useState("");
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
@@ -79,8 +79,13 @@ const JobPage = () => {
     initialValues,
     validationSchema: submitJobApplicationValidationSchema,
     onSubmit: (values, actions) => {
-      console.log(values);
       submitApplication(values);
+      if (Boolean(jobData.hiringTest)) {
+        setIsTestMode(true);
+        navigate(`/dashboard/job-application/hiring-test/${jobData._id}`);
+      } else {
+        //navigate to completed page
+      }
     },
   });
 
@@ -90,7 +95,36 @@ const JobPage = () => {
       const data = response.data;
       setJobData(data);
       console.log(data);
+
+      await checkTestStatusAndRedirect(data._id, data?.hiringTest._id);
+
       setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const checkTestStatusAndRedirect = async (jobId, testId) => {
+    try {
+      const { data } = await http.get(
+        `/teacher/job-application/test-status/${jobId}`
+      );
+
+      if (data.notFound) {
+        return;
+      }
+
+      const { status } = data;
+
+      if (
+        Boolean(testId) &&
+        (status === "pending" || status === "in progress")
+      ) {
+        setIsTestMode(true);
+        navigate(`/dashboard/job-application/hiring-test/${jobId}`);
+      } else {
+        setIsTestMode(false);
+      }
     } catch (error) {
       console.log(error);
     }
