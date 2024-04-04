@@ -8,6 +8,7 @@ export { default as SignInPage } from "./SignInPage";
 // export { default as PrivateRoute } from "./PrivateRoute";
 export { default as ProfileSetup } from "./ProfileSetup";
 export { default as ManageAccountPage } from "./ManageAccountPage";
+export { default as SuccessPage } from "./SuccessPage";
 export { default as ProfilePage } from "./teacher/ProfilePage";
 export { default as EmployerProfilePage } from "./employer/EmployerProfilePage";
 export { default as HomePage } from "./teacher/HomePage";

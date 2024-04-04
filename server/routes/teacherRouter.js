@@ -118,6 +118,7 @@ router.post(
         applicationInfo.test = JSON.parse(applicationInfo.test);
         let newApplication = new JobApplication({
           ...applicationInfo,
+          status: "pending",
         });
         let filePath;
 
@@ -153,9 +154,11 @@ router.get(
           .json({ message: "Job application not found", noFound: true });
       }
 
-      return res
-        .status(200)
-        .json({ status: jobApplication.test.status, notFound: false });
+      return res.status(200).json({
+        status: jobApplication.test.status,
+        jobStatus: jobApplication.status,
+        notFound: false,
+      });
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: "Internal server error" });
@@ -180,52 +183,14 @@ router.get(
   }
 );
 
-router.put("/job-application/start-test/:jobId", async (req, res) => {
-  try {
-    const { jobId } = req.params;
-    const applicant = await Teacher.findOne({ userId: req.user.userId });
-    const jobData = await Job.findById(jobId).populate("hiringTest");
-    const jobApplication = await JobApplication.findOne({
-      jobId,
-      applicantId: applicant._id,
-    });
-
-    if (!jobApplication) {
-      return res.status(404).json({ message: "Job application not found" });
-    }
-
-    if (jobApplication.test.status === "pending") {
-      jobApplication.test.status = "in progress";
-      jobApplication.test.startTime = Date.now();
-      jobApplication.test.endTime = new Date(
-        Date.now() + jobData.hiringTest.duration * 60000
-      );
-
-      await jobApplication.save();
-
-      return res.status(200).json({
-        message: "Test started",
-        testStatus: jobApplication.test.status,
-        startTime: jobApplication.test.startTime,
-        endTime: jobApplication.test.endTime,
-      });
-    } else {
-      return res.status(400).json({ message: "Test is already in progress" });
-    }
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-});
-
 router.put(
-  "/job-application/submit-answer/:jobId",
+  "/job-application/start-test/:jobId",
   authenticateUser,
   async (req, res) => {
     try {
       const { jobId } = req.params;
-      const { questionId, answer } = req.body;
       const applicant = await Teacher.findOne({ userId: req.user.userId });
+      const jobData = await Job.findById(jobId).populate("hiringTest");
       const jobApplication = await JobApplication.findOne({
         jobId,
         applicantId: applicant._id,
@@ -234,28 +199,107 @@ router.put(
       if (!jobApplication) {
         return res.status(404).json({ message: "Job application not found" });
       }
-
       if (jobApplication.test.status === "pending") {
         jobApplication.test.status = "in progress";
-      }
+        jobApplication.test.startTime = Date.now();
+        jobApplication.test.endTime = new Date(
+          Date.now() + jobData.hiringTest.duration * 60000
+        );
 
-      const existingAnswerIndex = jobApplication.test.answers.findIndex(
-        (item) => item.questionId.equals(questionId)
-      );
+        await jobApplication.save();
 
-      if (existingAnswerIndex > -1) {
-        jobApplication.test.answers[existingAnswerIndex].answer = answer;
+        return res.status(200).json({
+          message: "Test started",
+          testStatus: jobApplication.test.status,
+          startTime: jobApplication.test.startTime,
+          endTime: jobApplication.test.endTime,
+        });
       } else {
-        jobApplication.test.answers.push({ questionId, answer });
+        return res.status(200).json({
+          message: "Test already in progress",
+          testStatus: jobApplication.test.status,
+          startTime: jobApplication.test.startTime,
+          endTime: jobApplication.test.endTime,
+        });
       }
-
-      await jobApplication.save();
-
-      return res.status(200).json({ message: "Answer submitted successfully" });
     } catch (error) {
       console.log(error);
     }
   }
 );
+
+router.put(
+  "/job-application/submit-test/:jobId",
+  authenticateUser,
+  async (req, res) => {
+    try {
+      const { jobId } = req.params;
+      const testData = { ...req.body };
+      const applicant = await Teacher.findOne({ userId: req.user.userId });
+      const jobData = await Job.findById(jobId).populate("hiringTest");
+      const jobApplication = await JobApplication.findOne({
+        jobId,
+        applicantId: applicant._id,
+      });
+
+      if (!jobApplication) {
+        return res.status(404).json({ message: "Job application not found" });
+      }
+      if (jobApplication.test.status === "in progress") {
+        jobApplication.test.status = "completed";
+        jobApplication.status = "applied";
+        jobApplication.test.correctAnswers = testData.correctAnswers;
+        jobApplication.test.wrongAnswers = testData.wrongAnswers;
+        jobApplication.test.score = testData.score;
+      }
+
+      await jobApplication.save();
+
+      return res.status(200).json({ message: "Test successfully completed" });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+// router.put(
+//   "/job-application/submit-answer/:jobId",
+//   authenticateUser,
+//   async (req, res) => {
+//     try {
+//       const { jobId } = req.params;
+//       const { questionId, answer } = req.body;
+//       const applicant = await Teacher.findOne({ userId: req.user.userId });
+//       const jobApplication = await JobApplication.findOne({
+//         jobId,
+//         applicantId: applicant._id,
+//       });
+
+//       if (!jobApplication) {
+//         return res.status(404).json({ message: "Job application not found" });
+//       }
+
+//       if (jobApplication.test.status === "pending") {
+//         jobApplication.test.status = "in progress";
+//       }
+
+//       const existingAnswerIndex = jobApplication.test.answers.findIndex(
+//         (item) => item.questionId.equals(questionId)
+//       );
+
+//       if (existingAnswerIndex > -1) {
+//         jobApplication.test.answers[existingAnswerIndex].answer = answer;
+//       } else {
+//         jobApplication.test.answers.push({ questionId, answer });
+//       }
+
+//       await jobApplication.save();
+
+//       return res.status(200).json({ message: "Answer submitted successfully" });
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   }
+// );
 
 export default router;

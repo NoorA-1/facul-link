@@ -14,7 +14,7 @@ const HomePage = () => {
   const [statsData, setStatsData] = useState(null);
   const { userData, setUserData } = useDashboardContext();
   // const [userData, setUserData] = useState(initialUserData);
-  console.log(userData);
+  // console.log(userData);
 
   const getJobsData = async () => {
     try {

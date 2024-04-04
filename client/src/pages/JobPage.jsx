@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import http from "../utils/http";
 import {
   Avatar,
@@ -51,6 +51,7 @@ const JobPage = () => {
   const [jobData, setJobData] = useState("");
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [isJobApplied, setIsJobApplied] = useState(false);
   const handleOpen = () => {
     setOpen(true);
     resetForm();
@@ -84,7 +85,8 @@ const JobPage = () => {
         setIsTestMode(true);
         navigate(`/dashboard/job-application/hiring-test/${jobData._id}`);
       } else {
-        //navigate to completed page
+        setIsTestMode(false);
+        navigate(`/dashboard/success/${jobData._id}/?status=submitted`);
       }
     },
   });
@@ -115,15 +117,17 @@ const JobPage = () => {
       }
 
       const { status } = data;
+      const { jobStatus } = data;
 
       if (
         Boolean(testId) &&
+        jobStatus === "pending" &&
         (status === "pending" || status === "in progress")
       ) {
         setIsTestMode(true);
-        navigate(`/dashboard/job-application/hiring-test/${jobId}`);
-      } else {
+      } else if (jobStatus === "applied") {
         setIsTestMode(false);
+        setIsJobApplied(true);
       }
     } catch (error) {
       console.log(error);
@@ -135,7 +139,7 @@ const JobPage = () => {
       getData();
     }
     updateUserData();
-  }, [params]);
+  }, [params.id]);
 
   const updateUserData = async () => {
     const { data } = await http.get("/users/current-user");
@@ -451,14 +455,25 @@ const JobPage = () => {
           </div>
         </div>
         <div className="row">
-          <div className="col-12 d-flex justify-content-center mt-3 ">
+          <div className="col-12 d-flex align-items-center flex-column justify-content-center mt-3 ">
+            {isJobApplied && (
+              <p
+                className="fw-bold"
+                style={{
+                  color: "#0a9396",
+                }}
+              >
+                You have already applied for this job
+              </p>
+            )}
             {userData.user.userId.role !== "employer" && (
               <Button
                 variant="contained"
                 className="w-25 w-lg-50"
                 onClick={handleOpen}
+                disabled={isJobApplied}
               >
-                Apply Now
+                {!isJobApplied ? "Apply Now" : "Applied"}
               </Button>
             )}
           </div>

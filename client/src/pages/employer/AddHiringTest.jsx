@@ -259,6 +259,7 @@ const AddHiringTest = () => {
               Boolean(testFormik.errors.duration)
             }
           >
+            <MenuItem value="1">1 Minute (for testing)</MenuItem>
             <MenuItem value="5">5 Minutes</MenuItem>
             <MenuItem value="10">10 Minutes</MenuItem>
             <MenuItem value="15">15 Minutes</MenuItem>

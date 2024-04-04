@@ -39,6 +39,7 @@ import {
   ViewEmployerProfilePage,
   JobPage,
   GiveHiringTest,
+  SuccessPage,
 } from "./pages";
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
@@ -289,6 +290,10 @@ const App = () => {
                 />
               ),
               loader: manageAccountLoader,
+            },
+            {
+              path: "success/:id",
+              element: <SuccessPage />,
             },
           ],
         },

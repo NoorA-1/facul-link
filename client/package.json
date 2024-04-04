@@ -25,6 +25,7 @@
     "react-cookie": "^6.1.1",
     "react-dom": "^18.2.0",
     "react-icons": "^4.11.0",
+    "react-lottie": "^1.2.4",
     "react-router-dom": "^6.15.0",
     "recharts": "^2.10.3",
     "yup": "^1.2.0"

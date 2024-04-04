@@ -37,7 +37,17 @@ const jobApplicationSchema = new Schema(
       score: {
         type: Number,
       },
-      answers: [
+      correctAnswers: [
+        {
+          questionId: {
+            type: Schema.Types.ObjectId,
+          },
+          answer: {
+            type: String,
+          },
+        },
+      ],
+      wrongAnswers: [
         {
           questionId: {
             type: Schema.Types.ObjectId,
@@ -51,7 +61,7 @@ const jobApplicationSchema = new Schema(
     status: {
       type: String,
       required: true,
-      enum: ["pending", "shortlisted", "rejected"],
+      enum: ["pending", "applied", "shortlisted", "rejected"],
       default: "pending",
     },
     applicationDate: {

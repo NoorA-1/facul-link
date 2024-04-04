@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import http from "../../utils/http";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDashboardContext } from "../DashboardLayout";
 import {
   Button,
@@ -9,12 +9,15 @@ import {
   FormLabel,
   FormControlLabel,
   Radio,
+  Alert,
 } from "@mui/material";
 
 const GiveHiringTest = () => {
+  const navigate = useNavigate();
   const params = useParams();
   const [jobData, setJobData] = useState(null);
   const { isTestMode, setIsTestMode } = useDashboardContext();
+  const [view, setView] = useState("instructions");
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [questionsArray, setQuestionsArray] = useState([]);
@@ -24,9 +27,9 @@ const GiveHiringTest = () => {
       answer: "",
     },
   ]);
+  const [error, setError] = useState(null);
   const [timeLeft, setTimeLeft] = useState(null);
   const [timeUp, setTimeUp] = useState(null);
-  const [view, setView] = useState("instructions");
 
   const getData = async () => {
     try {
@@ -40,72 +43,125 @@ const GiveHiringTest = () => {
   };
 
   useEffect(() => {
+    const storedTestDetails = localStorage.getItem("testDetails");
+    const testDetails = JSON.parse(storedTestDetails);
+    if (params.jobId && testDetails?.jobId === params.jobId) {
+      const timeLeftInSeconds = calculateTimeLeft(testDetails.endTime);
+      console.log(timeLeftInSeconds);
+      if (timeLeftInSeconds > 0) {
+        setIsTestMode(true);
+        setView("test");
+        setTimeLeft(timeLeftInSeconds);
+      } else {
+        localStorage.removeItem("testDetails");
+        setTimeUp(true);
+        submitTest();
+      }
+    }
+
     if (params.jobId) {
       getData();
       setIsTestMode(true);
     }
   }, [params.jobId]);
 
-  // useEffect(() => {
-  //   let interval = null;
+  useEffect(() => {
+    if (timeLeft <= 0 && timeLeft !== null) {
+      if (!timeUp) {
+        setTimeUp(true);
+        localStorage.removeItem("testDetails");
+        submitTest();
+      }
+    }
+  }, [timeLeft]);
 
-  //   if (!showInstructions && timeLeft > 0) {
-  //     interval = setInterval(() => {
-  //       setTimeLeft((prevTime) => prevTime - 1);
-  //     }, 1000);
-  //   } else if (timeLeft === 0) {
-  //     clearInterval(interval);
-  //     // Submit logic
-  //   }
+  useEffect(() => {
+    if (jobData) {
+      if (jobData?.hiringTest.shuffleQuestions) {
+        const shuffledArray = shuffle([...jobData.hiringTest.questions]);
+        setQuestionsArray(shuffledArray);
+      } else {
+        setQuestionsArray([...jobData.hiringTest.questions]);
+      }
+    }
+  }, [jobData]);
 
-  //   return () => clearInterval(interval);
-  // }, [timeLeft, showInstructions]);
-
-  const submitTest = () => {
+  const submitTest = async () => {
     try {
       let correctAnswers = [];
       let wrongAnswers = [];
 
-      questionsArray.forEach((e, index) => {
-        if (
-          e._id === answers[index].questionId &&
-          e.correctOption === answers[index].answer
-        ) {
-          correctAnswers.push(e);
+      questionsArray.forEach((question) => {
+        const answerForQuestion = answers.find(
+          (answer) => answer.questionId === question._id
+        );
+
+        if (answerForQuestion) {
+          if (answerForQuestion.answer === question.correctOption) {
+            correctAnswers.push({
+              questionId: question._id,
+              answer: answerForQuestion.answer,
+            });
+          } else {
+            wrongAnswers.push({
+              questionId: question._id,
+              answer: answerForQuestion.answer,
+            });
+          }
         } else {
-          wrongAnswers.push(e);
+          wrongAnswers.push({
+            questionId: question._id,
+            answer: null,
+          });
         }
       });
-      console.log("result:" + correctAnswers.length);
-      setView("completed");
+
+      const testData = {
+        correctAnswers,
+        wrongAnswers,
+        score: correctAnswers.length,
+      };
+
+      const response = await http.put(
+        `/teacher/job-application/submit-test/${jobData._id}`,
+        testData
+      );
+      console.log(response);
+      localStorage.removeItem("testDetails");
+      // setView("completed");
+      setIsTestMode(false);
+      navigate(`/dashboard/success/${jobData._id}/?status=submitted`);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    let interval = null;
-
     if (view === "test" && timeLeft > 0) {
-      interval = setInterval(() => {
+      const interval = setInterval(() => {
         setTimeLeft((prevTime) => {
-          if (prevTime <= 1) {
+          const updatedTime = prevTime - 1;
+          if (updatedTime <= 0) {
             clearInterval(interval);
             setTimeUp(true);
             submitTest();
-            return 0;
           }
-          return prevTime - 1;
+          return updatedTime;
         });
       }, 1000);
+      return () => clearInterval(interval);
     }
+  }, [view, timeLeft]);
 
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
-  }, [view, timeLeft, submitTest]);
+  const calculateTimeLeft = (dateTime) => {
+    const endTime = new Date(dateTime).getTime();
+    const currentTime = Date.now();
+    const timeLeftInSeconds = Math.max(
+      0,
+      Math.floor((endTime - currentTime) / 1000)
+    );
+    return timeLeftInSeconds;
+  };
 
   const shuffle = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -115,36 +171,34 @@ const GiveHiringTest = () => {
     return array;
   };
 
-  const startTest = () => {
-    if (jobData?.hiringTest.shuffleQuestions) {
-      const shuffledArray = shuffle([...jobData.hiringTest.questions]);
-      setQuestionsArray(shuffledArray);
-    } else {
-      setQuestionsArray([...jobData.hiringTest.questions]);
-    }
-    setIsTestMode(true);
-    setView("test");
-    setTimeLeft(jobData?.hiringTest.duration * 60);
-    startTimer();
-  };
-
-  const saveAnswer = async (id, answer) => {
+  const startTest = async () => {
     try {
-      const data = {
-        questionId: id,
-        answer,
-      };
-      const response = await http.put(
-        `/teacher/job-application/submit-answer/${jobData._id}`,
-        data
+      const { data } = await http.put(
+        `/teacher/job-application/start-test/${jobData._id}`
       );
-      console.log(response);
+      console.log(data);
+      setIsTestMode(true);
+      setView("test");
+
+      const timeLeftInSeconds = calculateTimeLeft(data.endTime);
+      setTimeLeft(timeLeftInSeconds);
+
+      const testDetails = {
+        jobId: jobData._id,
+        testId: jobData.hiringTest._id,
+        endTime: data.endTime,
+      };
+      localStorage.setItem("testDetails", JSON.stringify(testDetails));
     } catch (error) {
       console.log(error);
     }
   };
 
-  console.log(questionsArray);
+  const saveAnswer = async (updatedAnswers) => {
+    const testDetails = JSON.parse(localStorage.getItem("testDetails"));
+    testDetails.answers = updatedAnswers;
+    localStorage.setItem("testDetails", JSON.stringify(testDetails));
+  };
 
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
@@ -152,15 +206,15 @@ const GiveHiringTest = () => {
     return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
   };
 
-  if (view === "completed") {
-    return (
-      <div className="container mx-auto my-3">
-        <div className="bg-white py-4 rounded grey-border px-5">
-          <h1>Test completed</h1>
-        </div>
-      </div>
-    );
-  }
+  // if (view === "completed") {
+  //   return (
+  //     <div className="container mx-auto my-3">
+  //       <div className="bg-white py-4 rounded grey-border px-5">
+  //         <h1>Test completed</h1>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="container mx-auto my-3">
@@ -177,7 +231,7 @@ const GiveHiringTest = () => {
                 {jobData?.hiringTest.duration} minutes
               </li>
               <li className="mb-3">
-                Total questions: {questionsArray?.length}
+                Total questions: {jobData?.hiringTest.questions.length}
               </li>
               <li className="mb-3">
                 You can use the "Previous" and "Next" buttons to navigate
@@ -208,8 +262,9 @@ const GiveHiringTest = () => {
                 Q{currentQuestionIndex + 1} :{" "}
                 {questionsArray[currentQuestionIndex]?.question}
               </h5>
+              {Boolean(error) && <Alert severity="error">{error}</Alert>}
               <div className="d-flex flex-column gap-2">
-                {questionsArray?.[currentQuestionIndex].options.map(
+                {questionsArray?.[currentQuestionIndex]?.options.map(
                   (option, index) => (
                     <div
                       className="border border-1 border-secondary-subtle rounded p-2 px-4 mt-3"
@@ -232,8 +287,11 @@ const GiveHiringTest = () => {
                                   answer: option.optionLabel,
                                 };
 
+                                saveAnswer(updatedAnswers);
+
                                 return updatedAnswers;
                               });
+                              setError(null);
                             }}
                             value={option.optionValue}
                             name="radio-buttons"
@@ -251,7 +309,10 @@ const GiveHiringTest = () => {
                 <Button
                   variant="outlined"
                   disabled={currentQuestionIndex <= 0}
-                  onClick={() => setCurrentQuestionIndex((prev) => prev - 1)}
+                  onClick={() => {
+                    setCurrentQuestionIndex((prev) => prev - 1);
+                    setError(null);
+                  }}
                   sx={{
                     border: 2,
                     ":hover": {
@@ -265,11 +326,15 @@ const GiveHiringTest = () => {
                   <Button
                     variant="outlined"
                     onClick={() => {
-                      setCurrentQuestionIndex((prev) => prev + 1);
-                      saveAnswer(
-                        questionsArray[currentQuestionIndex]._id,
-                        answers[currentQuestionIndex].answer
-                      );
+                      if (
+                        answers[currentQuestionIndex] &&
+                        answers[currentQuestionIndex]?.answer !== ""
+                      ) {
+                        setCurrentQuestionIndex((prev) => prev + 1);
+                        setError(null);
+                      } else {
+                        setError("Option must be selected");
+                      }
                     }}
                     sx={{
                       border: 2,
@@ -283,7 +348,20 @@ const GiveHiringTest = () => {
                 )}
 
                 {currentQuestionIndex === questionsArray.length - 1 && (
-                  <Button variant="contained" onClick={() => submitTest()}>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      if (
+                        answers[currentQuestionIndex] &&
+                        answers[currentQuestionIndex]?.answer !== ""
+                      ) {
+                        submitTest();
+                        setError(null);
+                      } else {
+                        setError("Option must be selected");
+                      }
+                    }}
+                  >
                     Submit
                   </Button>
                 )}
