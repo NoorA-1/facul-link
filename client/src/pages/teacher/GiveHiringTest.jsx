@@ -31,10 +31,10 @@ const GiveHiringTest = () => {
   const [timeLeft, setTimeLeft] = useState(null);
   const [timeUp, setTimeUp] = useState(null);
 
-  const getData = async () => {
+  const getData = async (jobId) => {
     try {
       const { data } = await http.get(
-        `/teacher/job-application/hiring-test/${params.jobId}`
+        `/teacher/job-application/hiring-test/${jobId}`
       );
       setJobData(data);
     } catch (error) {
@@ -60,7 +60,7 @@ const GiveHiringTest = () => {
     }
 
     if (params.jobId) {
-      getData();
+      getData(params.jobId);
       setIsTestMode(true);
     }
   }, [params.jobId]);
@@ -123,14 +123,14 @@ const GiveHiringTest = () => {
       };
 
       const response = await http.put(
-        `/teacher/job-application/submit-test/${jobData._id}`,
+        `/teacher/job-application/submit-test/${params.jobId}`,
         testData
       );
       console.log(response);
       localStorage.removeItem("testDetails");
       // setView("completed");
       setIsTestMode(false);
-      navigate(`/dashboard/success/${jobData._id}/?status=submitted`);
+      navigate(`/dashboard/success/${params.jobId}/?status=submitted`);
     } catch (error) {
       console.log(error);
     }
@@ -174,7 +174,7 @@ const GiveHiringTest = () => {
   const startTest = async () => {
     try {
       const { data } = await http.put(
-        `/teacher/job-application/start-test/${jobData._id}`
+        `/teacher/job-application/start-test/${params.jobId}`
       );
       console.log(data);
       setIsTestMode(true);

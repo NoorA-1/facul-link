@@ -125,6 +125,7 @@ const JobPage = () => {
         (status === "pending" || status === "in progress")
       ) {
         setIsTestMode(true);
+        navigate(`/dashboard/job-application/hiring-test/${params.id}`);
       } else if (jobStatus === "applied") {
         setIsTestMode(false);
         setIsJobApplied(true);
