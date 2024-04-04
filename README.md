@@ -16,6 +16,7 @@ Frontend Packages:
   <li>Formik</li>
   <li>Yup</li>
   <li>Axios</li>
+  <li>Lottie-React</li>
 </ol>
 
 Backend Packages:
