@@ -55,17 +55,21 @@ const JobPostCard = ({
       <div className="w-100">
         <div className="d-flex flex-column flex-lg-row justify-content-between">
           <div>
-            <h5 className="fw-bold" style={{ color: "#084C61" }}>
+            <h6 className="fw-bold text-wrap" style={{ color: "#084C61" }}>
               {title}
-            </h5>
+            </h6>
             <div className="d-flex gap-2 flex-wrap">
               <div className="d-flex align-items-center gap-2">
                 <CorporateFareOutlinedIcon fontSize="small" />
-                <p className="fw-bold m-0">{universityName}</p>
+                <p className="fw-bold m-0" style={{ fontSize: "0.9em" }}>
+                  {universityName}
+                </p>
               </div>
               <div className="d-flex align-items-center gap-2">
                 <LocationOnOutlinedIcon fontSize="small" />
-                <p className="fw-bold m-0">{location}</p>
+                <p className="fw-bold m-0" style={{ fontSize: "0.9em" }}>
+                  {location}
+                </p>
               </div>
             </div>
             <div className="d-flex align-items-center gap-2 mt-2">

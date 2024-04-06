@@ -118,7 +118,7 @@ router.post(
         applicationInfo.test = JSON.parse(applicationInfo.test);
         let newApplication = new JobApplication({
           ...applicationInfo,
-          status: "pending",
+          // status: "pending",
         });
         let filePath;
 
@@ -245,17 +245,34 @@ router.put(
       if (!jobApplication) {
         return res.status(404).json({ message: "Job application not found" });
       }
-      if (jobApplication.test.status === "in progress") {
-        jobApplication.test.status = "completed";
-        jobApplication.status = "applied";
-        jobApplication.test.correctAnswers = testData.correctAnswers;
-        jobApplication.test.wrongAnswers = testData.wrongAnswers;
-        jobApplication.test.score = testData.score;
-      }
 
-      await jobApplication.save();
+      const provisionalCompletedTime = new Date(testData.completedTime);
+      const endTime = new Date(jobApplication.test.endTime);
+      const timeDifference = (provisionalCompletedTime - endTime) / 60000;
 
-      return res.status(200).json({ message: "Test successfully completed" });
+      const completedTime =
+        timeDifference > 1 ? endTime : provisionalCompletedTime;
+
+      await JobApplication.findOneAndUpdate(
+        { _id: jobApplication._id, "test.status": "in progress" },
+        {
+          "test.status": "completed",
+          status: "applied",
+          "test.correctAnswers": testData.correctAnswers,
+          "test.wrongAnswers": testData.wrongAnswers,
+          "test.score": testData.score,
+          "test.completedTime.time": completedTime,
+          "test.completedTime.isTimeUp": testData.isTimeUp,
+        },
+        { new: true }
+      );
+
+      const lateEntry = timeDifference > 1;
+
+      return res.status(200).json({
+        message: "Test successfully completed",
+        lateEntry: lateEntry,
+      });
     } catch (error) {
       console.log(error);
     }

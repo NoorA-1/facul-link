@@ -56,7 +56,11 @@ const JobPage = () => {
     setOpen(true);
     resetForm();
   };
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    deleteResumeFile();
+    setSelectedValue("a");
+  };
   const [selectedValue, setSelectedValue] = useState("a");
 
   const [resume, setResume] = useState({
@@ -79,14 +83,18 @@ const JobPage = () => {
   } = useFormik({
     initialValues,
     validationSchema: submitJobApplicationValidationSchema,
-    onSubmit: (values, actions) => {
-      submitApplication(values);
-      if (Boolean(jobData.hiringTest)) {
-        setIsTestMode(true);
-        navigate(`/dashboard/job-application/hiring-test/${jobData._id}`);
+    onSubmit: async (values, actions) => {
+      const isCorrectSubmission = await submitApplication(values);
+      if (isCorrectSubmission) {
+        if (Boolean(jobData.hiringTest)) {
+          setIsTestMode(true);
+          navigate(`/dashboard/job-application/hiring-test/${jobData._id}`);
+        } else {
+          setIsTestMode(false);
+          navigate(`/dashboard/success/${jobData._id}?status=submitted`);
+        }
       } else {
-        setIsTestMode(false);
-        navigate(`/dashboard/success/${jobData._id}/?status=submitted`);
+        return;
       }
     },
   });
@@ -95,10 +103,10 @@ const JobPage = () => {
     try {
       const response = await http.get(`/employer/jobs/${params.id}`);
       const data = response.data;
-      setJobData(data);
+      setJobData(() => data);
       console.log(data);
 
-      await checkTestStatusAndRedirect(data._id, data?.hiringTest._id);
+      await checkTestStatusAndRedirect(data._id, data?.hiringTest?._id);
 
       setLoading(false);
     } catch (error) {
@@ -106,7 +114,7 @@ const JobPage = () => {
     }
   };
 
-  const checkTestStatusAndRedirect = async (jobId, testId) => {
+  const checkTestStatusAndRedirect = async (jobId, testId = null) => {
     try {
       const { data } = await http.get(
         `/teacher/job-application/test-status/${jobId}`
@@ -232,35 +240,44 @@ const JobPage = () => {
     try {
       if (!userData.user.resumeFile && !resume.file) {
         setResumeFileError("A resume is required to submit the application.");
-        return;
+        return false;
+      } else if (selectedValue === "b" && !resume.file) {
+        setResumeFileError("A resume is required to submit the application.");
+        return false;
       }
       const formData = new FormData();
       const contactNumber = values.contactNumber.replace(/\s+/g, "");
       formData.append("applicantId", userData.user._id);
       formData.append("jobId", jobData._id);
-      if (resume.file) {
+      if (selectedValue === "b" && resume.file) {
         formData.append("newResumeFile", resume.file);
-      } else if (userData.user.resumeFile) {
+      } else if (selectedValue === "a" && userData.user.resumeFile) {
         formData.append("resumeFile", userData.user.resumeFile);
       }
+
       formData.append("contactNumber", contactNumber);
+
       if (!jobData.hiringTest) {
         const test = {
           status: "no test",
         };
         formData.append("test", JSON.stringify(test));
+        formData.append("status", "applied");
       } else {
         const test = {
           status: "pending",
         };
         formData.append("test", JSON.stringify(test));
+        formData.append("status", "pending");
       }
-      formData.append("status", "pending");
 
       const response = await http.post("/teacher/job-application", formData);
       console.log(response);
+
+      return true;
     } catch (error) {
       console.log(error);
+      return false;
     }
   };
 
@@ -459,7 +476,7 @@ const JobPage = () => {
           <div className="col-12 d-flex align-items-center flex-column justify-content-center mt-3 ">
             {isJobApplied && (
               <p
-                className="fw-bold"
+                className="fw-semibold"
                 style={{
                   color: "#0a9396",
                 }}

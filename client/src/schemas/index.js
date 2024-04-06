@@ -414,8 +414,9 @@ export const jobPostValidationSchema = Yup.object({
 export const submitJobApplicationValidationSchema = Yup.object({
   contactNumber: Yup.string()
     .required("Contact Number is required")
+    .transform((value) => value.replace(/\s/g, ""))
     .matches(
-      /^\+92\s?\d{3}\s?\d{7}$/,
-      "Contact Number must be exactly 10 digits excluding (+92)"
+      /^\+92\d{10}$/,
+      "Contact Number must start with +92 followed by exactly 10 digits"
     ),
 });

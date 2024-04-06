@@ -29,7 +29,8 @@ const GiveHiringTest = () => {
   ]);
   const [error, setError] = useState(null);
   const [timeLeft, setTimeLeft] = useState(null);
-  const [timeUp, setTimeUp] = useState(null);
+  const [timeUp, setTimeUp] = useState(false);
+  const [hasBeenSubmitted, setHasBeenSubmitted] = useState(false);
 
   const getData = async (jobId) => {
     try {
@@ -54,7 +55,7 @@ const GiveHiringTest = () => {
         setTimeLeft(timeLeftInSeconds);
       } else {
         localStorage.removeItem("testDetails");
-        setTimeUp(true);
+        setTimeUp(() => true);
         submitTest();
       }
     }
@@ -68,7 +69,7 @@ const GiveHiringTest = () => {
   useEffect(() => {
     if (timeLeft <= 0 && timeLeft !== null) {
       if (!timeUp) {
-        setTimeUp(true);
+        setTimeUp(() => true);
         localStorage.removeItem("testDetails");
         submitTest();
       }
@@ -88,8 +89,12 @@ const GiveHiringTest = () => {
 
   const submitTest = async () => {
     try {
+      if (hasBeenSubmitted) return;
+      setHasBeenSubmitted(true);
       let correctAnswers = [];
       let wrongAnswers = [];
+
+      console.log(questionsArray);
 
       questionsArray.forEach((question) => {
         const answerForQuestion = answers.find(
@@ -116,10 +121,15 @@ const GiveHiringTest = () => {
         }
       });
 
+      const completedTime = new Date();
+      const isTimeUp = Boolean(timeLeft <= 1);
+
       const testData = {
         correctAnswers,
         wrongAnswers,
         score: correctAnswers.length,
+        completedTime,
+        isTimeUp,
       };
 
       const response = await http.put(
@@ -130,7 +140,11 @@ const GiveHiringTest = () => {
       localStorage.removeItem("testDetails");
       // setView("completed");
       setIsTestMode(false);
-      navigate(`/dashboard/success/${params.jobId}/?status=submitted`);
+      if (response.data.lateEntry) {
+        navigate(`/dashboard/success/${params.jobId}?status=applied`);
+      } else {
+        navigate(`/dashboard/success/${params.jobId}?status=submitted`);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -144,14 +158,17 @@ const GiveHiringTest = () => {
           if (updatedTime <= 0) {
             clearInterval(interval);
             setTimeUp(true);
-            submitTest();
+            if (!hasBeenSubmitted) {
+              submitTest();
+            }
+            return 0;
           }
           return updatedTime;
         });
       }, 1000);
       return () => clearInterval(interval);
     }
-  }, [view, timeLeft]);
+  }, [view, timeLeft, hasBeenSubmitted]);
 
   const calculateTimeLeft = (dateTime) => {
     const endTime = new Date(dateTime).getTime();

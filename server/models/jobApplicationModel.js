@@ -34,6 +34,14 @@ const jobApplicationSchema = new Schema(
       endTime: {
         type: Date,
       },
+      completedTime: {
+        time: {
+          type: Date,
+        },
+        isTimeUp: {
+          type: Boolean,
+        },
+      },
       score: {
         type: Number,
       },
