@@ -48,6 +48,7 @@ import { loader as dashboardLoader } from "./pages/DashboardLayout";
 import { loader as hiringTestsLoader } from "./pages/employer/HiringTests";
 import { loader as postJobsLoader } from "./pages/employer/PostJobHome";
 import { loader as postJobTestsLoader } from "./pages/employer/PostJob";
+import { loader as searchJobLoader } from "./pages/SearchJob";
 import { loader as AdminDashboardLoader } from "./pages/admin/AdminDashboardLayout";
 import { loader as AdminEmployersLoader } from "./pages/admin/AdminManageEmployersPage";
 // const token = Cookies.get("token");
@@ -173,6 +174,7 @@ const App = () => {
             {
               path: "search-job",
               element: <SearchJob />,
+              loader: searchJobLoader,
             },
             {
               path: "all-jobs",

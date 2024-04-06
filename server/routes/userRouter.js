@@ -12,6 +12,7 @@ import UniEmployer from "../models/uniEmployerModel.js";
 import fs from "fs";
 import multer from "multer";
 import path from "path";
+import Job from "../models/jobModel.js";
 
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
@@ -357,4 +358,79 @@ router.put(
   }
 );
 
+router.get("/search-jobs", authenticateUser, async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = 5,
+      title,
+      skills = [],
+      experience,
+      degree,
+      universityName,
+    } = req.query;
+    const skip = (page - 1) * limit;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const pipeline = [
+      {
+        $lookup: {
+          from: "uniemployer",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "createdBy",
+        },
+      },
+      { $unwind: "$createdBy" },
+    ];
+
+    const matchConditions = {
+      endDate: { $gte: today },
+      "createdBy.status": "active",
+    };
+    if (title) matchConditions.title = { $regex: title, $options: "i" };
+
+    if (universityName)
+      matchConditions["createdBy.universityName"] = {
+        $regex: universityName,
+        $options: "i",
+      };
+
+    if (degree) {
+      matchConditions["requiredQualification.degree"] = degree;
+    }
+
+    if (experience) {
+      matchConditions.requiredExperience = parseInt(experience);
+    }
+
+    if (skills.length > 0) matchConditions.skills = { $all: skills };
+
+    if (Object.keys(matchConditions).length > 0) {
+      pipeline.push({ $match: matchConditions });
+    }
+
+    pipeline.push({ $skip: skip }, { $limit: limit });
+
+    const jobs = await Job.aggregate(pipeline);
+
+    const countPipeline = [...pipeline];
+    countPipeline.splice(-2, 2);
+    countPipeline.push({ $count: "total" });
+
+    const countResult = await Job.aggregate(countPipeline);
+    const totalJobs = countResult.length > 0 ? countResult[0].total : 0;
+
+    res.status(200).json({
+      jobs,
+      totalPages: Math.ceil(totalJobs / limit),
+      currentPage: page,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+});
 export default router;

@@ -19,6 +19,7 @@ const JobPostCard = ({
   jobId,
   isBookmarked,
   updateUserData,
+  classes,
   endDate,
 }) => {
   const navigate = useNavigate();
@@ -88,12 +89,14 @@ const JobPostCard = ({
                 <BookmarkBorderOutlinedIcon />
               </IconButton>
             ) : (
-              <IconButton
-                onClick={() => unBookmarkJob(jobId)}
-                className="mt-3 mt-lg-0"
-              >
-                <BookmarkOutlinedIcon />
-              </IconButton>
+              role === "teacher" && (
+                <IconButton
+                  onClick={() => unBookmarkJob(jobId)}
+                  className="mt-3 mt-lg-0"
+                >
+                  <BookmarkOutlinedIcon />
+                </IconButton>
+              )
             )}
             <Button
               fullWidth
