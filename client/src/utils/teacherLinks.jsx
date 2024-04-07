@@ -12,15 +12,15 @@ const teacherLinks = [
     icon: <HomeOutlinedIcon className="mb-1" />,
   },
   {
-    text: "Search Job",
+    text: "Explore Jobs",
     path: "search-job",
     icon: <SearchOutlinedIcon />,
   },
-  {
-    text: "All Jobs",
-    path: "all-jobs",
-    icon: <WorkOutlineOutlinedIcon />,
-  },
+  // {
+  //   text: "All Jobs",
+  //   path: "all-jobs",
+  //   icon: <WorkOutlineOutlinedIcon />,
+  // },
   {
     text: "Application History",
     path: "application-history",

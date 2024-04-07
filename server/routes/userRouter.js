@@ -358,6 +358,50 @@ router.put(
   }
 );
 
+router.get("/search-jobs/filters", authenticateUser, async (req, res) => {
+  try {
+    const skillsPipeline = [
+      { $unwind: "$skills" },
+      { $group: { _id: null, skillsList: { $addToSet: "$skills" } } },
+    ];
+
+    const universityPipeline = [
+      {
+        $lookup: {
+          from: "uniemployer",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "createdBy",
+        },
+      },
+      { $unwind: "$createdBy" },
+      {
+        $group: {
+          _id: null,
+          universitiesList: { $addToSet: "$createdBy.universityName" },
+        },
+      },
+    ];
+
+    const [skillsResult, universityResult] = await Promise.all([
+      Job.aggregate(skillsPipeline),
+      Job.aggregate(universityPipeline),
+    ]);
+
+    const skillsList = skillsResult[0] ? skillsResult[0].skillsList : [];
+    const universitiesList = universityResult[0]
+      ? universityResult[0].universitiesList
+      : [];
+
+    res.status(200).json({
+      skillsList,
+      universitiesList,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 router.get("/search-jobs", authenticateUser, async (req, res) => {
   try {
     const {

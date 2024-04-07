@@ -58,6 +58,29 @@ router.get("/stats", authenticateUser, async (req, res) => {
   }
 });
 
+router.get("/all-bookmarks", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "teacher") {
+      const teacher = await Teacher.findOne({
+        userId: req.user.userId,
+      }).populate([
+        "bookmarks",
+        {
+          path: "bookmarks",
+          populate: {
+            path: "createdBy",
+            model: "UniEmployer",
+          },
+        },
+      ]);
+
+      return res.status(200).json({ bookmarks: teacher.bookmarks });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 router.post("/bookmark/:jobId", authenticateUser, async (req, res) => {
   try {
     const jobId = req.params.jobId;
@@ -236,7 +259,7 @@ router.put(
       const { jobId } = req.params;
       const testData = { ...req.body };
       const applicant = await Teacher.findOne({ userId: req.user.userId });
-      const jobData = await Job.findById(jobId).populate("hiringTest");
+      // const jobData = await Job.findById(jobId).populate("hiringTest");
       const jobApplication = await JobApplication.findOne({
         jobId,
         applicantId: applicant._id,

@@ -16,14 +16,19 @@ import { serverURL } from "../utils/formData";
 import Pagination from "@mui/material/Pagination";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { skillsList } from "../utils/formData";
 
 dayjs.extend(relativeTime);
 
 export const loader = async () => {
   try {
     const { data } = await http.get("/users/search-jobs");
-    return data;
+    const { data: filtersData } = await http.get("/users/search-jobs/filters");
+
+    return {
+      data,
+      skillsList: filtersData.skillsList,
+      universitiesList: filtersData.universitiesList,
+    };
   } catch (error) {
     console.log(error);
     return error;
@@ -33,11 +38,12 @@ export const loader = async () => {
 const SearchJob = () => {
   const [skills, setSkills] = useState([]);
   const [inputValue, setInputValue] = useState("");
-  const data = useLoaderData();
+  const { data, skillsList, universitiesList } = useLoaderData();
   const [jobsData, setJobsData] = useState(data);
   const titleRef = useRef("");
   const qualificationRef = useRef("");
   const experienceRef = useRef("");
+  const universityRef = useRef("");
 
   const [page, setPage] = useState(1);
   const handlePageChange = (event, value) => {
@@ -77,7 +83,10 @@ const SearchJob = () => {
       const experience =
         experienceRef.current.value === "0" ? "" : experienceRef.current.value;
 
-      const queryString = `title=${titleRef.current.value}&degree=${qualification}&experience=${experience}&${skillsQuery}&page=${page}`;
+      const university =
+        universityRef.current.value === "0" ? "" : universityRef.current.value;
+
+      const queryString = `title=${titleRef.current.value}&degree=${qualification}&experience=${experience}&${skillsQuery}&page=${page}&universityName=${university}`;
       const { data } = await http.get(`/users/search-jobs?${queryString}`);
       setJobsData(data);
     } catch (error) {
@@ -96,7 +105,7 @@ const SearchJob = () => {
       <div className="d-flex align-items-center justify-content-center">
         <TextField
           label="Search jobs"
-          className="w-50 bg-white"
+          className="bg-white w-75"
           variant="outlined"
           inputRef={titleRef}
           InputProps={{
@@ -116,8 +125,8 @@ const SearchJob = () => {
         />
       </div>
       <div className="bg-white py-5 mt-5 rounded grey-border px-5">
-        <div className="row">
-          <div className="pe-4 col-2 border-end border-1">
+        <div className="row flex-column flex-sm-row">
+          <div className="col-12 col-md-3 col-lg-2 pe-4 col-2 border-end border-1">
             <h5 className="fw-semibold">Filter</h5>
 
             <div className="filter mt-4">
@@ -157,6 +166,40 @@ const SearchJob = () => {
             </div>
 
             <div className="filter mt-4">
+              <TextField
+                select
+                fullWidth
+                inputRef={universityRef}
+                variant="standard"
+                label="Select University"
+                size="small"
+                defaultValue="0"
+                SelectProps={{
+                  MenuProps: {
+                    PaperProps: {
+                      style: {
+                        maxWidth: 200,
+                        maxHeight: 300,
+                        overflow: "auto",
+                      },
+                    },
+                  },
+                }}
+              >
+                <MenuItem value="0">All</MenuItem>
+                {universitiesList.map((e, index) => (
+                  <MenuItem
+                    key={index}
+                    value={e}
+                    style={{ whiteSpace: "normal" }}
+                  >
+                    {e}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </div>
+
+            <div className="filter mt-4">
               <Autocomplete
                 multiple
                 value={skills}
@@ -179,18 +222,16 @@ const SearchJob = () => {
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    variant="outlined"
+                    variant="standard"
                     label="Skills"
                     // placeholder="Add skills"
                     fullWidth
-                    multiline
-                    rows={3}
                   />
                 )}
               />
             </div>
           </div>
-          <div className="ps-5 col-10">
+          <div className="col-12 col-md-9 col-lg-10 mt-md-0 mt-5">
             <h5 className="fw-semibold">Jobs Found: {jobsData.jobs.length}</h5>
 
             <div className="mt-3 w-100">
