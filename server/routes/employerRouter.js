@@ -188,7 +188,6 @@ router.get("/jobs", authenticateUser, async (req, res) => {
       const employerData = await UniEmployer.findOne({
         userId: req.user.userId,
       });
-      console.log(employerData);
       const allJobs = await Job.find({ createdBy: employerData._id }).populate(
         "hiringTest"
       );

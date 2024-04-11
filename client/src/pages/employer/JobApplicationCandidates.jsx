@@ -88,119 +88,129 @@ const JobApplicationCandidates = () => {
           Go Back
         </Button>
         <h5 className="text-center fw-medium mt-3">
-          Job Title:{" "}
+          Candidates for Job:{" "}
           <span className="fw-semibold">{data[0]?.jobId?.title}</span>
         </h5>
-        <hr className="mb-5" />
-        <TableContainer
-          sx={{ border: "1px solid #0A9396" }}
-          className="mb-4"
-          component={Paper}
-        >
-          <Table sx={{ minWidth: 650 }}>
-            <TableHead>
-              <TableRow>
-                <TableCell className="fw-bold">Candidate Name</TableCell>
-                {/* <TableCell align="right" className="fw-bold">
-            Location
-          </TableCell> */}
-                <TableCell align="left" className="fw-bold">
-                  Email
-                </TableCell>
-                <TableCell align="right" className="fw-bold">
-                  Contact Number
-                </TableCell>
-                <TableCell align="right" className="fw-bold">
-                  Resume
-                </TableCell>
-                <TableCell align="right" className="fw-bold">
-                  Application Status
-                </TableCell>
-                {Boolean(data[0]?.jobId?.hiringTest) && (
-                  <TableCell align="right" className="fw-bold">
-                    Test Score
-                  </TableCell>
-                )}
-                <TableCell align="right" className="fw-bold">
-                  Profile
-                </TableCell>
-                <TableCell align="center" className="fw-bold">
-                  Actions
-                </TableCell>
-                <TableCell align="right"></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.length > 0 &&
-                data.map((e, index) => (
-                  <TableRow
-                    key={e.applicantId._id}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      <div className="d-flex align-items-center gap-2">
-                        <Avatar
-                          src={profileImage(e)}
-                          sx={{ border: "1px solid #0A9396" }}
-                        >{`${e.applicantId.userId.firstname}[0] ${e.applicantId.userId.lastname}[0]`}</Avatar>
-                        {`${e.applicantId.userId.firstname} ${e.applicantId.userId.lastname}`}
-                      </div>
-                    </TableCell>
-                    <TableCell align="left">
-                      {e.applicantId.userId.email}
-                    </TableCell>
-                    <TableCell align="right">{e.contactNumber}</TableCell>
+        <hr className="mb-" />
 
-                    <TableCell align="right">
-                      <a
-                        href={resumeFileSrc(e)}
-                        download={resumeFileName(e)}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <IconButton size="large" color="secondary">
-                          <FileDownloadOutlinedIcon />
-                        </IconButton>
-                      </a>
-                    </TableCell>
-                    <TableCell align="right" className="text-capitalize">
+        <div
+          className={`d-flex align-items-center flex-wrap my-3 ${
+            data.length === 1
+              ? "justify-content-start"
+              : "justify-content-around"
+          }`}
+          style={{
+            gap: "20px",
+          }}
+        >
+          {data.length > 0 &&
+            data.map((e, index) => (
+              <>
+                <div
+                  className="candidate-card p-3 rounded shadow w-25"
+                  style={{
+                    border: "1px solid #0A9396",
+                    margin: "10px",
+                  }}
+                  key={index}
+                >
+                  <div className="d-flex flex-column align-items-center justify-content-center">
+                    <Avatar
+                      src={profileImage(e)}
+                      sx={{
+                        border: "1px solid #0A9396",
+                        width: 80,
+                        height: 80,
+                      }}
+                    >{`${e.applicantId.userId.firstname}[0] ${e.applicantId.userId.lastname}[0]`}</Avatar>
+
+                    <h5 className="mt-3 mb-0 fw-semibold">
+                      {`${e.applicantId.userId.firstname} ${e.applicantId.userId.lastname}`}
+                    </h5>
+                  </div>
+                  <hr className="w-100" />
+                  <p className="fw-medium">
+                    Email:{" "}
+                    <span className="fw-normal">
+                      {e.applicantId.userId.email}
+                    </span>
+                  </p>
+                  <p className="fw-medium">
+                    Contact Number:{" "}
+                    <span className="fw-normal">{e.contactNumber}</span>
+                  </p>
+                  <p className="fw-medium">
+                    Application Status:{" "}
+                    <span className="fw-normal text-capitalize">
                       {e.status}
-                    </TableCell>
-                    {Boolean(e.test?.status !== "no test") && (
-                      <TableCell align="right" className="text-capitalize">
-                        {testScore(e)}%
-                      </TableCell>
-                    )}
-                    <TableCell align="right" className="text-capitalize">
-                      <IconButton
-                        onClick={() =>
-                          navigate(
-                            `/dashboard/teacher-profile/${e.applicantId.userId._id}`
-                          )
-                        }
+                    </span>
+                  </p>
+
+                  {Boolean(e.test?.status !== "no test") && (
+                    <p className="fw-medium text-capitalize">
+                      Test Score:{" "}
+                      <span className="fw-normal">{testScore(e)}%</span>
+                    </p>
+                  )}
+                  <hr className="w-100" />
+                  <div className="d-flex flex-column gap-3">
+                    <a
+                      href={resumeFileSrc(e)}
+                      download={resumeFileName(e)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        endIcon={<FileDownloadOutlinedIcon />}
+                        fullWidth
                       >
-                        <VisibilityOutlinedIcon color="alternate" />
-                      </IconButton>
-                    </TableCell>
-                    <TableCell align="center">
-                      <div className="d-flex justify-content-center gap-2">
-                        {Boolean(e.test?.status !== "no test") && (
-                          <IconButton>
-                            <ScoreboardOutlinedIcon color="warning" />
-                          </IconButton>
-                        )}
-                        {e.status !== "pending" && (
-                          <IconButton>
-                            <MarkEmailReadOutlinedIcon color="primary" />
-                          </IconButton>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                        Resume
+                      </Button>
+                    </a>
+
+                    <Button
+                      variant="outlined"
+                      color="alternate"
+                      endIcon={<VisibilityOutlinedIcon />}
+                      fullWidth
+                      onClick={() =>
+                        navigate(
+                          `/dashboard/teacher-profile/${e.applicantId.userId._id}`
+                        )
+                      }
+                    >
+                      Profile
+                    </Button>
+
+                    <div className="d-flex align-items-center gap-2">
+                      {Boolean(e.test?.status !== "no test") && (
+                        <Button
+                          variant="outlined"
+                          color="warning"
+                          endIcon={<ScoreboardOutlinedIcon />}
+                          fullWidth
+                        >
+                          Test Report
+                        </Button>
+                      )}
+                      {Boolean(e.status !== "pending") && (
+                        <Button
+                          variant="outlined"
+                          color="success"
+                          endIcon={<MarkEmailReadOutlinedIcon />}
+                          fullWidth
+                        >
+                          Shortlist
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </>
+            ))}
+        </div>
       </div>
     </div>
   );

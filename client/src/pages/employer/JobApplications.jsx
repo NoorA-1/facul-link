@@ -57,7 +57,7 @@ const JobApplications = () => {
                   Positions
                 </TableCell>
                 <TableCell align="center" className="fw-bold">
-                  End Date
+                  Closing Date
                 </TableCell>
                 <TableCell align="center" className="fw-bold">
                   Candidates
