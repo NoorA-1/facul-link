@@ -6,7 +6,7 @@ const jobApplicationSchema = new Schema(
     applicantId: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: "User",
+      ref: "Teacher",
     },
     jobId: {
       type: Schema.Types.ObjectId,

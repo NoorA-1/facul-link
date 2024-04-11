@@ -302,44 +302,67 @@ router.put(
   }
 );
 
-// router.put(
-//   "/job-application/submit-answer/:jobId",
-//   authenticateUser,
-//   async (req, res) => {
-//     try {
-//       const { jobId } = req.params;
-//       const { questionId, answer } = req.body;
-//       const applicant = await Teacher.findOne({ userId: req.user.userId });
-//       const jobApplication = await JobApplication.findOne({
-//         jobId,
-//         applicantId: applicant._id,
-//       });
+const getTotalYearsExperience = (experiences) => {
+  const currentDate = new Date();
+  return experiences.reduce((total, exp) => {
+    const startDate = new Date(exp.date.startDate);
+    const endDate = exp.date.endDate ? new Date(exp.date.endDate) : currentDate;
+    const years = (endDate - startDate) / (1000 * 60 * 60 * 24 * 365);
+    return total + years;
+  }, 0);
+};
 
-//       if (!jobApplication) {
-//         return res.status(404).json({ message: "Job application not found" });
-//       }
+router.get("/recommend-jobs", authenticateUser, async (req, res) => {
+  try {
+    const teacher = await Teacher.findOne({ userId: req.user.userId });
+    if (!teacher) {
+      return res.status(404).send({ message: "Teacher not found" });
+    }
 
-//       if (jobApplication.test.status === "pending") {
-//         jobApplication.test.status = "in progress";
-//       }
+    const qualificationLevels = teacher.qualification.map((e) => e.level);
+    const totalExperienceYears = getTotalYearsExperience(teacher.experience);
 
-//       const existingAnswerIndex = jobApplication.test.answers.findIndex(
-//         (item) => item.questionId.equals(questionId)
-//       );
+    const jobs = await Job.aggregate([
+      {
+        $addFields: {
+          score: {
+            $add: [
+              {
+                $multiply: [
+                  { $size: { $setIntersection: ["$skills", teacher.skills] } },
+                  50,
+                ],
+              },
+              {
+                $cond: {
+                  if: {
+                    $in: ["$requiredQualification.degree", qualificationLevels],
+                  },
+                  then: 20,
+                  else: 0,
+                },
+              },
+              {
+                $cond: {
+                  if: { $gte: ["$requiredExperience", totalExperienceYears] },
+                  then: 30,
+                  else: 0,
+                },
+              },
+            ],
+          },
+        },
+      },
+      { $match: { score: { $gt: 0 } } },
+      { $sort: { score: -1 } },
+      { $limit: 10 },
+    ]);
 
-//       if (existingAnswerIndex > -1) {
-//         jobApplication.test.answers[existingAnswerIndex].answer = answer;
-//       } else {
-//         jobApplication.test.answers.push({ questionId, answer });
-//       }
-
-//       await jobApplication.save();
-
-//       return res.status(200).json({ message: "Answer submitted successfully" });
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   }
-// );
+    res.status(200).json(jobs);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+});
 
 export default router;

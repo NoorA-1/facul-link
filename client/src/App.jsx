@@ -40,15 +40,18 @@ import {
   JobPage,
   GiveHiringTest,
   SuccessPage,
+  JobApplications,
+  JobApplicationCandidates,
 } from "./pages";
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
 import { loader as manageAccountLoader } from "./pages/ManageAccountPage";
 import { loader as dashboardLoader } from "./pages/DashboardLayout";
+import { loader as bookmarksLoader } from "./pages/teacher/Bookmarks";
 import { loader as hiringTestsLoader } from "./pages/employer/HiringTests";
 import { loader as postJobsLoader } from "./pages/employer/PostJobHome";
 import { loader as postJobTestsLoader } from "./pages/employer/PostJob";
-import { loader as bookmarksLoader } from "./pages/teacher/Bookmarks";
+import { loader as JobApplicationsLoader } from "./pages/employer/JobApplications";
 import { loader as searchJobLoader } from "./pages/SearchJob";
 import { loader as AdminDashboardLoader } from "./pages/admin/AdminDashboardLayout";
 import { loader as AdminEmployersLoader } from "./pages/admin/AdminManageEmployersPage";
@@ -267,6 +270,25 @@ const App = () => {
               element:
                 token?.role === "employer" ? (
                   <AddHiringTest />
+                ) : (
+                  <Navigate to="/dashboard" />
+                ),
+            },
+            {
+              path: "job-applications",
+              element:
+                token?.role === "employer" ? (
+                  <JobApplications />
+                ) : (
+                  <Navigate to="/dashboard" />
+                ),
+              loader: JobApplicationsLoader,
+            },
+            {
+              path: "job-application/candidate/:id",
+              element:
+                token?.role === "employer" ? (
+                  <JobApplicationCandidates />
                 ) : (
                   <Navigate to="/dashboard" />
                 ),

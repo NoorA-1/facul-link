@@ -9,6 +9,7 @@ import { authenticateUser } from "../middlewares/authMiddleware.js";
 import { validationResult } from "express-validator";
 import mongoose, { Schema, SchemaTypes } from "mongoose";
 import Job from "../models/jobModel.js";
+import JobApplication from "../models/jobApplicationModel.js";
 
 router.get("/stats", authenticateUser, async (req, res) => {
   try {
@@ -298,6 +299,53 @@ router.get("/all-jobs/:num", authenticateUser, async (req, res) => {
     return res
       .status(500)
       .json({ message: "An error occurred", error: error.message });
+  }
+});
+
+router.get("/applications", authenticateUser, async (req, res) => {
+  try {
+    const applications = await JobApplication.find().populate([
+      "jobId",
+      {
+        path: "jobId",
+        populate: {
+          path: "hiringTest",
+          model: "HiringTest",
+        },
+      },
+    ]);
+    res.status(200).json(applications);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.get("/applications/:id", authenticateUser, async (req, res) => {
+  try {
+    const jobId = req.params.id;
+    const applications = await JobApplication.find({
+      jobId,
+    }).populate([
+      "jobId",
+      "applicantId",
+      {
+        path: "applicantId",
+        populate: {
+          path: "userId",
+          model: "User",
+        },
+      },
+      {
+        path: "jobId",
+        populate: {
+          path: "hiringTest",
+          model: "HiringTest",
+        },
+      },
+    ]);
+    res.status(200).json(applications);
+  } catch (error) {
+    console.log(error);
   }
 });
 

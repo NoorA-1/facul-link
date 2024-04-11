@@ -18,11 +18,11 @@ const employerLinks = [
     path: "search-job",
     icon: <SearchOutlinedIcon />,
   },
-  {
-    text: "All Jobs",
-    path: "all-jobs",
-    icon: <WorkOutlineOutlinedIcon />,
-  },
+  // {
+  //   text: "All Jobs",
+  //   path: "all-jobs",
+  //   icon: <WorkOutlineOutlinedIcon />,
+  // },
   {
     text: "Post Job",
     path: "post-job",
