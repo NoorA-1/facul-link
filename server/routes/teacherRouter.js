@@ -49,10 +49,17 @@ router.get("/stats", authenticateUser, async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    const teacher = await Teacher.findOne({ userId: req.user.userId });
+
     const totalJobsCount = await Job.find({
       endDate: { $gte: today },
     }).countDocuments();
-    return res.status(200).json(totalJobsCount);
+
+    const totalApplicationsCount = await JobApplication.countDocuments({
+      applicantId: teacher._id,
+    });
+
+    return res.status(200).json({ totalJobsCount, totalApplicationsCount });
   } catch (error) {
     console.log(error);
   }
@@ -169,7 +176,12 @@ router.get(
   async (req, res) => {
     try {
       const jobId = req.params.id;
-      const jobApplication = await JobApplication.findOne({ jobId }); //add applicant id check
+      const userId = req.user.userId;
+      const applicantId = await Teacher.findOne({ userId });
+      const jobApplication = await JobApplication.findOne({
+        jobId,
+        applicantId,
+      });
 
       if (!jobApplication) {
         return res

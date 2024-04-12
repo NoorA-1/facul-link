@@ -17,6 +17,7 @@ export const loader = async () => {
   } catch (error) {
     // console.log(error);
     // return redirect("/");
+
     return null;
   }
 };

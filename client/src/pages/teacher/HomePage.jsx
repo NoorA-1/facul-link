@@ -22,6 +22,8 @@ const HomePage = () => {
       setJobsData(data);
       const { data: newStatsData } = await http.get("/teacher/stats");
       setStatsData(newStatsData);
+
+      console.log(newStatsData);
     } catch (error) {
       console.log(error);
     }
@@ -53,14 +55,20 @@ const HomePage = () => {
       <div className="d-flex flex-column flex-md-row gap-5">
         <HomePageCard
           cardText="Total Jobs"
-          digit={Boolean(statsData) ? statsData : 0}
+          digit={
+            Boolean(statsData?.totalJobsCount) ? statsData.totalJobsCount : 0
+          }
           color="#005F73"
         >
           <CasesOutlinedIcon className="mt-2 mb-3" sx={{ color: "#005F73" }} />
         </HomePageCard>
         <HomePageCard
           cardText="Applications Submitted"
-          digit={0}
+          digit={
+            Boolean(statsData?.totalApplicationsCount)
+              ? statsData.totalApplicationsCount
+              : 0
+          }
           color="#00733D"
         >
           <AssignmentTurnedInOutlinedIcon

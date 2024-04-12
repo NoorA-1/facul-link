@@ -402,6 +402,19 @@ router.get("/search-jobs/filters", authenticateUser, async (req, res) => {
   }
 });
 
+router.get("/teacher/:id", authenticateUser, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const teacher = await Teacher.findOne({ userId }).populate("userId");
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+    return res.status(200).json(teacher);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 router.get("/search-jobs", authenticateUser, async (req, res) => {
   try {
     const {

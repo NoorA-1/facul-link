@@ -116,27 +116,31 @@ const JobPage = () => {
 
   const checkTestStatusAndRedirect = async (jobId, testId = null) => {
     try {
-      const { data } = await http.get(
-        `/teacher/job-application/test-status/${jobId}`
-      );
+      if (userData.user.userId.role === "teacher") {
+        const { data } = await http.get(
+          `/teacher/job-application/test-status/${jobId}`
+        );
+        console.log(data);
+        if (data.notFound) {
+          return;
+        }
 
-      if (data.notFound) {
+        const { status } = data;
+        const { jobStatus } = data;
+
+        if (
+          Boolean(testId) &&
+          jobStatus === "pending" &&
+          (status === "pending" || status === "in progress")
+        ) {
+          setIsTestMode(true);
+          navigate(`/dashboard/job-application/hiring-test/${params.id}`);
+        } else if (jobStatus === "applied") {
+          setIsTestMode(false);
+          setIsJobApplied(true);
+        }
+      } else {
         return;
-      }
-
-      const { status } = data;
-      const { jobStatus } = data;
-
-      if (
-        Boolean(testId) &&
-        jobStatus === "pending" &&
-        (status === "pending" || status === "in progress")
-      ) {
-        setIsTestMode(true);
-        navigate(`/dashboard/job-application/hiring-test/${params.id}`);
-      } else if (jobStatus === "applied") {
-        setIsTestMode(false);
-        setIsJobApplied(true);
       }
     } catch (error) {
       console.log(error);
@@ -253,6 +257,8 @@ const JobPage = () => {
         formData.append("newResumeFile", resume.file);
       } else if (selectedValue === "a" && userData.user.resumeFile) {
         formData.append("resumeFile", userData.user.resumeFile);
+      } else if (resume.file) {
+        formData.append("newResumeFile", resume.file);
       }
 
       formData.append("contactNumber", contactNumber);

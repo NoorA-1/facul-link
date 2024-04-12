@@ -61,7 +61,7 @@ const EmployerHomePage = () => {
         </HomePageCard>
         <HomePageCard
           cardText="Total Applications Received"
-          digit={0}
+          digit={statsData?.totalApplicationsCount}
           color="#00733D"
         >
           <AssignmentTurnedInOutlinedIcon

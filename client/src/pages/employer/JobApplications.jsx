@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   TableContainer,
   Table,
@@ -12,10 +12,12 @@ import {
 import http from "../../utils/http";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
+import FolderOffOutlinedIcon from "@mui/icons-material/FolderOffOutlined";
 
 export const loader = async () => {
   try {
     const { data } = await http.get("/employer/applications");
+    console.log(data);
     return data;
   } catch (error) {
     console.log(error);
@@ -26,6 +28,15 @@ export const loader = async () => {
 const JobApplications = () => {
   const data = useLoaderData();
   const navigate = useNavigate();
+
+  const sortedData = useMemo(() => {
+    if (data && data.length > 0) {
+      return data.sort((a, b) => {
+        return new Date(a.jobId.endDate) - new Date(b.jobId.endDate);
+      });
+    }
+    return [];
+  }, [data]);
 
   return (
     <div className="mx-auto my-3">
@@ -66,8 +77,8 @@ const JobApplications = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.length > 0 &&
-                data.map((e, index) => (
+              {sortedData.length > 0 ? (
+                sortedData.map((e, index) => (
                   <TableRow
                     key={e.jobId._id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -113,7 +124,20 @@ const JobApplications = () => {
                       </Button>
                     </TableCell>
                   </TableRow>
-                ))}
+                ))
+              ) : (
+                <TableRow
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell
+                    colSpan="8"
+                    style={{ textAlign: "center", padding: 35 }}
+                  >
+                    <FolderOffOutlinedIcon color="disabled" fontSize="large" />
+                    <p className="text-secondary">No jobs found</p>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </TableContainer>

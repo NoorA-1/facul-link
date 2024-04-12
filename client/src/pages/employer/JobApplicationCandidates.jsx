@@ -44,7 +44,11 @@ const JobApplicationCandidates = () => {
   }, [params.id]);
 
   if (loading && !data) {
-    return <div>Loading</div>;
+    return (
+      <div className="spinner-border m-5" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+    );
   }
 
   const profileImage = (e) => {
@@ -87,15 +91,15 @@ const JobApplicationCandidates = () => {
         >
           Go Back
         </Button>
-        <h5 className="text-center fw-medium mt-3">
+        <h5 className="text-center fw-semibold mt-3">
           Candidates for Job:{" "}
-          <span className="fw-semibold">{data[0]?.jobId?.title}</span>
+          <span className="fw-medium">{data[0]?.jobId?.title}</span>
         </h5>
         <hr className="mb-" />
 
         <div
           className={`d-flex align-items-center flex-wrap my-3 ${
-            data.length === 1
+            data.length <= 2
               ? "justify-content-start"
               : "justify-content-around"
           }`}
@@ -165,6 +169,12 @@ const JobApplicationCandidates = () => {
                         color="secondary"
                         endIcon={<FileDownloadOutlinedIcon />}
                         fullWidth
+                        sx={{
+                          border: 1.5,
+                          ":hover": {
+                            border: 1.5,
+                          },
+                        }}
                       >
                         Resume
                       </Button>
@@ -180,6 +190,12 @@ const JobApplicationCandidates = () => {
                           `/dashboard/teacher-profile/${e.applicantId.userId._id}`
                         )
                       }
+                      sx={{
+                        border: 1.5,
+                        ":hover": {
+                          border: 1.5,
+                        },
+                      }}
                     >
                       Profile
                     </Button>
@@ -191,13 +207,19 @@ const JobApplicationCandidates = () => {
                           color="warning"
                           endIcon={<ScoreboardOutlinedIcon />}
                           fullWidth
+                          sx={{
+                            border: 1.5,
+                            ":hover": {
+                              border: 1.5,
+                            },
+                          }}
                         >
                           Test Report
                         </Button>
                       )}
                       {Boolean(e.status !== "pending") && (
                         <Button
-                          variant="outlined"
+                          variant="contained"
                           color="success"
                           endIcon={<MarkEmailReadOutlinedIcon />}
                           fullWidth

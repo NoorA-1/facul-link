@@ -23,11 +23,12 @@ export { default as GiveHiringTest } from "./teacher/GiveHiringTest";
 export { default as EmployerHomePage } from "./employer/EmployerHomePage";
 export { default as PostJobHome } from "./employer/PostJobHome";
 export { default as PostJob } from "./employer/PostJob";
-export { default as JobPage } from "./JobPage";
 export { default as HiringTests } from "./employer/HiringTests";
 export { default as AddHiringTest } from "./employer/AddHiringTest";
 export { default as JobApplications } from "./employer/JobApplications";
 export { default as JobApplicationCandidates } from "./employer/JobApplicationCandidates";
+export { default as JobPage } from "./JobPage";
+export { default as ViewTeacherProfile } from "./ViewTeacherProfile";
 export { default as ViewEmployerProfilePage } from "./ViewEmployerProfilePage";
 
 export { default as AdminDashboardLayout } from "./admin/AdminDashboardLayout";

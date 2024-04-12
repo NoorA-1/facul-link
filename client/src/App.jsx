@@ -42,6 +42,7 @@ import {
   SuccessPage,
   JobApplications,
   JobApplicationCandidates,
+  ViewTeacherProfile,
 } from "./pages";
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
@@ -301,6 +302,10 @@ const App = () => {
                 ) : (
                   token?.role === "employer" && <EmployerProfilePage />
                 ),
+            },
+            {
+              path: "teacher-profile/:id",
+              element: <ViewTeacherProfile />,
             },
             {
               path: "employer-profile/:id",

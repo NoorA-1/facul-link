@@ -23,7 +23,38 @@ router.get("/stats", authenticateUser, async (req, res) => {
       const totalTestsCount = await HiringTest.countDocuments({
         createdBy: employerData._id,
       });
-      return res.status(200).json({ totalJobsCount, totalTestsCount });
+      const totalApplicationsCount = await JobApplication.aggregate([
+        {
+          $lookup: {
+            from: "job",
+            localField: "jobId",
+            foreignField: "_id",
+            as: "jobDetails",
+          },
+        },
+        {
+          $unwind: "$jobDetails",
+        },
+        {
+          $match: {
+            "jobDetails.createdBy": employerData._id,
+          },
+        },
+        {
+          $count: "totalApplications",
+        },
+      ]);
+
+      const applicationCount =
+        totalApplicationsCount.length > 0
+          ? totalApplicationsCount[0].totalApplications
+          : 0;
+
+      return res.status(200).json({
+        totalJobsCount,
+        totalTestsCount,
+        totalApplicationsCount: applicationCount,
+      });
     } else {
       return res.status(404).json({ message: "Unauthorized" });
     }
@@ -303,16 +334,27 @@ router.get("/all-jobs/:num", authenticateUser, async (req, res) => {
 
 router.get("/applications", authenticateUser, async (req, res) => {
   try {
-    const applications = await JobApplication.find().populate([
-      "jobId",
-      {
+    const employer = await UniEmployer.findOne({ userId: req.user.userId });
+    if (!employer) {
+      return res.status(404).json({ message: "Employer not found" });
+    }
+    const jobIds = await Job.find({ createdBy: employer._id }).distinct("_id");
+
+    const applications = [];
+    for (const jobId of jobIds) {
+      const application = await JobApplication.findOne({
+        jobId: jobId,
+      }).populate({
         path: "jobId",
         populate: {
           path: "hiringTest",
           model: "HiringTest",
         },
-      },
-    ]);
+      });
+      if (application) {
+        applications.push(application);
+      }
+    }
     res.status(200).json(applications);
   } catch (error) {
     console.log(error);
