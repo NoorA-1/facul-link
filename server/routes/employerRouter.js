@@ -379,6 +379,17 @@ router.get("/applications/:id", authenticateUser, async (req, res) => {
       {
         path: "jobId",
         populate: {
+          path: "createdBy",
+          model: "UniEmployer",
+          populate: {
+            path: "userId",
+            model: "User",
+          },
+        },
+      },
+      {
+        path: "jobId",
+        populate: {
           path: "hiringTest",
           model: "HiringTest",
         },

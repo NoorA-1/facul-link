@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   TableContainer,
   Table,
@@ -10,7 +10,11 @@ import {
   Button,
   Modal,
   Box,
+  Tabs,
+  Tab,
+  MenuItem,
   IconButton,
+  TextField,
 } from "@mui/material";
 import http from "../../utils/http";
 import { useLoaderData, useNavigate, useParams } from "react-router-dom";
@@ -23,7 +27,7 @@ import ScoreboardOutlinedIcon from "@mui/icons-material/ScoreboardOutlined";
 import MarkEmailReadOutlinedIcon from "@mui/icons-material/MarkEmailReadOutlined";
 import { serverURL } from "../../utils/formData";
 
-const modalStyle = {
+const reportModalStyle = {
   position: "absolute",
   top: "50%",
   left: "50%",
@@ -37,24 +41,36 @@ const modalStyle = {
   p: 4,
 };
 
+const shortlistModalStyle = {
+  ...reportModalStyle,
+  width: "50%",
+};
+
 const JobApplicationCandidates = () => {
   const [loading, setIsLoading] = useState(true);
-  const [data, setData] = useState("");
+  const [data, setData] = useState([]);
   const params = useParams();
   const navigate = useNavigate();
+  const [tab, setTab] = useState("1");
   const [currentApplicationId, setCurrentApplicationId] = useState(null);
+  const [selectedOption, setSelectedOption] = useState("");
 
   const [open, setOpen] = useState({
     reportModal: false,
     shortlistModal: false,
   });
-  const handleOpen = (name, id) => {
+  const handleModalOpen = (name, id) => {
     setCurrentApplicationId(() => id);
     setOpen((prev) => ({ ...prev, [name]: true }));
   };
-  const handleClose = (name, id) => {
+  const handleModalClose = (name) => {
     setCurrentApplicationId(null);
+    setSelectedOption("");
     setOpen((prev) => ({ ...prev, [name]: false }));
+  };
+
+  const handleTab = (event, newValue) => {
+    setTab(newValue);
   };
 
   const getData = async () => {
@@ -73,6 +89,19 @@ const JobApplicationCandidates = () => {
       setIsLoading(false);
     }
   }, [params.id]);
+
+  const filteredData = data.filter((e) => {
+    switch (tab) {
+      case "1":
+        return true;
+      case "2":
+        return e.status === "shortlisted";
+      case "3":
+        return e.status === "rejected";
+      default:
+        return true;
+    }
+  });
 
   if (loading && !data) {
     return (
@@ -106,6 +135,42 @@ const JobApplicationCandidates = () => {
     return scorePercentage;
   };
 
+  const defaultEmail = (
+    candidateName,
+    jobTitle,
+    employerName,
+    departmentName,
+    universityName
+  ) => `Dear ${candidateName},
+
+We are pleased to inform you that you have been shortlisted for the ${jobTitle} position at ${universityName}. Further details regarding the next steps of the recruitment process will be communicated to you shortly.
+  
+Best regards,
+${employerName}
+${departmentName}
+${universityName}
+`;
+
+  const handleEmailBody = () => {
+    const currentApplication = data.find(
+      (application) => application._id === currentApplicationId
+    );
+    console.log(currentApplication);
+    return currentApplication
+      ? defaultEmail(
+          currentApplication.applicantId.userId?.firstname +
+            " " +
+            currentApplication.applicantId.userId?.lastname,
+          currentApplication.jobId.title,
+          currentApplication.jobId.createdBy.userId?.firstname +
+            " " +
+            currentApplication.jobId.createdBy.userId?.lastname,
+          currentApplication.jobId.createdBy?.departmentName + " Department",
+          currentApplication.jobId.createdBy?.universityName
+        )
+      : "Loading...";
+  };
+
   return (
     <div className="mx-auto my-3">
       <div className="bg-white py-4 rounded grey-border px-5">
@@ -126,8 +191,14 @@ const JobApplicationCandidates = () => {
           Candidates for Job:{" "}
           <span className="fw-medium">{data[0]?.jobId?.title}</span>
         </h5>
-        <hr className="mb-" />
+        <hr className="mt-3 m-0" />
+        <Tabs value={tab} onChange={handleTab}>
+          <Tab label="All" value="1" />
+          <Tab label="Shortlisted" value="2" />
+          <Tab label="Rejected" value="3" />
+        </Tabs>
 
+        <hr className="mt-0" />
         <div
           className={`d-flex align-items-center flex-wrap my-3 ${
             data.length <= 2
@@ -138,8 +209,8 @@ const JobApplicationCandidates = () => {
             gap: "20px",
           }}
         >
-          {data.length > 0 &&
-            data.map((e, index) => (
+          {filteredData.length > 0 &&
+            filteredData.map((e, index) => (
               <div
                 className="candidate-card p-3 rounded shadow w-25"
                 style={{
@@ -241,7 +312,7 @@ const JobApplicationCandidates = () => {
                             border: 1.5,
                           },
                         }}
-                        onClick={() => handleOpen("reportModal", e._id)}
+                        onClick={() => handleModalOpen("reportModal", e._id)}
                       >
                         Test Report
                       </Button>
@@ -252,6 +323,7 @@ const JobApplicationCandidates = () => {
                         color="success"
                         endIcon={<MarkEmailReadOutlinedIcon />}
                         fullWidth
+                        onClick={() => handleModalOpen("shortlistModal", e._id)}
                       >
                         Shortlist
                       </Button>
@@ -263,9 +335,9 @@ const JobApplicationCandidates = () => {
         </div>
         <Modal
           open={open.reportModal}
-          onClose={() => handleClose("reportModal")}
+          onClose={() => handleModalClose("reportModal")}
         >
-          <Box sx={modalStyle}>
+          <Box sx={reportModalStyle}>
             <h4 className="fw-semibold text-center">Test Results</h4>
             <hr />
             {data.length > 0 &&
@@ -347,6 +419,54 @@ const JobApplicationCandidates = () => {
                 }
                 return null;
               })}
+          </Box>
+        </Modal>
+
+        <Modal
+          open={open.shortlistModal}
+          onClose={() => handleModalClose("shortlistModal")}
+        >
+          <Box sx={shortlistModalStyle}>
+            <h4 className="fw-semibold text-center">Shortlist Candidate</h4>
+            <hr />
+
+            <div className="d-flex flex-column align-items-center justify-content-center mt-4">
+              <TextField
+                select
+                label="Select Option"
+                value={selectedOption}
+                onChange={(event) => setSelectedOption(event.target.value)}
+                className="w-25"
+              >
+                <MenuItem value="shortlisted">Shortlist</MenuItem>
+                <MenuItem value="rejected">Reject</MenuItem>
+              </TextField>
+              {selectedOption === "shortlisted" && (
+                <>
+                  <h6 className="mt-3 fw-semibold align-self-start">Email</h6>
+                  <TextField
+                    fullWidth
+                    label="Subject"
+                    className="mb-3"
+                    defaultValue={`Shortlisted for ${data[0]?.jobId.title} Position`}
+                  />
+                  <TextField
+                    multiline
+                    fullWidth
+                    rows={10}
+                    label="Body"
+                    defaultValue={handleEmailBody()}
+                  />
+                </>
+              )}
+              <Button
+                variant="contained"
+                className="w-50 mt-5"
+                disabled={selectedOption === ""}
+              >
+                Submit
+              </Button>
+            </div>
           </Box>
         </Modal>
       </div>
