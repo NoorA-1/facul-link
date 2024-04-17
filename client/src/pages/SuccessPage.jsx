@@ -10,7 +10,7 @@ const SuccessPage = () => {
   const navigate = useNavigate();
 
   const defaultOptions = {
-    loop: true,
+    loop: false,
     autoplay: true,
     animationData: successLottie,
     rendererSettings: {

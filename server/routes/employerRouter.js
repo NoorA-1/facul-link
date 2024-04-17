@@ -10,6 +10,7 @@ import { validationResult } from "express-validator";
 import mongoose, { Schema, SchemaTypes } from "mongoose";
 import Job from "../models/jobModel.js";
 import JobApplication from "../models/jobApplicationModel.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 router.get("/stats", authenticateUser, async (req, res) => {
   try {
@@ -396,6 +397,26 @@ router.get("/applications/:id", authenticateUser, async (req, res) => {
       },
     ]);
     res.status(200).json(applications);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.post("/notify", authenticateUser, async (req, res) => {
+  try {
+    const reqBody = req.body;
+    const employer = await UniEmployer.findOne({
+      userId: req.user.userId,
+    }).populate("userId");
+    const info = await sendEmail(
+      `"${employer.userId.firstname} ${employer.userId.lastname}" <${employer.userId.email}>`,
+      reqBody.email,
+      reqBody.subject,
+      reqBody.text
+      // `<p>${reqBody.text}</p>`
+    );
+
+    return res.status(200).json({ message: "Email sent successfully", info });
   } catch (error) {
     console.log(error);
   }

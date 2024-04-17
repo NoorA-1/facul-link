@@ -312,21 +312,23 @@ const JobPage = () => {
                   Bookmark
                 </Button>
               ) : (
-                <Button
-                  startIcon={<BookmarkOutlinedIcon />}
-                  onClick={() => unBookmarkJob(jobData._id)}
-                  className="mt-3 mt-lg-0 "
-                  variant="outlined"
-                  size="small"
-                  sx={{
-                    border: 2,
-                    ":hover": {
+                userData.user.userId.role === "teacher" && (
+                  <Button
+                    startIcon={<BookmarkOutlinedIcon />}
+                    onClick={() => unBookmarkJob(jobData._id)}
+                    className="mt-3 mt-lg-0 "
+                    variant="outlined"
+                    size="small"
+                    sx={{
                       border: 2,
-                    },
-                  }}
-                >
-                  Unbookmark
-                </Button>
+                      ":hover": {
+                        border: 2,
+                      },
+                    }}
+                  >
+                    Unbookmark
+                  </Button>
+                )
               )}
             </div>
             <div className="d-flex align-items-center mt-3 mb-4 flex-wrap">
