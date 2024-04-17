@@ -38,7 +38,7 @@ Backend Packages:
   <li>Nodemon</li>
 </ol>
 
-The emailConfig.js file is excluded from the repository as I do not want my credentials to be shared. It contains the code:
+The emailConfig.js file in "server\utils" is excluded from the repository as I do not want my credentials to be shared. It contains the code:
 
 ```
 const config = {
