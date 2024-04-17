@@ -8,8 +8,8 @@ import { EmployerEditProfileForm } from "../../components";
 import http from "../../utils/http";
 
 const ProfilePage = () => {
-  const { userData: initialUserData } = useDashboardContext();
-  const [userData, setUserData] = useState(initialUserData);
+  const { userData, setUserData } = useDashboardContext();
+  // const [userData, setUserData] = useState(initialUserData);
   const [editMode, setEditMode] = useState(false);
   // console.log(userData);
   const serverURL = "http://localhost:3000/";

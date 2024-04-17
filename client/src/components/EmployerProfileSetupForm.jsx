@@ -144,8 +144,6 @@ const EmployerProfileSetupForm = ({ userData }) => {
     universityLogo: "",
   });
 
-  console.log(imageFileError);
-
   const ProfileImageMessageBox = () => {
     if (imageFileError.profileImage) {
       return (

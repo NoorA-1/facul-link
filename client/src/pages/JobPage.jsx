@@ -436,17 +436,19 @@ const JobPage = () => {
                   jobData.createdBy.profileImage &&
                   jobData.createdBy.profileImage.split("public\\")[1]
                 }`}
-                sx={{ width: 80, height: 80 }}
+                sx={{ width: 80, height: 80, border: "1px solid #0A9396" }}
               />
-              <h4 className="fw-semibold">{`${jobData.createdBy.userId.firstname} ${jobData.createdBy.userId.lastname}`}</h4>
+              <h4 className="mt-3 fw-semibold">{`${jobData.createdBy.userId.firstname} ${jobData.createdBy.userId.lastname}`}</h4>
               <p>{jobData.createdBy.departmentName} Department</p>
               <hr className="w-100" />
               <div className="d-flex align-items-center gap-2">
                 <Avatar
-                  src={`${serverURL}${
+                  src={
                     jobData.createdBy.universityLogo &&
-                    jobData.createdBy.universityLogo.split("public\\")[1]
-                  }`}
+                    `${serverURL}${
+                      jobData.createdBy.universityLogo.split("public\\")[1]
+                    }`
+                  }
                   variant="rounded"
                   sx={{ width: 40, height: 40 }}
                   className="mt-1"
