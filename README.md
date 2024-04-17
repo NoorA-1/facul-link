@@ -45,7 +45,6 @@ const config = {
   service: "gmail",
   host: "smtp.gmail.com",
   port: "587",
-  // service: process.env.SMTP_SERVICE,
   auth: {
     user: email,
     pass: app_password,
