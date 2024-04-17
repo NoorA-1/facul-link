@@ -21,6 +21,7 @@ const GiveHiringTest = () => {
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [questionsArray, setQuestionsArray] = useState([]);
+  const [currentSelection, setCurrentSelection] = useState("");
   const [answers, setAnswers] = useState([
     {
       questionId: "",
@@ -86,6 +87,92 @@ const GiveHiringTest = () => {
       }
     }
   }, [jobData]);
+
+  const handleNextButtonClick = () => {
+    if (!currentSelection) {
+      setError("Option must be selected");
+      return;
+    }
+
+    setAnswers((prevAnswers) => {
+      const updatedAnswers = [...prevAnswers];
+      updatedAnswers[currentQuestionIndex] = {
+        questionId: questionsArray[currentQuestionIndex]._id,
+        answer: currentSelection,
+      };
+
+      saveAnswer(updatedAnswers);
+
+      return updatedAnswers;
+    });
+
+    setCurrentQuestionIndex((prev) => prev + 1);
+    setCurrentSelection("");
+    setError(null);
+  };
+
+  useEffect(() => {
+    const currentAnswer = answers.find(
+      (answer) =>
+        answer.questionId === questionsArray[currentQuestionIndex]?._id
+    );
+    if (currentAnswer) {
+      setCurrentSelection(currentAnswer.answer);
+    } else {
+      setCurrentSelection("");
+    }
+  }, [currentQuestionIndex, answers, questionsArray]);
+
+  const handleSubmitButtonClick = () => {
+    setAnswers((prevAnswers) => {
+      const updatedAnswers = [...prevAnswers];
+      updatedAnswers[currentQuestionIndex] = {
+        questionId: questionsArray[currentQuestionIndex]._id,
+        answer: currentSelection,
+      };
+
+      saveAnswer(updatedAnswers);
+
+      return updatedAnswers;
+    });
+
+    setError(null);
+  };
+
+  //last answer useEffect
+  useEffect(() => {
+    if (
+      currentQuestionIndex === questionsArray.length - 1 &&
+      currentSelection !== ""
+    ) {
+      submitTest();
+    }
+  }, [answers]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        syncTimeWithServer();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
+  const syncTimeWithServer = async () => {
+    try {
+      const response = await http.get(
+        `/teacher/job-application/time-sync/${params.jobId}`
+      );
+      setTimeLeft(response.data.remainingTime);
+    } catch (error) {
+      console.error("Failed to sync time with server:", error);
+    }
+  };
 
   const submitTest = async () => {
     try {
@@ -290,26 +377,10 @@ const GiveHiringTest = () => {
                       <FormControlLabel
                         control={
                           <Radio
-                            checked={
-                              answers[currentQuestionIndex]?.answer ===
-                              option.optionLabel
+                            checked={currentSelection === option.optionLabel}
+                            onChange={() =>
+                              setCurrentSelection(option.optionLabel)
                             }
-                            onChange={() => {
-                              setAnswers((prevAnswers) => {
-                                const updatedAnswers = [...prevAnswers];
-                                updatedAnswers[currentQuestionIndex] = {
-                                  ...updatedAnswers[currentQuestionIndex],
-                                  questionId:
-                                    questionsArray[currentQuestionIndex]._id,
-                                  answer: option.optionLabel,
-                                };
-
-                                saveAnswer(updatedAnswers);
-
-                                return updatedAnswers;
-                              });
-                              setError(null);
-                            }}
                             value={option.optionValue}
                             name="radio-buttons"
                             color="primary"
@@ -342,17 +413,7 @@ const GiveHiringTest = () => {
                 {currentQuestionIndex < questionsArray.length - 1 && (
                   <Button
                     variant="outlined"
-                    onClick={() => {
-                      if (
-                        answers[currentQuestionIndex] &&
-                        answers[currentQuestionIndex]?.answer !== ""
-                      ) {
-                        setCurrentQuestionIndex((prev) => prev + 1);
-                        setError(null);
-                      } else {
-                        setError("Option must be selected");
-                      }
-                    }}
+                    onClick={handleNextButtonClick}
                     sx={{
                       border: 2,
                       ":hover": {
@@ -368,12 +429,8 @@ const GiveHiringTest = () => {
                   <Button
                     variant="contained"
                     onClick={() => {
-                      if (
-                        answers[currentQuestionIndex] &&
-                        answers[currentQuestionIndex]?.answer !== ""
-                      ) {
-                        submitTest();
-                        setError(null);
+                      if (currentSelection && currentSelection !== "") {
+                        handleSubmitButtonClick();
                       } else {
                         setError("Option must be selected");
                       }

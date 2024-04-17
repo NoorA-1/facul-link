@@ -7,9 +7,9 @@ import { authenticateUser } from "../middlewares/authMiddleware.js";
 import { validationResult } from "express-validator";
 import mongoose, { Schema, SchemaTypes } from "mongoose";
 import Job from "../models/jobModel.js";
-import fs from "fs";
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 import JobApplication from "../models/jobApplicationModel.js";
 import HiringTest from "../models/hiringTestModel.js";
 
@@ -151,13 +151,34 @@ router.post(
           // status: "pending",
         });
         let filePath;
+        const dir = `public\\uploads\\${req.user.userId}\\job-application\\${req.body.jobId}`;
 
         if (req.file) {
           filePath = req.file.path;
           newApplication.resumeFile = filePath;
+        } else if (applicationInfo.resumeFile) {
+          newApplication.resumeFile =
+            dir + applicationInfo.resumeFile.split("\\documents")[1];
         }
 
         await newApplication.save();
+
+        //copy the file in application directory if profile resume is used
+        if (!req.file && applicationInfo.resumeFile) {
+          if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+          }
+
+          try {
+            fs.copyFileSync(
+              applicationInfo.resumeFile,
+              newApplication.resumeFile
+            );
+          } catch (copyErr) {
+            console.error("Error copying file:", copyErr);
+            return res.status(500).json({ message: "Failed to copy file." });
+          }
+        }
         return res
           .status(200)
           .json({ message: "Job application submitted successfully" });
@@ -307,6 +328,39 @@ router.put(
       return res.status(200).json({
         message: "Test successfully completed",
         lateEntry: lateEntry,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+router.get(
+  "/job-application/time-sync/:jobId",
+  authenticateUser,
+  async (req, res) => {
+    try {
+      const { jobId } = req.params;
+      const teacher = await Teacher.findOne({ userId: req.user.userId });
+      const applicant = await JobApplication.findOne({
+        jobId,
+        applicantId: teacher._id,
+      });
+
+      if (!applicant) {
+        return res.status(404).json({ message: "Job application not found." });
+      }
+
+      const endTime = new Date(applicant.test.endTime);
+      const currentTime = new Date();
+      const remainingTimeInSeconds = Math.max(
+        0,
+        Math.floor((endTime - currentTime) / 1000)
+      );
+
+      return res.status(200).json({
+        remainingTime: remainingTimeInSeconds,
+        message: "Remaining time fetched successfully.",
       });
     } catch (error) {
       console.log(error);

@@ -112,11 +112,11 @@ const JobApplicationCandidates = () => {
   }
 
   const profileImage = (e) => {
-    return serverURL + e.applicantId.profileImage.split("public\\")[1];
+    return serverURL + e.applicantId?.profileImage?.split("public\\")[1];
   };
 
   const resumeFileName = (e) => {
-    const parts = e.resumeFile.split("\\");
+    const parts = e?.resumeFile.split("\\");
     const fileName = parts[parts.length - 1];
     return fileName;
   };
@@ -227,7 +227,7 @@ ${universityName}
                       width: 80,
                       height: 80,
                     }}
-                  >{`${e.applicantId.userId.firstname}[0] ${e.applicantId.userId.lastname}[0]`}</Avatar>
+                  >{`${e.applicantId.userId.firstname[0]} ${e.applicantId.userId.lastname[0]}`}</Avatar>
 
                   <h5 className="mt-3 mb-0 fw-semibold">
                     {`${e.applicantId.userId.firstname} ${e.applicantId.userId.lastname}`}
