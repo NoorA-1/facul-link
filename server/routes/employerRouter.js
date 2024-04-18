@@ -362,9 +362,9 @@ router.get("/applications", authenticateUser, async (req, res) => {
   }
 });
 
-router.get("/applications/:id", authenticateUser, async (req, res) => {
+router.get("/applications/:jobId", authenticateUser, async (req, res) => {
   try {
-    const jobId = req.params.id;
+    const jobId = req.params.jobId;
     const applications = await JobApplication.find({
       jobId,
     }).populate([
@@ -402,12 +402,15 @@ router.get("/applications/:id", authenticateUser, async (req, res) => {
   }
 });
 
-router.post("/notify", authenticateUser, async (req, res) => {
+router.post("/review/:applicationId", authenticateUser, async (req, res) => {
   try {
     const reqBody = req.body;
     const employer = await UniEmployer.findOne({
       userId: req.user.userId,
     }).populate("userId");
+
+    const application = await JobApplication.findById(req.params.applicationId);
+
     const info = await sendEmail(
       `"${employer.userId.firstname} ${employer.userId.lastname}" <${employer.userId.email}>`,
       reqBody.email,
@@ -416,7 +419,12 @@ router.post("/notify", authenticateUser, async (req, res) => {
       // `<p>${reqBody.text}</p>`
     );
 
-    return res.status(200).json({ message: "Email sent successfully", info });
+    application.status = reqBody.status;
+    await application.save();
+
+    return res
+      .status(200)
+      .json({ message: "Candidate shortlisted sent successfully", info });
   } catch (error) {
     console.log(error);
   }

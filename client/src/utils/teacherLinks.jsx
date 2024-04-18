@@ -22,7 +22,7 @@ const teacherLinks = [
   //   icon: <WorkOutlineOutlinedIcon />,
   // },
   {
-    text: "Application History",
+    text: "My Applications",
     path: "application-history",
     icon: <WorkHistoryOutlinedIcon />,
   },

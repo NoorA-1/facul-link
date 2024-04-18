@@ -420,3 +420,22 @@ export const submitJobApplicationValidationSchema = Yup.object({
       "Contact Number must start with +92 followed by exactly 10 digits"
     ),
 });
+
+export const emailFormValidationSchema = Yup.object({
+  emailSubject: Yup.string()
+    .required("Email subject is required")
+    .min(5, "Email subject must be at least 5 characters long")
+    .test(
+      "is-empty-after-trim",
+      "Email subject cannot be empty or only whitespace",
+      (value) => value.trim() !== ""
+    ),
+  emailBody: Yup.string()
+    .required("Email body is required")
+    .min(5, "Email body must be at least 30 characters long")
+    .test(
+      "is-empty-after-trim",
+      "Email body cannot be empty or only whitespace",
+      (value) => value.trim() !== ""
+    ),
+});

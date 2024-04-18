@@ -25,7 +25,10 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import ScoreboardOutlinedIcon from "@mui/icons-material/ScoreboardOutlined";
 import MarkEmailReadOutlinedIcon from "@mui/icons-material/MarkEmailReadOutlined";
+import PersonOffOutlinedIcon from "@mui/icons-material/PersonOffOutlined";
 import { serverURL } from "../../utils/formData";
+import { emailFormValidationSchema } from "../../schemas";
+import { useFormik } from "formik";
 
 const reportModalStyle = {
   position: "absolute",
@@ -46,6 +49,11 @@ const shortlistModalStyle = {
   width: "50%",
 };
 
+const emailFormInitialValues = {
+  emailSubject: "",
+  emailBody: "",
+};
+
 const JobApplicationCandidates = () => {
   const [loading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
@@ -54,10 +62,11 @@ const JobApplicationCandidates = () => {
   const [tab, setTab] = useState("1");
   const [currentApplicationId, setCurrentApplicationId] = useState(null);
   const [selectedOption, setSelectedOption] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [open, setOpen] = useState({
     reportModal: false,
-    shortlistModal: false,
+    reviewModal: false,
   });
   const handleModalOpen = (name, id) => {
     setCurrentApplicationId(() => id);
@@ -66,6 +75,7 @@ const JobApplicationCandidates = () => {
   const handleModalClose = (name) => {
     setCurrentApplicationId(null);
     setSelectedOption("");
+    emailFormik.resetForm();
     setOpen((prev) => ({ ...prev, [name]: false }));
   };
 
@@ -83,6 +93,29 @@ const JobApplicationCandidates = () => {
     }
   };
 
+  const Options = ({ applicationId }) => {
+    const application = data.find((app) => app._id === applicationId);
+
+    return (
+      <TextField
+        select
+        label="Select Option"
+        value={selectedOption}
+        onChange={(event) => {
+          setSelectedOption(event.target.value);
+        }}
+        className="w-25"
+      >
+        {application && application.status !== "shortlisted" && (
+          <MenuItem value="shortlisted">Shortlist</MenuItem>
+        )}
+        {application && application.status !== "rejected" && (
+          <MenuItem value="rejected">Reject</MenuItem>
+        )}
+      </TextField>
+    );
+  };
+
   useEffect(() => {
     if (params.id) {
       getData();
@@ -93,7 +126,7 @@ const JobApplicationCandidates = () => {
   const filteredData = data.filter((e) => {
     switch (tab) {
       case "1":
-        return true;
+        return e.status === "applied";
       case "2":
         return e.status === "shortlisted";
       case "3":
@@ -140,9 +173,12 @@ const JobApplicationCandidates = () => {
     jobTitle,
     employerName,
     departmentName,
-    universityName
-  ) => `Dear ${candidateName},
-
+    universityName,
+    selectedOption
+  ) => {
+    if (selectedOption === "shortlisted") {
+      return `Dear ${candidateName},
+  
 We are pleased to inform you that you have been shortlisted for the ${jobTitle} position at ${universityName}. Further details regarding the next steps of the recruitment process will be communicated to you shortly.
   
 Best regards,
@@ -150,13 +186,24 @@ ${employerName}
 ${departmentName}
 ${universityName}
 `;
+    } else if (selectedOption === "rejected") {
+      return `Dear ${candidateName},
+  
+Thank you for your interest in the ${jobTitle} position at ${universityName}. After careful consideration, we regret to inform you that we will not be moving forward with your application. We appreciate the time you invested in your application and encourage you to apply for future opportunities that match your qualifications.
+  
+Best regards,
+${employerName}
+${departmentName}
+${universityName}
+`;
+    }
+  };
 
-  const handleEmailBody = () => {
+  const handleEmailText = () => {
     const currentApplication = data.find(
       (application) => application._id === currentApplicationId
     );
-    console.log(currentApplication);
-    return currentApplication
+    const emailBody = currentApplication
       ? defaultEmail(
           currentApplication.applicantId.userId?.firstname +
             " " +
@@ -166,10 +213,60 @@ ${universityName}
             " " +
             currentApplication.jobId.createdBy.userId?.lastname,
           currentApplication.jobId.createdBy?.departmentName + " Department",
-          currentApplication.jobId.createdBy?.universityName
+          currentApplication.jobId.createdBy?.universityName,
+          selectedOption
         )
       : "Loading...";
+    emailFormik.setValues({
+      emailSubject:
+        selectedOption === "shortlisted"
+          ? `Shortlisted for ${currentApplication.jobId.title} Position`
+          : selectedOption === "rejected" &&
+            `Rejected for ${currentApplication.jobId.title} Position`,
+      emailBody: emailBody,
+    });
   };
+
+  useEffect(() => {
+    handleEmailText();
+  }, [selectedOption]);
+
+  const submitReviewForm = async () => {
+    setIsSubmitting(() => true);
+    try {
+      const currentApplication = data.find(
+        (application) => application._id === currentApplicationId
+      );
+      const sendData = {
+        email: currentApplication.applicantId.userId.email,
+        subject: emailFormik.values.emailSubject,
+        text: emailFormik.values.emailBody,
+        status: selectedOption,
+      };
+      const response = await http.post(
+        `/employer/review/${currentApplication._id}`,
+        sendData
+      );
+      console.log(response);
+
+      if (response.status === 200) {
+        getData();
+        handleModalClose("reviewModal");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const emailFormik = useFormik({
+    initialValues: emailFormInitialValues,
+    validationSchema: emailFormValidationSchema,
+    onSubmit: () => {
+      submitReviewForm();
+    },
+  });
 
   return (
     <div className="mx-auto my-3">
@@ -183,7 +280,7 @@ ${universityName}
             },
           }}
           startIcon={<ArrowBackOutlinedIcon />}
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/dashboard/job-applications")}
         >
           Go Back
         </Button>
@@ -193,7 +290,7 @@ ${universityName}
         </h5>
         <hr className="mt-3 m-0" />
         <Tabs value={tab} onChange={handleTab}>
-          <Tab label="All" value="1" />
+          <Tab label="Active" value="1" />
           <Tab label="Shortlisted" value="2" />
           <Tab label="Rejected" value="3" />
         </Tabs>
@@ -209,7 +306,7 @@ ${universityName}
             gap: "20px",
           }}
         >
-          {filteredData.length > 0 &&
+          {filteredData.length > 0 ? (
             filteredData.map((e, index) => (
               <div
                 className="candidate-card p-3 rounded shadow w-25"
@@ -323,15 +420,23 @@ ${universityName}
                         color="success"
                         endIcon={<MarkEmailReadOutlinedIcon />}
                         fullWidth
-                        onClick={() => handleModalOpen("shortlistModal", e._id)}
+                        onClick={() => handleModalOpen("reviewModal", e._id)}
                       >
-                        Shortlist
+                        Review
                       </Button>
                     )}
                   </div>
                 </div>
               </div>
-            ))}
+            ))
+          ) : (
+            <div className="d-flex align-items-center justify-content-center p-5 w-100 bg-body-secondary rounded">
+              <div className="d-flex flex-column align-items-center ">
+                <PersonOffOutlinedIcon color="disabled" fontSize="large" />
+                <p className="text-secondary m-0">No candidates</p>
+              </div>
+            </div>
+          )}
         </div>
         <Modal
           open={open.reportModal}
@@ -423,50 +528,73 @@ ${universityName}
         </Modal>
 
         <Modal
-          open={open.shortlistModal}
-          onClose={() => handleModalClose("shortlistModal")}
+          open={open.reviewModal}
+          onClose={() => handleModalClose("reviewModal")}
         >
           <Box sx={shortlistModalStyle}>
-            <h4 className="fw-semibold text-center">Shortlist Candidate</h4>
+            <h4 className="fw-semibold text-center">Review Candidate</h4>
             <hr />
-
-            <div className="d-flex flex-column align-items-center justify-content-center mt-4">
-              <TextField
-                select
-                label="Select Option"
-                value={selectedOption}
-                onChange={(event) => setSelectedOption(event.target.value)}
-                className="w-25"
-              >
-                <MenuItem value="shortlisted">Shortlist</MenuItem>
-                <MenuItem value="rejected">Reject</MenuItem>
-              </TextField>
-              {selectedOption === "shortlisted" && (
-                <>
-                  <h6 className="mt-3 fw-semibold align-self-start">Email</h6>
-                  <TextField
-                    fullWidth
-                    label="Subject"
-                    className="mb-3"
-                    defaultValue={`Shortlisted for ${data[0]?.jobId.title} Position`}
-                  />
-                  <TextField
-                    multiline
-                    fullWidth
-                    rows={10}
-                    label="Body"
-                    defaultValue={handleEmailBody()}
-                  />
-                </>
-              )}
-              <Button
-                variant="contained"
-                className="w-50 mt-5"
-                disabled={selectedOption === ""}
-              >
-                Submit
-              </Button>
-            </div>
+            <form onSubmit={emailFormik.handleSubmit}>
+              <div className="d-flex flex-column align-items-center justify-content-center mt-4">
+                <Options applicationId={currentApplicationId} />
+                {Boolean(selectedOption) && (
+                  <>
+                    <h6 className="mt-3 fw-semibold align-self-start">Email</h6>
+                    <TextField
+                      fullWidth
+                      label="Subject"
+                      className="mb-3"
+                      onChange={emailFormik.handleChange}
+                      onBlur={emailFormik.handleBlur}
+                      name="emailSubject"
+                      value={emailFormik.values.emailSubject}
+                      error={
+                        Boolean(emailFormik.touched.emailSubject) &&
+                        Boolean(emailFormik.errors.emailSubject)
+                      }
+                      helperText={
+                        Boolean(emailFormik.errors.emailSubject) &&
+                        Boolean(emailFormik.touched.emailSubject) &&
+                        emailFormik.errors.emailSubject
+                      }
+                    />
+                    <TextField
+                      multiline
+                      fullWidth
+                      rows={10}
+                      label="Body"
+                      onChange={emailFormik.handleChange}
+                      onBlur={emailFormik.handleBlur}
+                      name="emailBody"
+                      value={emailFormik.values.emailBody}
+                      error={
+                        Boolean(emailFormik.touched.emailBody) &&
+                        Boolean(emailFormik.errors.emailBody)
+                      }
+                      helperText={
+                        Boolean(emailFormik.errors.emailBody) &&
+                        Boolean(emailFormik.touched.emailBody) &&
+                        emailFormik.errors.emailBody
+                      }
+                    />
+                  </>
+                )}
+                <Button
+                  variant="contained"
+                  className="w-50 mt-5"
+                  disabled={selectedOption === "" || isSubmitting}
+                  type="submit"
+                >
+                  {isSubmitting ? (
+                    <div className="d-flex justify-content-center">
+                      <div className="spinner-border"></div>
+                    </div>
+                  ) : (
+                    "Submit"
+                  )}
+                </Button>
+              </div>
+            </form>
           </Box>
         </Modal>
       </div>
