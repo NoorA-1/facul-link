@@ -13,6 +13,7 @@ import fs from "fs";
 import multer from "multer";
 import path from "path";
 import Job from "../models/jobModel.js";
+import Notifications from "../models/notificationsModel.js";
 
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
@@ -357,6 +358,18 @@ router.put(
     }
   }
 );
+
+router.get("/notifications", authenticateUser, async (req, res) => {
+  try {
+    const notifications = await Notifications.find({
+      userId: req.user.userId,
+    });
+
+    return res.status(200).json(notifications);
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 router.get("/search-jobs/filters", authenticateUser, async (req, res) => {
   try {

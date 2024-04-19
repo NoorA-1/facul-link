@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 import { BigSidebar, SmallSidebar, Header } from "../components";
 import {
   NavLink,
@@ -11,6 +17,7 @@ import {
   Button,
   Menu,
   MenuItem,
+  Badge,
   Avatar,
   useMediaQuery,
   IconButton,
@@ -18,6 +25,7 @@ import {
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import PendingOutlinedIcon from "@mui/icons-material/PendingOutlined";
 import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
+import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import http from "../utils/http";
 import { io } from "socket.io-client";
@@ -25,7 +33,14 @@ const DashboardContext = createContext();
 
 export const loader = async () => {
   try {
-    const { data } = await http.get("/users/current-user");
+    const { data: userData } = await http.get("/users/current-user");
+    const { data: notificationsData } = await http.get("/users/notifications");
+
+    const data = {
+      userData,
+      notificationsData,
+    };
+
     return data;
   } catch (error) {
     const { data } = await http.get("/auth/sign-out");
@@ -35,8 +50,11 @@ export const loader = async () => {
 };
 
 const DashboardLayout = () => {
-  const userLoaderData = useLoaderData();
-  const [userData, setUserData] = useState(userLoaderData);
+  const loaderData = useLoaderData();
+  const [userData, setUserData] = useState(loaderData.userData);
+  const [notifications, setNotifications] = useState(
+    Boolean(loaderData.notificationsData) ? loaderData.notificationsData : []
+  );
   const [isTestMode, setIsTestMode] = useState(false);
   const navigate = useNavigate();
 
@@ -44,13 +62,27 @@ const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const buttonSize = isSmallScreen ? "small" : "medium";
   const [anchorEl, setAnchorEl] = useState(null);
+  const initialized = useRef(false);
   const open = Boolean(anchorEl);
 
-  const socket = io("http://localhost:3000");
+  useEffect(() => {
+    if (!initialized.current) {
+      initialized.current = true;
+      if (userData) {
+        const socket = io("http://localhost:3000", {
+          query: { userId: userData.user.userId._id },
+        });
 
-  socket.on("connection", () => {
-    console.log("Connected to server");
-  });
+        socket.on("notifyUser", (data) => {
+          setNotifications((prev) => [...prev, data]);
+        });
+      }
+    }
+  }, [userData]);
+
+  // socket.on("connection", () => {
+  //   console.log("Connected to server");
+  // });
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -205,11 +237,17 @@ const DashboardLayout = () => {
             <Avatar src={profileImage} sx={{ border: "2px solid #0a9396" }}>
               {`${userData.user.userId.firstname[0]} ${userData.user.userId.lastname[0]}`}
             </Avatar>
+
+            {userData.user.userId.role === "teacher" && (
+              <IconButton>
+                <Badge badgeContent={notifications.length} color="error">
+                  <NotificationsOutlinedIcon />
+                </Badge>
+              </IconButton>
+            )}
+
             <Button
               id="basic-button"
-              aria-controls={open ? "basic-menu" : undefined}
-              aria-haspopup="true"
-              aria-expanded={open ? "true" : undefined}
               onClick={handleClick}
               variant="contained"
               sx={{
@@ -221,26 +259,18 @@ const DashboardLayout = () => {
             >
               {userData.user.userId.firstname}
             </Button>
-          </div>
-          <Menu
-            id="basic-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-              "aria-labelledby": "basic-button",
-            }}
-          >
-            <NavLink
-              to="manage-account"
-              style={{ color: "unset", textDecoration: "unset" }}
-              end
-            >
-              <MenuItem>Manage Account Details</MenuItem>
-            </NavLink>
+            <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+              <NavLink
+                to="manage-account"
+                style={{ color: "unset", textDecoration: "unset" }}
+                end
+              >
+                <MenuItem>Manage Account Details</MenuItem>
+              </NavLink>
 
-            <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
-          </Menu>
+              <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
+            </Menu>
+          </div>
         </Header>
         <div className="row w-100">
           {isSmallScreen ? (
@@ -268,4 +298,5 @@ const DashboardLayout = () => {
 };
 
 export const useDashboardContext = () => useContext(DashboardContext);
+
 export default DashboardLayout;
