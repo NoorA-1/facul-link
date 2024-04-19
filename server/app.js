@@ -62,11 +62,17 @@ app.use((err, req, res, next) => {
   }
 });
 
+let userSockets = {};
+
 io.on("connection", (socket) => {
-  console.log("A user connected:", socket.id);
+  const userId = socket.handshake.query.userId;
+  userSockets[userId] = socket.id;
+  console.log("User connected", socket.id);
+  // console.log(userSockets);
 
   socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
+    console.log("User disconnected", socket.id);
+    delete userSockets[userId];
   });
 });
 
@@ -81,3 +87,5 @@ try {
   console.log(error);
   process.exit(1);
 }
+
+export { io, userSockets };

@@ -11,6 +11,8 @@ import mongoose, { Schema, SchemaTypes } from "mongoose";
 import Job from "../models/jobModel.js";
 import JobApplication from "../models/jobApplicationModel.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import { io, userSockets } from "../app.js";
+import Notifications from "../models/notificationsModel.js";
 
 router.get("/stats", authenticateUser, async (req, res) => {
   try {
@@ -409,7 +411,18 @@ router.post("/review/:applicationId", authenticateUser, async (req, res) => {
       userId: req.user.userId,
     }).populate("userId");
 
-    const application = await JobApplication.findById(req.params.applicationId);
+    const application = await JobApplication.findById(
+      req.params.applicationId
+    ).populate([
+      "applicantId",
+      {
+        path: "applicantId",
+        populate: {
+          path: "userId",
+          model: "User",
+        },
+      },
+    ]);
 
     const info = await sendEmail(
       `"${employer.userId.firstname} ${employer.userId.lastname}" <${employer.userId.email}>`,
@@ -422,9 +435,28 @@ router.post("/review/:applicationId", authenticateUser, async (req, res) => {
     application.status = reqBody.status;
     await application.save();
 
+    const notification = {
+      userId: application.applicantId.userId._id,
+      title: `The status of your application has been updated to ${reqBody.status}.`,
+      onClickURL: `application-history/${req.params.applicationId}`,
+    };
+
+    const newNotification = new Notifications({
+      ...notification,
+    });
+
+    await newNotification.save();
+
+    const applicantSocketId = userSockets[application.applicantId.userId._id];
+    if (applicantSocketId) {
+      io.to(applicantSocketId).emit("notifyUser", {
+        ...notification,
+      });
+    }
+
     return res
       .status(200)
-      .json({ message: "Candidate shortlisted sent successfully", info });
+      .json({ message: "Candidate shortlisted sent successfully" });
   } catch (error) {
     console.log(error);
   }
