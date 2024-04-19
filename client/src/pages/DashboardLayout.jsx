@@ -48,9 +48,9 @@ const DashboardLayout = () => {
 
   const socket = io("http://localhost:3000");
 
-  // socket.on("connection", () => {
-  //   console.log("Connected to server");
-  // });
+  socket.on("connection", () => {
+    console.log("Connected to server");
+  });
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
