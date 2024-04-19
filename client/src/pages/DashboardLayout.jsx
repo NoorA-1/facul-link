@@ -20,7 +20,7 @@ import PendingOutlinedIcon from "@mui/icons-material/PendingOutlined";
 import BlockOutlinedIcon from "@mui/icons-material/BlockOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import http from "../utils/http";
-
+import { io } from "socket.io-client";
 const DashboardContext = createContext();
 
 export const loader = async () => {
@@ -45,6 +45,13 @@ const DashboardLayout = () => {
   const buttonSize = isSmallScreen ? "small" : "medium";
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+
+  const socket = io("http://localhost:3000");
+
+  // socket.on("connection", () => {
+  //   console.log("Connected to server");
+  // });
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
