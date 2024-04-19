@@ -103,6 +103,7 @@ const SearchJob = () => {
   return (
     <div className=" mx-auto mt-5 mb-3">
       <div className="d-flex align-items-center justify-content-center">
+        <h1>some changes</h1>
         <TextField
           label="Search jobs"
           className="bg-white w-75"
