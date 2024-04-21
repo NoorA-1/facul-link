@@ -28,6 +28,7 @@ export { default as AddHiringTest } from "./employer/AddHiringTest";
 export { default as JobApplications } from "./employer/JobApplications";
 export { default as JobApplicationCandidates } from "./employer/JobApplicationCandidates";
 export { default as JobPage } from "./JobPage";
+export { default as Notifications } from "./Notifications";
 export { default as ViewTeacherProfile } from "./ViewTeacherProfile";
 export { default as ViewEmployerProfilePage } from "./ViewEmployerProfilePage";
 

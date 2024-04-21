@@ -11,7 +11,9 @@ const notificationsSchema = new Schema(
       type: String,
       required: true,
     },
-
+    message: {
+      type: String,
+    },
     isMarkedRead: {
       type: Boolean,
       required: true,

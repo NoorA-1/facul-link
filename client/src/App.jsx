@@ -43,12 +43,14 @@ import {
   JobApplications,
   JobApplicationCandidates,
   ViewTeacherProfile,
+  Notifications,
 } from "./pages";
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
 import { loader as manageAccountLoader } from "./pages/ManageAccountPage";
 import { loader as dashboardLoader } from "./pages/DashboardLayout";
 import { loader as bookmarksLoader } from "./pages/teacher/Bookmarks";
+import { loader as notificationsLoader } from "./pages/Notifications";
 import { loader as hiringTestsLoader } from "./pages/employer/HiringTests";
 import { loader as postJobsLoader } from "./pages/employer/PostJobHome";
 import { loader as postJobTestsLoader } from "./pages/employer/PostJob";
@@ -203,6 +205,11 @@ const App = () => {
                   <Navigate to="/dashboard" />
                 ),
               loader: bookmarksLoader,
+            },
+            {
+              path: "notifications",
+              element: <Notifications />,
+              loader: notificationsLoader,
             },
             {
               path: "post-job",

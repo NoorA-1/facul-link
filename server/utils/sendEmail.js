@@ -14,11 +14,18 @@ export const sendEmail = async (from, to, subject, text, html) => {
     };
 
     const info = await transporter.sendMail(message);
+    console.log(info);
     return {
       messageId: info.messageId,
       link: nodemailer.getTestMessageUrl(info),
+      success: true,
     };
   } catch (error) {
-    return error;
+    console.error("Error sending email:", error);
+    return {
+      success: false,
+      error: error.message,
+      // errorCode: error.code,
+    };
   }
 };

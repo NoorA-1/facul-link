@@ -11,8 +11,8 @@ import mongoose, { Schema, SchemaTypes } from "mongoose";
 import Job from "../models/jobModel.js";
 import JobApplication from "../models/jobApplicationModel.js";
 import { sendEmail } from "../utils/sendEmail.js";
-import { io, userSockets } from "../app.js";
 import Notifications from "../models/notificationsModel.js";
+import { notifyUserEmit } from "../utils/socketFunctions.js";
 
 router.get("/stats", authenticateUser, async (req, res) => {
   try {
@@ -439,6 +439,7 @@ router.post("/review/:applicationId", authenticateUser, async (req, res) => {
       userId: application.applicantId.userId._id,
       title: `The status of your application has been updated to ${reqBody.status}.`,
       onClickURL: `application-history/${req.params.applicationId}`,
+      message: reqBody.text,
     };
 
     const newNotification = new Notifications({
@@ -447,12 +448,7 @@ router.post("/review/:applicationId", authenticateUser, async (req, res) => {
 
     await newNotification.save();
 
-    const applicantSocketId = userSockets[application.applicantId.userId._id];
-    if (applicantSocketId) {
-      io.to(applicantSocketId).emit("notifyUser", {
-        ...notification,
-      });
-    }
+    notifyUserEmit(application.applicantId.userId._id, notification);
 
     return res
       .status(200)

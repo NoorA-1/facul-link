@@ -14,6 +14,10 @@ import multer from "multer";
 import path from "path";
 import Job from "../models/jobModel.js";
 import Notifications from "../models/notificationsModel.js";
+import {
+  notifyUserEmit,
+  updateNotificationEmit,
+} from "../utils/socketFunctions.js";
 
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
@@ -366,6 +370,32 @@ router.get("/notifications", authenticateUser, async (req, res) => {
     });
 
     return res.status(200).json(notifications);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.put("/notifications/:id", authenticateUser, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const reqBody = req.body;
+
+    let notification = await Notifications.findById(id);
+    if (!notification) {
+      return res.status(404).json({ message: "No notification found" });
+    }
+
+    Object.keys(reqBody).forEach((key) => {
+      notification[key] = reqBody[key];
+    });
+
+    await notification.save();
+
+    updateNotificationEmit(req.user.userId, notification);
+
+    return res
+      .status(200)
+      .json({ message: "Notification updated successfully" });
   } catch (error) {
     console.log(error);
   }

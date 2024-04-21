@@ -76,6 +76,15 @@ const DashboardLayout = () => {
         socket.on("notifyUser", (data) => {
           setNotifications((prev) => [...prev, data]);
         });
+
+        socket.on("updateNotification", (updatedNotification) => {
+          const newNotification = updatedNotification.notification;
+          setNotifications((prev) =>
+            prev.map((e) =>
+              e._id === newNotification._id ? newNotification : e
+            )
+          );
+        });
       }
     }
   }, [userData]);
@@ -219,7 +228,14 @@ const DashboardLayout = () => {
 
   return (
     <DashboardContext.Provider
-      value={{ userData, setUserData, isTestMode, setIsTestMode }}
+      value={{
+        userData,
+        setUserData,
+        isTestMode,
+        setIsTestMode,
+        notifications,
+        setNotifications,
+      }}
     >
       <div className="sign-up-bg">
         <Header homeDisabled={true}>
@@ -234,18 +250,23 @@ const DashboardLayout = () => {
             </IconButton>
           )}
           <div className="d-flex align-items-center gap-3">
-            <Avatar src={profileImage} sx={{ border: "2px solid #0a9396" }}>
-              {`${userData.user.userId.firstname[0]} ${userData.user.userId.lastname[0]}`}
-            </Avatar>
-
             {userData.user.userId.role === "teacher" && (
-              <IconButton>
-                <Badge badgeContent={notifications.length} color="error">
+              <IconButton onClick={() => navigate("/dashboard/notifications")}>
+                <Badge
+                  badgeContent={
+                    notifications.filter(
+                      (notification) => !notification.isMarkedRead
+                    ).length
+                  }
+                  color="error"
+                >
                   <NotificationsOutlinedIcon />
                 </Badge>
               </IconButton>
             )}
-
+            <Avatar src={profileImage} sx={{ border: "2px solid #0a9396" }}>
+              {`${userData.user.userId.firstname[0]} ${userData.user.userId.lastname[0]}`}
+            </Avatar>
             <Button
               id="basic-button"
               onClick={handleClick}
