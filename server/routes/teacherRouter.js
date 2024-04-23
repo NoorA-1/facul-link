@@ -191,6 +191,32 @@ router.post(
   }
 );
 
+router.get("/job-applications", authenticateUser, async (req, res) => {
+  try {
+    const teacher = await Teacher.findOne({ userId: req.user.userId });
+    const applications = await JobApplication.find({
+      applicantId: teacher._id,
+    }).populate([
+      "jobId",
+      {
+        path: "jobId",
+        populate: {
+          path: "createdBy",
+          model: "UniEmployer",
+        },
+      },
+    ]);
+
+    if (!applications) {
+      return res.status(404).json({ message: "No applications found" });
+    }
+
+    return res.status(200).json(applications);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 router.get(
   "/job-application/test-status/:id",
   authenticateUser,

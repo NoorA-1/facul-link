@@ -50,10 +50,10 @@ import { loader as profileSetupLoader } from "./pages/ProfileSetup";
 import { loader as manageAccountLoader } from "./pages/ManageAccountPage";
 import { loader as dashboardLoader } from "./pages/DashboardLayout";
 import { loader as bookmarksLoader } from "./pages/teacher/Bookmarks";
-import { loader as notificationsLoader } from "./pages/Notifications";
 import { loader as hiringTestsLoader } from "./pages/employer/HiringTests";
 import { loader as postJobsLoader } from "./pages/employer/PostJobHome";
 import { loader as postJobTestsLoader } from "./pages/employer/PostJob";
+import { loader as applicationsHistoryLoader } from "./pages/teacher/AppHistory";
 import { loader as JobApplicationsLoader } from "./pages/employer/JobApplications";
 import { loader as searchJobLoader } from "./pages/SearchJob";
 import { loader as AdminDashboardLoader } from "./pages/admin/AdminDashboardLayout";
@@ -195,6 +195,17 @@ const App = () => {
                 ) : (
                   <Navigate to="/dashboard" />
                 ),
+              loader: applicationsHistoryLoader,
+            },
+            {
+              path: "application-history/:jobId",
+              element:
+                token?.role === "teacher" ? (
+                  <AppHistory />
+                ) : (
+                  <Navigate to="/dashboard" />
+                ),
+              loader: applicationsHistoryLoader,
             },
             {
               path: "bookmarks",
@@ -209,7 +220,6 @@ const App = () => {
             {
               path: "notifications",
               element: <Notifications />,
-              loader: notificationsLoader,
             },
             {
               path: "post-job",

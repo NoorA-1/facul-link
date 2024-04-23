@@ -243,7 +243,7 @@ ${universityName}
         text: emailFormik.values.emailBody,
         status: selectedOption,
       };
-      const response = await http.post(
+      const response = await http.put(
         `/employer/review/${currentApplication._id}`,
         sendData
       );

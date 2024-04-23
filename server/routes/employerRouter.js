@@ -404,7 +404,7 @@ router.get("/applications/:jobId", authenticateUser, async (req, res) => {
   }
 });
 
-router.post("/review/:applicationId", authenticateUser, async (req, res) => {
+router.put("/review/:applicationId", authenticateUser, async (req, res) => {
   try {
     const reqBody = req.body;
     const employer = await UniEmployer.findOne({
@@ -415,6 +415,7 @@ router.post("/review/:applicationId", authenticateUser, async (req, res) => {
       req.params.applicationId
     ).populate([
       "applicantId",
+      "jobId",
       {
         path: "applicantId",
         populate: {
@@ -433,11 +434,12 @@ router.post("/review/:applicationId", authenticateUser, async (req, res) => {
     );
 
     application.status = reqBody.status;
+    application.text = reqBody.text;
     await application.save();
 
     const notification = {
       userId: application.applicantId.userId._id,
-      title: `The status of your application has been updated to ${reqBody.status}.`,
+      title: `The status of your application for ${application.jobId.title} has been updated to ${reqBody.status}.`,
       onClickURL: `application-history/${req.params.applicationId}`,
       message: reqBody.text,
     };

@@ -11,15 +11,6 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { useDashboardContext } from "./DashboardLayout";
 dayjs.extend(relativeTime);
 
-export const loader = async () => {
-  try {
-    const { data } = await http.get("/users/notifications");
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 const Notifications = () => {
   //   const data = useLoaderData();
   const { notifications, setNotifications } = useDashboardContext();

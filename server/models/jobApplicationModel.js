@@ -72,6 +72,9 @@ const jobApplicationSchema = new Schema(
       enum: ["pending", "applied", "shortlisted", "rejected"],
       default: "pending",
     },
+    text: {
+      type: String,
+    },
     applicationDate: {
       type: Date,
       default: Date.now,
