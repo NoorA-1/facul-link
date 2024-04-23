@@ -18,7 +18,6 @@ import {
 } from "@mui/material";
 import http from "../../utils/http";
 import { useLoaderData, useNavigate, useParams } from "react-router-dom";
-import dayjs from "dayjs";
 import Avatar from "@mui/material/Avatar";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
@@ -29,6 +28,10 @@ import PersonOffOutlinedIcon from "@mui/icons-material/PersonOffOutlined";
 import { serverURL } from "../../utils/formData";
 import { emailFormValidationSchema } from "../../schemas";
 import { useFormik } from "formik";
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
+
+dayjs.extend(duration);
 
 const reportModalStyle = {
   position: "absolute",
@@ -362,7 +365,7 @@ ${universityName}
                   >
                     <Button
                       variant="outlined"
-                      color="secondary"
+                      color="primary"
                       endIcon={<FileDownloadOutlinedIcon />}
                       fullWidth
                       sx={{
@@ -378,7 +381,7 @@ ${universityName}
 
                   <Button
                     variant="outlined"
-                    color="alternate"
+                    color="info"
                     endIcon={<VisibilityOutlinedIcon />}
                     fullWidth
                     onClick={() =>
@@ -397,7 +400,7 @@ ${universityName}
                   </Button>
 
                   <div className="d-flex align-items-center gap-2">
-                    {Boolean(e.test?.status !== "no test") && (
+                    {Boolean(e.test?.status === "completed") && (
                       <Button
                         variant="outlined"
                         color="warning"
@@ -417,12 +420,12 @@ ${universityName}
                     {Boolean(e.status !== "pending") && (
                       <Button
                         variant="contained"
-                        color="success"
+                        color="primary"
                         endIcon={<MarkEmailReadOutlinedIcon />}
                         fullWidth
                         onClick={() => handleModalOpen("reviewModal", e._id)}
                       >
-                        Review
+                        Update
                       </Button>
                     )}
                   </div>
@@ -532,7 +535,7 @@ ${universityName}
           onClose={() => handleModalClose("reviewModal")}
         >
           <Box sx={shortlistModalStyle}>
-            <h4 className="fw-semibold text-center">Review Candidate</h4>
+            <h4 className="fw-semibold text-center">Update Candidate</h4>
             <hr />
             <form onSubmit={emailFormik.handleSubmit}>
               <div className="d-flex flex-column align-items-center justify-content-center mt-4">

@@ -23,7 +23,7 @@ const Bookmarks = () => {
   const data = useLoaderData();
   console.log(data);
   return (
-    <div className="container mx-auto mt-5 mb-3">
+    <div className="mx-auto mt-5 mb-3">
       <div className="bg-white py-5 mt-5 rounded grey-border px-5">
         <h5 className="text-center fw-bold">Your Bookmarks</h5>
         <hr />

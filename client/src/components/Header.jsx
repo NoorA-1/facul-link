@@ -3,7 +3,7 @@ import logo from "../assets/logo.svg";
 import { useNavigate, Link } from "react-router-dom";
 import { Button, useMediaQuery } from "@mui/material";
 
-const Header = ({ children, homeDisabled, classes }) => {
+const Header = ({ children, homeDisabled, classes, isTestMode = false }) => {
   const navigate = useNavigate();
   const isDesktop = useMediaQuery((theme) => theme.breakpoints.up("lg"));
 
@@ -19,12 +19,19 @@ const Header = ({ children, homeDisabled, classes }) => {
       <div className="d-flex align-items-center gap-5">
         <div
           className="logo"
-          style={{ width: isDesktop ? 180 : 160, cursor: "pointer" }}
+          style={{
+            width: isDesktop ? 180 : 160,
+            cursor: !isTestMode && "pointer",
+          }}
         >
           <img
             src={logo}
             className="d-block img-fluid"
-            onClick={navigateToHomePage}
+            onClick={() => {
+              if (!isTestMode) {
+                navigateToHomePage();
+              }
+            }}
           />
         </div>
         {homeDisabled ? null : (

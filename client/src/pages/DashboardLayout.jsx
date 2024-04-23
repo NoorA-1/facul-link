@@ -238,7 +238,7 @@ const DashboardLayout = () => {
       }}
     >
       <div className="sign-up-bg">
-        <Header homeDisabled={true}>
+        <Header homeDisabled={true} isTestMode={isTestMode}>
           {isSmallScreen && (
             <IconButton
               color="inherit"
@@ -250,7 +250,7 @@ const DashboardLayout = () => {
             </IconButton>
           )}
           <div className="d-flex align-items-center gap-3">
-            {userData.user.userId.role === "teacher" && (
+            {userData.user.userId.role === "teacher" && !isTestMode && (
               <IconButton onClick={() => navigate("/dashboard/notifications")}>
                 <Badge
                   badgeContent={
@@ -277,6 +277,7 @@ const DashboardLayout = () => {
               }}
               endIcon={<KeyboardArrowDownOutlinedIcon />}
               size={buttonSize}
+              disabled={isTestMode}
             >
               {userData.user.userId.firstname}
             </Button>

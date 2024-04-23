@@ -11,6 +11,10 @@ import {
   Radio,
   Alert,
 } from "@mui/material";
+import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
+import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
+import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
+import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 
 const GiveHiringTest = () => {
   const navigate = useNavigate();
@@ -360,7 +364,12 @@ const GiveHiringTest = () => {
                   <span className="fw-semibold"> Total Questions:</span>{" "}
                   {questionsArray?.length}
                 </h6>
-                <h6 className="fw-semibold">{formatTime(timeLeft)}</h6>
+                <div className="d-flex align-items-center gap-2">
+                  <TimerOutlinedIcon />
+                  <h6 className="m-0 pt-1 fw-semibold">
+                    {formatTime(timeLeft)}
+                  </h6>
+                </div>
               </div>
               <h5>
                 Q{currentQuestionIndex + 1} :{" "}
@@ -407,6 +416,7 @@ const GiveHiringTest = () => {
                       border: 2,
                     },
                   }}
+                  startIcon={<ArrowBackOutlinedIcon />}
                 >
                   Previous
                 </Button>
@@ -420,6 +430,7 @@ const GiveHiringTest = () => {
                         border: 2,
                       },
                     }}
+                    endIcon={<ArrowForwardOutlinedIcon />}
                   >
                     Next
                   </Button>
@@ -435,6 +446,7 @@ const GiveHiringTest = () => {
                         setError("Option must be selected");
                       }
                     }}
+                    endIcon={<CheckOutlinedIcon />}
                   >
                     Submit
                   </Button>

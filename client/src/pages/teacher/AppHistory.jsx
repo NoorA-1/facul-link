@@ -69,7 +69,7 @@ const AppHistory = () => {
                   University Name
                 </TableCell>
                 <TableCell align="left" className="fw-bold">
-                  Application Date
+                  Applied On
                 </TableCell>
                 <TableCell align="center" className="fw-bold">
                   Status
