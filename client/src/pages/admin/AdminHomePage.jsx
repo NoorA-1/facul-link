@@ -23,6 +23,9 @@ const AdminHomePage = () => {
   const [statsData, setStatsData] = useState({});
   const [totalStatsData, setTotalStatsData] = useState({
     totalUsers: null,
+    totalTests: null,
+    totalJobs: null,
+    totalApplications: null,
   });
   const [chartType, setChartType] = useState("User Chart");
   const options = {
@@ -54,13 +57,38 @@ const AdminHomePage = () => {
           count: item.count,
         };
       });
+
+      const transformedJobData = data.jobCount.map((item) => {
+        const formattedMonth = dayjs(
+          new Date(item._id.year, item._id.month - 1)
+        ).format("MMMM YYYY");
+        return {
+          month: formattedMonth,
+          count: item.count,
+        };
+      });
+
+      const transformedApplicationData = data.applicationCount.map((item) => {
+        const formattedMonth = dayjs(
+          new Date(item._id.year, item._id.month - 1)
+        ).format("MMMM YYYY");
+        return {
+          month: formattedMonth,
+          count: item.count,
+        };
+      });
+
       setStatsData({
         userCount: transformedData,
         testCount: transformedTestData,
+        jobCount: transformedJobData,
+        applicationCount: transformedApplicationData,
       });
       setTotalStatsData(() => {
         return {
           totalUsers: data.totalUsers,
+          totalJobs: data.totalJobs,
+          totalApplications: data.totalApplications,
           totalTests: data.totalTests,
         };
       });
@@ -92,10 +120,18 @@ const AdminHomePage = () => {
             sx={{ color: "#BB3E03" }}
           />
         </HomePageCard>
-        <HomePageCard cardText="Total Jobs" digit={0} color="#005F73">
+        <HomePageCard
+          cardText="Total Jobs"
+          digit={totalStatsData.totalJobs}
+          color="#005F73"
+        >
           <CasesOutlinedIcon className="mt-2 mb-3" sx={{ color: "#005F73" }} />
         </HomePageCard>
-        <HomePageCard cardText="Total Applications" digit={0} color="#00733D">
+        <HomePageCard
+          cardText="Total Applications"
+          digit={totalStatsData.totalApplications}
+          color="#00733D"
+        >
           <AssignmentTurnedInOutlinedIcon
             className="mt-2 mb-3"
             sx={{ color: "#00733D" }}
@@ -126,6 +162,8 @@ const AdminHomePage = () => {
           sx={{ backgroundColor: "#FFF" }}
         >
           <MenuItem value="User Chart">User Chart</MenuItem>
+          <MenuItem value="Job Chart">Jobs Chart</MenuItem>
+          <MenuItem value="Application Chart">Applications Chart</MenuItem>
           <MenuItem value="Test Chart">Test Chart</MenuItem>
         </TextField>
       </div>

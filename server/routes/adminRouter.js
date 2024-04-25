@@ -6,6 +6,7 @@ import { authenticateUser } from "../middlewares/authMiddleware.js";
 import mongoose from "mongoose";
 import UniEmployer from "../models/uniEmployerModel.js";
 import Job from "../models/jobModel.js";
+import JobApplication from "../models/jobApplicationModel.js";
 
 router.get("/stats", authenticateUser, async (req, res) => {
   try {
@@ -49,9 +50,57 @@ router.get("/stats", authenticateUser, async (req, res) => {
           },
         },
       ]);
+
+      let jobCount = await Job.aggregate([
+        {
+          $group: {
+            _id: {
+              year: { $year: "$createdAt" },
+              month: { $month: "$createdAt" },
+            },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: {
+            "_id.year": 1,
+            "_id.month": 1,
+          },
+        },
+      ]);
+
+      let applicationCount = await JobApplication.aggregate([
+        {
+          $group: {
+            _id: {
+              year: { $year: "$createdAt" },
+              month: { $month: "$createdAt" },
+            },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: {
+            "_id.year": 1,
+            "_id.month": 1,
+          },
+        },
+      ]);
+
       const totalUsers = await User.countDocuments();
+      const totalJobs = await Job.countDocuments();
       const totalTests = await HiringTest.countDocuments();
-      res.status(200).json({ userCount, testCount, totalUsers, totalTests });
+      const totalApplications = await JobApplication.countDocuments();
+      res.status(200).json({
+        userCount,
+        testCount,
+        jobCount,
+        applicationCount,
+        totalUsers,
+        totalTests,
+        totalJobs,
+        totalApplications,
+      });
     } else {
       res.status(401).json({ message: "Unauthorized Access. Not Admin." });
     }
