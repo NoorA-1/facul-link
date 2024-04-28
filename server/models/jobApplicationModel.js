@@ -69,12 +69,31 @@ const jobApplicationSchema = new Schema(
     status: {
       type: String,
       required: true,
-      enum: ["pending", "applied", "shortlisted", "rejected"],
+      enum: [
+        "pending",
+        "applied",
+        "shortlisted",
+        "interview",
+        "hired",
+        "rejected",
+      ],
       default: "pending",
     },
     text: {
       type: String,
     },
+
+    interviewDetails: {
+      mode: {
+        type: String,
+        enum: ["in-person", "online"],
+      },
+      meetingURL: { type: String },
+      location: { type: String },
+      date: { type: Date },
+      time: { type: Date },
+    },
+
     applicationDate: {
       type: Date,
       default: Date.now,

@@ -439,3 +439,59 @@ export const emailFormValidationSchema = Yup.object({
       (value) => value.trim() !== ""
     ),
 });
+
+export const interviewFormValidationSchema = Yup.object({
+  emailSubject: Yup.string()
+    .required("Email subject is required")
+    .min(5, "Email subject must be at least 5 characters long")
+    .test(
+      "is-empty-after-trim",
+      "Email subject cannot be empty or only whitespace",
+      (value) => value.trim() !== ""
+    ),
+  emailBody: Yup.string()
+    .required("Email body is required")
+    .min(5, "Email body must be at least 30 characters long")
+    .test(
+      "is-empty-after-trim",
+      "Email body cannot be empty or only whitespace",
+      (value) => value.trim() !== ""
+    ),
+
+  mode: Yup.string().required("Interview Mode is required"),
+  meetingURL: Yup.string().when("mode", {
+    is: (mode) => mode === "online",
+    then: () =>
+      Yup.string()
+        .transform((currentValue) => {
+          const notStartsWithHTTP =
+            currentValue &&
+            !(
+              currentValue.startsWith("http://") ||
+              currentValue.startsWith("https://")
+            );
+
+          if (notStartsWithHTTP) {
+            return `http://${currentValue}`;
+          }
+          return currentValue;
+        })
+        .url("Must be a valid URL")
+        .required("Please provide meeting link"),
+
+    otherwise: () => Yup.string().nullable(),
+  }),
+
+  location: Yup.string().when("mode", {
+    is: (mode) => mode === "in-person",
+    then: () => Yup.string().required("Location is required"),
+    otherwise: () => Yup.string().nullable(),
+  }),
+  date: Yup.date()
+    .required("Date must be provided")
+    .min(
+      dayjs().toDate(),
+      `Date cannot be before ${dayjs().add(1, "day").format("DD-MM-YYYY")}`
+    ),
+  time: Yup.string().required("Time must be provided"),
+});

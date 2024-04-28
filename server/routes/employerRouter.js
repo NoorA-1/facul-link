@@ -425,6 +425,15 @@ router.put("/review/:applicationId", authenticateUser, async (req, res) => {
       },
     ]);
 
+    application.status = reqBody.status;
+    application.text = reqBody.text;
+    if (reqBody.mode === "in-person" || reqBody.mode === "online") {
+      Object.keys(reqBody).forEach((key) => {
+        application.interviewDetails[key] = reqBody[key];
+      });
+    }
+    await application.save();
+
     const info = await sendEmail(
       `"${employer.userId.firstname} ${employer.userId.lastname}" <${employer.userId.email}>`,
       reqBody.email,
@@ -432,10 +441,6 @@ router.put("/review/:applicationId", authenticateUser, async (req, res) => {
       reqBody.text
       // `<p>${reqBody.text}</p>`
     );
-
-    application.status = reqBody.status;
-    application.text = reqBody.text;
-    await application.save();
 
     const notification = {
       userId: application.applicantId.userId._id,
