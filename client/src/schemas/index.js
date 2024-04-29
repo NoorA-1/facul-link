@@ -484,7 +484,10 @@ export const interviewFormValidationSchema = Yup.object({
 
   location: Yup.string().when("mode", {
     is: (mode) => mode === "in-person",
-    then: () => Yup.string().required("Location is required"),
+    then: () =>
+      Yup.string()
+        .required("Location is required")
+        .min(5, "Location should be 5 characters long"),
     otherwise: () => Yup.string().nullable(),
   }),
   date: Yup.date()

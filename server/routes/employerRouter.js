@@ -13,6 +13,26 @@ import JobApplication from "../models/jobApplicationModel.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import Notifications from "../models/notificationsModel.js";
 import { notifyUserEmit } from "../utils/socketFunctions.js";
+import multer from "multer";
+import fs from "fs";
+
+const storage = multer.diskStorage({
+  destination: async (req, file, cb) => {
+    const dir = `./temp/uploads/${req.user.userId}`;
+    try {
+      await fs.promises.mkdir(dir, { recursive: true });
+      cb(null, dir);
+    } catch (error) {
+      cb(error);
+    }
+  },
+  filename: (req, file, cb) => {
+    const uniquePrefix = Date.now() + "-" + Math.round(Math.random() * 100);
+    const newFilename = uniquePrefix + "-" + file.originalname;
+    cb(null, newFilename);
+  },
+});
+const upload = multer({ storage });
 
 router.get("/stats", authenticateUser, async (req, res) => {
   try {
@@ -404,65 +424,97 @@ router.get("/applications/:jobId", authenticateUser, async (req, res) => {
   }
 });
 
-router.put("/review/:applicationId", authenticateUser, async (req, res) => {
+const cleanUpFiles = async (files) => {
   try {
-    const reqBody = req.body;
-    const employer = await UniEmployer.findOne({
-      userId: req.user.userId,
-    }).populate("userId");
-
-    const application = await JobApplication.findById(
-      req.params.applicationId
-    ).populate([
-      "applicantId",
-      "jobId",
-      {
-        path: "applicantId",
-        populate: {
-          path: "userId",
-          model: "User",
-        },
-      },
-    ]);
-
-    application.status = reqBody.status;
-    application.text = reqBody.text;
-    if (reqBody.mode === "in-person" || reqBody.mode === "online") {
-      Object.keys(reqBody).forEach((key) => {
-        application.interviewDetails[key] = reqBody[key];
-      });
-    }
-    await application.save();
-
-    const info = await sendEmail(
-      `"${employer.userId.firstname} ${employer.userId.lastname}" <${employer.userId.email}>`,
-      reqBody.email,
-      reqBody.subject,
-      reqBody.text
-      // `<p>${reqBody.text}</p>`
-    );
-
-    const notification = {
-      userId: application.applicantId.userId._id,
-      title: `The status of your application for ${application.jobId.title} has been updated.`,
-      onClickURL: `application-history/${req.params.applicationId}`,
-      message: reqBody.text,
-    };
-
-    const newNotification = new Notifications({
-      ...notification,
+    files.forEach(async (file) => {
+      await fs.promises.unlink(file.path);
     });
-
-    await newNotification.save();
-
-    notifyUserEmit(application.applicantId.userId._id, newNotification);
-
-    return res
-      .status(200)
-      .json({ message: "Candidate shortlisted sent successfully" });
   } catch (error) {
-    console.log(error);
+    console.error("Error cleaning up files:", error);
   }
-});
+};
+
+router.put(
+  "/review/:applicationId",
+  authenticateUser,
+  upload.array("attachments", 5),
+  async (req, res) => {
+    try {
+      const reqBody = req.body;
+
+      const employer = await UniEmployer.findOne({
+        userId: req.user.userId,
+      }).populate("userId");
+      const files = req.files;
+
+      const application = await JobApplication.findById(
+        req.params.applicationId
+      ).populate([
+        "applicantId",
+        "jobId",
+        {
+          path: "applicantId",
+          populate: {
+            path: "userId",
+            model: "User",
+          },
+        },
+      ]);
+
+      application.status = reqBody.status;
+      application.text = reqBody.text;
+      if (reqBody.mode === "in-person" || reqBody.mode === "online") {
+        Object.keys(reqBody).forEach((key) => {
+          application.interviewDetails[key] = reqBody[key];
+        });
+      }
+      await application.save();
+
+      // const info = await sendEmail(
+      //   `"${employer.userId.firstname} ${employer.userId.lastname}" <${employer.userId.email}>`,
+      //   reqBody.email,
+      //   reqBody.subject,
+      //   reqBody.text,
+      //   `<p style="white-space: pre;">${reqBody.text}</p>`,
+      //   files
+      // );
+
+      const notification = {
+        userId: application.applicantId.userId._id,
+        title: `The status of your application for ${application.jobId.title} has been updated.`,
+        onClickURL: `application-history/${req.params.applicationId}`,
+        message: reqBody.text,
+      };
+
+      const newNotification = new Notifications({
+        ...notification,
+      });
+
+      await newNotification.save();
+
+      notifyUserEmit(application.applicantId.userId._id, newNotification);
+
+      if (files && files.length > 0) {
+        await cleanUpFiles(files);
+      }
+
+      if (application.status === "hired") {
+        const job = await Job.findById(application.jobId._id);
+        if (job.totalPositions >= 1) {
+          job.totalPositions = job.totalPositions - 1;
+          await job.save();
+        } else {
+          return;
+        }
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Candidate status updated successfully" });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
 
 export default router;

@@ -83,6 +83,10 @@ const DashboardLayout = () => {
           prev.map((e) => (e._id === newNotification._id ? newNotification : e))
         );
       });
+
+      socket.on("error", (error) => {
+        console.error("WebSocket Error:", error);
+      });
     }
     // }
   }, [userData]);

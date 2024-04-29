@@ -1,11 +1,11 @@
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
-import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
-import MarkEmailReadOutlinedIcon from "@mui/icons-material/MarkEmailReadOutlined";
 import PersonOffOutlinedIcon from "@mui/icons-material/PersonOffOutlined";
-import ScoreboardOutlinedIcon from "@mui/icons-material/ScoreboardOutlined";
-import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import InsertLinkOutlinedIcon from "@mui/icons-material/InsertLinkOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+import UploadIcon from "@mui/icons-material/Upload";
 
 import {
   Box,
@@ -16,6 +16,7 @@ import {
   Tabs,
   TextField,
   InputAdornment,
+  IconButton,
 } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import { TimePicker } from "@mui/x-date-pickers";
@@ -33,6 +34,7 @@ import {
 } from "../../schemas";
 import { serverURL } from "../../utils/formData";
 import http from "../../utils/http";
+import { CandidateCard } from "../../components";
 
 dayjs.extend(duration);
 
@@ -77,6 +79,17 @@ const JobApplicationCandidates = () => {
   const [tab, setTab] = useState("applied");
   const [currentApplicationId, setCurrentApplicationId] = useState(null);
   const [selectedOption, setSelectedOption] = useState("");
+  const [files, setFiles] = useState([]);
+
+  const handleFile = (event) => {
+    const newFiles = Array.from(event.target.files);
+    const totalFiles = [...files, ...newFiles].slice(0, 5);
+    setFiles(totalFiles);
+  };
+
+  const removeFile = (index) => {
+    setFiles(files.filter((e, i) => i !== index));
+  };
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -92,6 +105,7 @@ const JobApplicationCandidates = () => {
     setCurrentApplicationId(null);
     setSelectedOption("");
     formik.resetForm();
+    setFiles([]);
     setOpen((prev) => ({ ...prev, [name]: false }));
   };
 
@@ -166,6 +180,7 @@ const JobApplicationCandidates = () => {
       });
     }
     handleEmailText();
+    setFiles([]);
   }, [selectedOption]);
 
   useEffect(() => {
@@ -204,21 +219,6 @@ const JobApplicationCandidates = () => {
       </div>
     );
   }
-
-  const profileImage = (e) => {
-    return serverURL + e.applicantId?.profileImage?.split("public\\")[1];
-  };
-
-  const resumeFileName = (e) => {
-    const parts = e?.resumeFile.split("\\");
-    const fileName = parts[parts.length - 1];
-    return fileName;
-  };
-
-  const resumeFileSrc = (e) => {
-    const source = serverURL + e?.resumeFile.split("public\\")[1];
-    return source;
-  };
 
   const testScore = (e) => {
     const test = e.test;
@@ -314,23 +314,26 @@ ${universityName}`;
       const currentApplication = data.find(
         (application) => application._id === currentApplicationId
       );
-      let sendData = {
-        email: currentApplication.applicantId.userId.email,
-        subject: values.emailSubject,
-        text: values.emailBody,
-        status: selectedOption,
-      };
+      const formData = new FormData();
+      formData.append("email", currentApplication.applicantId.userId.email);
+      formData.append("subject", values.emailSubject);
+      formData.append("text", values.emailBody);
+      formData.append("status", selectedOption);
       if (values.mode === "in-person" || values.mode === "online") {
-        sendData.mode = values.mode;
-        sendData.meetingURL = values.meetingURL;
-        sendData.location = values.location;
-        sendData.date = values.date;
-        sendData.time = values.time;
+        formData.append("mode", values.mode);
+        formData.append("meetingURL", values.meetingURL);
+        formData.append("location", values.location);
+        formData.append("date", values.date);
+        formData.append("time", values.time);
       }
+
+      files.forEach((file) => {
+        formData.append("attachments", file);
+      });
 
       const response = await http.put(
         `/employer/review/${currentApplication._id}`,
-        sendData
+        formData
       );
       console.log(response);
 
@@ -365,6 +368,11 @@ ${universityName}`;
           Candidates for Job:{" "}
           <span className="fw-medium">{data[0]?.jobId?.title}</span>
         </h5>
+        {data[0]?.jobId?.totalPositions <= 0 && (
+          <p className="text-danger fw-semibold text-center">
+            All positions for this job have been filled
+          </p>
+        )}
         <hr className="mt-3 m-0" />
         <Tabs value={tab} onChange={handleTab}>
           <Tab label="Applied" value="applied" />
@@ -387,130 +395,15 @@ ${universityName}`;
         >
           {filteredData.length > 0 ? (
             filteredData.map((e, index) => (
-              <div
-                className="candidate-card p-3 rounded shadow col-12 col-md-5 col-lg-5 col-xl-3"
-                style={{
-                  border: "1px solid #0A9396",
-                  margin: "10px",
-                }}
+              <CandidateCard
                 key={index}
-              >
-                <div className="d-flex flex-column align-items-center justify-content-center">
-                  <Avatar
-                    src={profileImage(e)}
-                    sx={{
-                      border: "1px solid #0A9396",
-                      width: 80,
-                      height: 80,
-                    }}
-                  >{`${e.applicantId.userId.firstname[0]} ${e.applicantId.userId.lastname[0]}`}</Avatar>
-
-                  <h5 className="mt-3 mb-0 fw-semibold">
-                    {`${e.applicantId.userId.firstname} ${e.applicantId.userId.lastname}`}
-                  </h5>
-                </div>
-                <hr className="w-100" />
-                <p className="fw-medium">
-                  Email:{" "}
-                  <span className="fw-normal">
-                    {e.applicantId.userId.email}
-                  </span>
-                </p>
-                <p className="fw-medium">
-                  Contact Number:{" "}
-                  <span className="fw-normal">{e.contactNumber}</span>
-                </p>
-                <p className="fw-medium">
-                  Application Status:{" "}
-                  <span className="fw-normal text-capitalize">{e.status}</span>
-                </p>
-
-                {Boolean(e.test?.status !== "no test") && (
-                  <p className="fw-medium text-capitalize">
-                    Test Score:{" "}
-                    <span className="fw-normal">{testScore(e)}%</span>
-                  </p>
-                )}
-                <hr className="w-100" />
-                <div className="d-flex flex-column gap-3">
-                  <a
-                    href={resumeFileSrc(e)}
-                    download={resumeFileName(e)}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      endIcon={<FileDownloadOutlinedIcon />}
-                      fullWidth
-                      sx={{
-                        border: 1.5,
-                        ":hover": {
-                          border: 1.5,
-                        },
-                      }}
-                    >
-                      Resume
-                    </Button>
-                  </a>
-
-                  <Button
-                    variant="outlined"
-                    color="info"
-                    endIcon={<VisibilityOutlinedIcon />}
-                    fullWidth
-                    onClick={() =>
-                      navigate(
-                        `/dashboard/teacher-profile/${e.applicantId.userId._id}`
-                      )
-                    }
-                    sx={{
-                      border: 1.5,
-                      ":hover": {
-                        border: 1.5,
-                      },
-                    }}
-                  >
-                    Profile
-                  </Button>
-
-                  <div className="d-flex align-items-center gap-2">
-                    {Boolean(e.test?.status === "completed") && (
-                      <Button
-                        variant="outlined"
-                        color="warning"
-                        endIcon={<ScoreboardOutlinedIcon />}
-                        fullWidth
-                        sx={{
-                          border: 1.5,
-                          ":hover": {
-                            border: 1.5,
-                          },
-                        }}
-                        onClick={() => handleModalOpen("reportModal", e._id)}
-                      >
-                        Test Report
-                      </Button>
-                    )}
-                    {Boolean(
-                      e.status !== "pending" &&
-                        e.status !== "rejected" &&
-                        e.status !== "hired"
-                    ) && (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        endIcon={<MarkEmailReadOutlinedIcon />}
-                        fullWidth
-                        onClick={() => handleModalOpen("reviewModal", e._id)}
-                      >
-                        Update
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
+                candidate={e}
+                navigate={navigate}
+                // profileImage={profileImage}
+                // resumeFileSrc={resumeFileSrc}
+                // resumeFileName={resumeFileName}
+                handleModalOpen={handleModalOpen}
+              />
             ))
           ) : (
             <div className="d-flex align-items-center justify-content-center p-5 w-100 bg-body-secondary rounded">
@@ -617,7 +510,7 @@ ${universityName}`;
           <Box sx={shortlistModalStyle}>
             <h4 className="fw-semibold text-center">Update Candidate</h4>
             <hr />
-            <form onSubmit={formik.handleSubmit}>
+            <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
               <div className="d-flex flex-column align-items-center justify-content-center mt-4">
                 <Options applicationId={currentApplicationId} />
                 {selectedOption === "interview" && (
@@ -801,6 +694,72 @@ ${universityName}`;
                         formik.errors.emailBody
                       }
                     />
+
+                    {files.length < 5 && (
+                      <Button
+                        className="mt-4 mb-1 w-50"
+                        variant="outlined"
+                        component="label"
+                        sx={{ border: 2, ":hover": { border: 2 } }}
+                        startIcon={<UploadIcon />}
+                      >
+                        Attachments
+                        <input
+                          type="file"
+                          hidden
+                          multiple
+                          // accept=".jpg, .png, .pdf"
+                          onChange={handleFile}
+                        />
+                      </Button>
+                    )}
+
+                    {files.length >= 5 && (
+                      <p className="text-danger">
+                        Maximum of 5 files can be attached.
+                      </p>
+                    )}
+
+                    {files.length > 0 && (
+                      <div>
+                        <p className="mt-2 mb-1 fw-medium">Attachments: </p>
+
+                        {files.map((file, index) => (
+                          <div
+                            key={index}
+                            className="bg-light-gray border border-dark-subtle rounded shadow-sm px-5 py-3 mb-2 d-flex align-items-center justify-content-between gap-2"
+                          >
+                            <div className="d-flex align-items-center gap-3">
+                              <DescriptionOutlinedIcon
+                                fontSize="large"
+                                color="secondary"
+                              />
+                              <span>{file.name}</span>
+                            </div>
+
+                            <div>
+                              <a
+                                href={URL.createObjectURL(file)}
+                                download={file.filename}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <IconButton size="large" color="secondary">
+                                  <FileDownloadOutlinedIcon />
+                                </IconButton>
+                              </a>
+
+                              <IconButton
+                                color="danger"
+                                onClick={() => removeFile(index)}
+                              >
+                                <CancelOutlinedIcon />
+                              </IconButton>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </>
                 )}
                 <Button

@@ -233,7 +233,7 @@ router.get(
       if (!jobApplication) {
         return res
           .status(200)
-          .json({ message: "Job application not found", noFound: true });
+          .json({ message: "Job application not found", notFound: true });
       }
 
       return res.status(200).json({

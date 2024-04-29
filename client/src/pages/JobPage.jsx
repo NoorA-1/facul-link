@@ -120,7 +120,6 @@ const JobPage = () => {
         const { data } = await http.get(
           `/teacher/job-application/test-status/${jobId}`
         );
-        console.log(data);
         if (data.notFound) {
           return;
         }
@@ -133,9 +132,9 @@ const JobPage = () => {
           jobStatus === "pending" &&
           (status === "pending" || status === "in progress")
         ) {
-          setIsTestMode(true);
+          console.log("here");
           navigate(`/dashboard/job-application/hiring-test/${params.id}`);
-        } else if (jobStatus === "applied") {
+        } else if (jobStatus !== "pending") {
           setIsTestMode(false);
           setIsJobApplied(true);
         }
@@ -494,12 +493,22 @@ const JobPage = () => {
                 You have already applied for this job
               </p>
             )}
+            {jobData.totalPositions <= 0 && !isJobApplied && (
+              <p
+                className="fw-semibold"
+                style={{
+                  color: "#0a9396",
+                }}
+              >
+                This job is no longer hiring.
+              </p>
+            )}
             {userData.user.userId.role !== "employer" && (
               <Button
                 variant="contained"
                 className="w-25 w-lg-50"
                 onClick={handleOpen}
-                disabled={isJobApplied}
+                disabled={isJobApplied || jobData.totalPositions <= 0}
               >
                 {!isJobApplied ? "Apply Now" : "Applied"}
               </Button>
