@@ -367,8 +367,7 @@ router.get("/notifications", authenticateUser, async (req, res) => {
   try {
     const notifications = await Notifications.find({
       userId: req.user.userId,
-    });
-
+    }).sort({ createdAt: -1 });
     return res.status(200).json(notifications);
   } catch (error) {
     console.log(error);

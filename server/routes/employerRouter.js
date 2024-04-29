@@ -444,7 +444,7 @@ router.put("/review/:applicationId", authenticateUser, async (req, res) => {
 
     const notification = {
       userId: application.applicantId.userId._id,
-      title: `The status of your application for ${application.jobId.title} has been updated to ${reqBody.status}.`,
+      title: `The status of your application for ${application.jobId.title} has been updated.`,
       onClickURL: `application-history/${req.params.applicationId}`,
       message: reqBody.text,
     };
@@ -455,7 +455,7 @@ router.put("/review/:applicationId", authenticateUser, async (req, res) => {
 
     await newNotification.save();
 
-    notifyUserEmit(application.applicantId.userId._id, notification);
+    notifyUserEmit(application.applicantId.userId._id, newNotification);
 
     return res
       .status(200)

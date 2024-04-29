@@ -82,7 +82,10 @@ const jobApplicationSchema = new Schema(
     text: {
       type: String,
     },
-
+    attachments: {
+      type: Array,
+      default: [],
+    },
     interviewDetails: {
       mode: {
         type: String,

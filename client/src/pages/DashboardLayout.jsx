@@ -66,27 +66,25 @@ const DashboardLayout = () => {
   const open = Boolean(anchorEl);
 
   useEffect(() => {
-    if (!initialized.current) {
-      initialized.current = true;
-      if (userData) {
-        const socket = io("http://localhost:3000", {
-          query: { userId: userData.user.userId._id },
-        });
+    // if (!initialized.current) {
+    //   initialized.current = true;
+    if (userData) {
+      const socket = io("http://localhost:3000", {
+        query: { userId: userData.user.userId._id },
+      });
 
-        socket.on("notifyUser", (data) => {
-          setNotifications((prev) => [...prev, data]);
-        });
+      socket.on("notifyUser", (data) => {
+        setNotifications((prev) => [...prev, data.data]);
+      });
 
-        socket.on("updateNotification", (updatedNotification) => {
-          const newNotification = updatedNotification.notification;
-          setNotifications((prev) =>
-            prev.map((e) =>
-              e._id === newNotification._id ? newNotification : e
-            )
-          );
-        });
-      }
+      socket.on("updateNotification", (updatedNotification) => {
+        const newNotification = updatedNotification.notification;
+        setNotifications((prev) =>
+          prev.map((e) => (e._id === newNotification._id ? newNotification : e))
+        );
+      });
     }
+    // }
   }, [userData]);
 
   // socket.on("connection", () => {

@@ -74,7 +74,7 @@ const JobApplicationCandidates = () => {
   const [data, setData] = useState([]);
   const params = useParams();
   const navigate = useNavigate();
-  const [tab, setTab] = useState("active");
+  const [tab, setTab] = useState("applied");
   const [currentApplicationId, setCurrentApplicationId] = useState(null);
   const [selectedOption, setSelectedOption] = useState("");
 
@@ -125,9 +125,11 @@ const JobApplicationCandidates = () => {
         {application && application.status === "applied" && (
           <MenuItem value="shortlisted">Shortlist</MenuItem>
         )}
-        {application && application.status === "shortlisted" && (
-          <MenuItem value="interview">Schedule Interview</MenuItem>
-        )}
+        {application &&
+          (application.status === "shortlisted" ||
+            application.status === "interview") && (
+            <MenuItem value="interview">Schedule Interview</MenuItem>
+          )}
         {application && application.status === "interview" && (
           <MenuItem value="hired">Hire</MenuItem>
         )}
@@ -175,7 +177,7 @@ const JobApplicationCandidates = () => {
 
   const filteredData = data.filter((e) => {
     switch (tab) {
-      case "active":
+      case "applied":
         return e.status === "applied";
 
       case "interview":
@@ -253,6 +255,15 @@ Best regards,
 ${employerName}
 ${departmentName}
 ${universityName}`;
+    } else if (selectedOption === "hired") {
+      return `Dear ${candidateName},
+      
+You have been hired for the ${jobTitle} position at ${universityName}.
+      
+Best regards,
+${employerName}
+${departmentName}
+${universityName}`;
     } else if (selectedOption === "rejected") {
       return `Dear ${candidateName},
     
@@ -289,8 +300,10 @@ ${universityName}`;
           ? `Shortlisted for ${currentApplication.jobId.title} Position`
           : selectedOption === "rejected"
           ? `Rejected for ${currentApplication.jobId.title} Position`
-          : selectedOption === "interview" &&
-            `Interview for ${currentApplication.jobId.title} Position`,
+          : selectedOption === "interview"
+          ? `Interview for ${currentApplication.jobId.title} Position`
+          : selectedOption === "hired" &&
+            `Hired for ${currentApplication.jobId.title} Position`,
       emailBody: emailBody,
     });
   };
@@ -354,7 +367,7 @@ ${universityName}`;
         </h5>
         <hr className="mt-3 m-0" />
         <Tabs value={tab} onChange={handleTab}>
-          <Tab label="Active" value="active" />
+          <Tab label="Applied" value="applied" />
           <Tab label="Shortlisted" value="shortlisted" />
           <Tab label="Interview" value="interview" />
           <Tab label="Hired" value="hired" />
@@ -480,7 +493,11 @@ ${universityName}`;
                         Test Report
                       </Button>
                     )}
-                    {Boolean(e.status !== "pending") && (
+                    {Boolean(
+                      e.status !== "pending" &&
+                        e.status !== "rejected" &&
+                        e.status !== "hired"
+                    ) && (
                       <Button
                         variant="contained"
                         color="primary"

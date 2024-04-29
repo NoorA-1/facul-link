@@ -22,6 +22,7 @@ const Notifications = () => {
         ...notification,
         isMarkedRead: true,
       };
+      console.log(notifications);
       const response = await http.put(
         `/users/notifications/${notification._id}`,
         data
@@ -38,51 +39,53 @@ const Notifications = () => {
       <hr />
 
       {notifications.length > 0 ? (
-        notifications.map((e, index) => (
-          <div
-            key={index}
-            className="notification grey-border px-3 py-3 shadow-sm rounded mb-3"
-            onClick={() => {
-              if (Boolean(e.message)) {
-                navigate(`/dashboard/${e.onClickURL}`);
-                markNotification(e);
-              }
-            }}
-            role={Boolean(e.message) ? "button" : ""}
-          >
-            <div className="d-flex align-items-center justify-content-between ">
-              <div className="d-flex align-items-center gap-3">
-                {!e.isMarkedRead ? (
-                  <Badge variant="dot" color="error">
+        notifications
+          .sort((a, b) => dayjs(b.createdAt) - dayjs(a.createdAt))
+          .map((e, index) => (
+            <div
+              key={index}
+              className="notification grey-border px-3 py-3 shadow-sm rounded mb-3"
+              onClick={() => {
+                if (Boolean(e.message)) {
+                  navigate(`/dashboard/${e.onClickURL}`);
+                  markNotification(e);
+                }
+              }}
+              role={Boolean(e.message) ? "button" : ""}
+            >
+              <div className="d-flex align-items-center justify-content-between ">
+                <div className="d-flex align-items-center gap-3">
+                  {!e.isMarkedRead ? (
+                    <Badge variant="dot" color="error">
+                      <NotificationsOutlinedIcon />
+                    </Badge>
+                  ) : (
                     <NotificationsOutlinedIcon />
-                  </Badge>
-                ) : (
-                  <NotificationsOutlinedIcon />
-                )}
-                <div className="pt-1">
-                  <h6 className="m-0">{e.title}</h6>
-                  <p className="m-0 text-light-emphasis">
-                    {dayjs(e.createdAt).fromNow()}
-                  </p>
+                  )}
+                  <div className="pt-1">
+                    <h6 className="m-0">{e.title}</h6>
+                    <p className="m-0 text-light-emphasis">
+                      {dayjs(e.createdAt).fromNow()}
+                    </p>
+                  </div>
+                </div>
+                <div className="pb-2">
+                  {!e.isMarkedRead ? (
+                    <IconButton
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        markNotification(e);
+                      }}
+                    >
+                      <MarkunreadOutlinedIcon color="primary" />
+                    </IconButton>
+                  ) : (
+                    <DraftsOutlinedIcon color="grey" />
+                  )}
                 </div>
               </div>
-              <div className="pb-2">
-                {!e.isMarkedRead ? (
-                  <IconButton
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      markNotification(e);
-                    }}
-                  >
-                    <MarkunreadOutlinedIcon color="primary" />
-                  </IconButton>
-                ) : (
-                  <DraftsOutlinedIcon color="grey" />
-                )}
-              </div>
             </div>
-          </div>
-        ))
+          ))
       ) : (
         <div className="d-flex flex-column align-items-center gap-2 mt-4">
           <NotificationsOffOutlinedIcon fontSize="large" color="disabled" />

@@ -4,7 +4,7 @@ export const notifyUserEmit = (userId, data) => {
   const applicantSocketId = userSockets[userId];
   if (applicantSocketId) {
     io.to(applicantSocketId).emit("notifyUser", {
-      ...data,
+      data,
     });
   }
 };
