@@ -387,10 +387,10 @@ ${universityName}`;
           className={`d-flex align-items-center flex-wrap my-3 ${
             data.length <= 2
               ? "justify-content-start"
-              : "justify-content-around"
+              : "justify-content-between"
           }`}
           style={{
-            gap: "20px",
+            gap: "10px",
           }}
         >
           {filteredData.length > 0 ? (
@@ -399,6 +399,7 @@ ${universityName}`;
                 key={index}
                 candidate={e}
                 navigate={navigate}
+                testScore={testScore}
                 // profileImage={profileImage}
                 // resumeFileSrc={resumeFileSrc}
                 // resumeFileName={resumeFileName}

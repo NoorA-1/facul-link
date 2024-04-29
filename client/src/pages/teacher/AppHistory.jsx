@@ -42,7 +42,7 @@ const AppHistory = () => {
 
   const statusColors = {
     rejected: "error",
-    shortlisted: "success",
+    hired: "success",
     pending: "warning",
     default: "info",
   };

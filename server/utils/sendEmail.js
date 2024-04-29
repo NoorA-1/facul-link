@@ -9,8 +9,8 @@ export const sendEmail = async (from, to, subject, text, html, files) => {
       from, // sender address
       to, // list of receivers
       subject, // Subject line
-      html, // html content
       text, // plain text body
+      html, // html content
     };
 
     if (files && files.length > 0) {

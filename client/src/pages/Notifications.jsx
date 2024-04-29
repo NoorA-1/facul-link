@@ -16,11 +16,11 @@ const Notifications = () => {
   const { notifications, setNotifications } = useDashboardContext();
   const navigate = useNavigate();
 
-  const markNotification = async (notification) => {
+  const markNotification = async (notification, markRead) => {
     try {
       const data = {
         ...notification,
-        isMarkedRead: true,
+        isMarkedRead: markRead,
       };
       console.log(notifications);
       const response = await http.put(
@@ -48,7 +48,7 @@ const Notifications = () => {
               onClick={() => {
                 if (Boolean(e.message)) {
                   navigate(`/dashboard/${e.onClickURL}`);
-                  markNotification(e);
+                  markNotification(e, true);
                 }
               }}
               role={Boolean(e.message) ? "button" : ""}
@@ -74,13 +74,20 @@ const Notifications = () => {
                     <IconButton
                       onClick={(event) => {
                         event.stopPropagation();
-                        markNotification(e);
+                        markNotification(e, true);
                       }}
                     >
                       <MarkunreadOutlinedIcon color="primary" />
                     </IconButton>
                   ) : (
-                    <DraftsOutlinedIcon color="grey" />
+                    <IconButton
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        markNotification(e, false);
+                      }}
+                    >
+                      <DraftsOutlinedIcon color="grey" />
+                    </IconButton>
                   )}
                 </div>
               </div>

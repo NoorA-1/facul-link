@@ -12,6 +12,7 @@ const CandidateCard = ({
   //   profileImage,
   //   resumeFileSrc,
   //   resumeFileName,
+  testScore,
   navigate,
   handleModalOpen,
 }) => {
@@ -55,6 +56,11 @@ const CandidateCard = ({
         Application Status:{" "}
         <span className="fw-normal text-capitalize">{candidate.status}</span>
       </p>
+
+      <p className="fw-medium">
+        Test Score: <span className="fw-normal">{testScore(candidate)}%</span>
+      </p>
+
       <hr className="w-100" />
       <div className="d-flex flex-column gap-3">
         <a

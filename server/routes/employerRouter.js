@@ -470,14 +470,14 @@ router.put(
       }
       await application.save();
 
-      // const info = await sendEmail(
-      //   `"${employer.userId.firstname} ${employer.userId.lastname}" <${employer.userId.email}>`,
-      //   reqBody.email,
-      //   reqBody.subject,
-      //   reqBody.text,
-      //   `<p style="white-space: pre;">${reqBody.text}</p>`,
-      //   files
-      // );
+      const info = await sendEmail(
+        `"${employer.userId.firstname} ${employer.userId.lastname}" <${employer.userId.email}>`,
+        reqBody.email,
+        reqBody.subject,
+        reqBody.text,
+        `<p style="white-space: pre;">${reqBody.text}</p>`,
+        files
+      );
 
       const notification = {
         userId: application.applicantId.userId._id,
