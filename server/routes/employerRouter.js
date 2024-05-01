@@ -1,20 +1,21 @@
 import { Router } from "express";
-const router = Router();
-import User from "../models/userModel.js";
+import HiringTest from "../models/hiringTestModel.js";
 import Teacher from "../models/teacherModel.js";
 import UniEmployer from "../models/uniEmployerModel.js";
-import HiringTest from "../models/hiringTestModel.js";
+import User from "../models/userModel.js";
+const router = Router();
 
-import { authenticateUser } from "../middlewares/authMiddleware.js";
+import dayjs from "dayjs";
 import { validationResult } from "express-validator";
-import mongoose, { Schema, SchemaTypes } from "mongoose";
-import Job from "../models/jobModel.js";
-import JobApplication from "../models/jobApplicationModel.js";
-import { sendEmail } from "../utils/sendEmail.js";
-import Notifications from "../models/notificationsModel.js";
-import { notifyUserEmit } from "../utils/socketFunctions.js";
-import multer from "multer";
 import fs from "fs";
+import mongoose, { Schema, SchemaTypes } from "mongoose";
+import multer from "multer";
+import { authenticateUser } from "../middlewares/authMiddleware.js";
+import JobApplication from "../models/jobApplicationModel.js";
+import Job from "../models/jobModel.js";
+import Notifications from "../models/notificationsModel.js";
+import { sendEmail } from "../utils/sendEmail.js";
+import { notifyUserEmit } from "../utils/socketFunctions.js";
 
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
@@ -470,12 +471,36 @@ router.put(
       }
       await application.save();
 
+      const pTagStyle = "margin: 0; font-weight: 500;";
+
       const info = await sendEmail(
         `"${employer.userId.firstname} ${employer.userId.lastname}" <${employer.userId.email}>`,
         reqBody.email,
         reqBody.subject,
         reqBody.text,
-        `<p style="white-space: pre;">${reqBody.text}</p>`,
+        `<p style="white-space: pre;">${reqBody.text}</p> ${
+          application.status === "interview"
+            ? `<hr/>
+            <p style="${pTagStyle} text-transform: capitalize;">Interview Mode: <span style="font-weight: 400">${
+                application.interviewDetails.mode
+              }</span></p>
+            <p style="${pTagStyle}">Date: <span style="font-weight: 400">${dayjs(
+                application.interviewDetails.date
+              ).format("DD-MM-YYYY")}</span></p>
+            <p style="${pTagStyle}">Time: <span style="font-weight: 400">${dayjs(
+                application.interviewDetails.time
+              ).format("hh:mm A")}</span></p>
+            <p style="${pTagStyle}">${
+                application.interviewDetails.mode === "online"
+                  ? "Meeting Link"
+                  : "Location"
+              }: <span style="font-weight: 400">${
+                application.interviewDetails.mode === "online"
+                  ? application.interviewDetails.meetingURL
+                  : application.interviewDetails.location
+              }</span></p>`
+            : ""
+        }`,
         files
       );
 

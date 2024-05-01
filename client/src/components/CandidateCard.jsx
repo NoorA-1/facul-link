@@ -54,12 +54,25 @@ const CandidateCard = ({
       </p>
       <p className="fw-medium">
         Application Status:{" "}
-        <span className="fw-normal text-capitalize">{candidate.status}</span>
+        <span className="fw-normal text-capitalize">{candidate.status}</span>{" "}
+        {candidate.status === "interview" && (
+          <span
+            className="fw-normal text-capitalize text-primary fw-medium"
+            role="button"
+            onClick={() =>
+              handleModalOpen("interviewDetailsModal", candidate._id)
+            }
+          >
+            (Details)
+          </span>
+        )}
       </p>
 
-      <p className="fw-medium">
-        Test Score: <span className="fw-normal">{testScore(candidate)}%</span>
-      </p>
+      {candidate.test.status === "completed" && (
+        <p className="fw-medium">
+          Test Score: <span className="fw-normal">{testScore(candidate)}%</span>
+        </p>
+      )}
 
       <hr className="w-100" />
       <div className="d-flex flex-column gap-3">

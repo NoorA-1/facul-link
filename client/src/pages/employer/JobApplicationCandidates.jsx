@@ -17,6 +17,7 @@ import {
   TextField,
   InputAdornment,
   IconButton,
+  Alert,
 } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import { TimePicker } from "@mui/x-date-pickers";
@@ -26,7 +27,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { FormikProvider, useFormik } from "formik";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, Fragment } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   emailFormValidationSchema,
@@ -80,11 +81,40 @@ const JobApplicationCandidates = () => {
   const [currentApplicationId, setCurrentApplicationId] = useState(null);
   const [selectedOption, setSelectedOption] = useState("");
   const [files, setFiles] = useState([]);
+  const [fileError, setFileError] = useState([]);
+  const fileInputRef = useRef(null);
 
   const handleFile = (event) => {
+    const allowedFileTypes = [
+      "image/jpeg",
+      "image/png",
+      "text/plain",
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ];
     const newFiles = Array.from(event.target.files);
     const totalFiles = [...files, ...newFiles].slice(0, 5);
-    setFiles(totalFiles);
+    const validFiles = totalFiles.filter(
+      (file) =>
+        file.size <= 2 * 1024 * 1024 && allowedFileTypes.includes(file.type)
+    );
+
+    // if (fileInputRef.current.files.length > 5) {
+    //   setFileError((prev) => [
+    //     ...prev,
+    //     "Maximum 5 number of files are allowed.",
+    //   ]);
+    // }
+
+    if (validFiles.length !== totalFiles.length) {
+      setFileError((prev) => [
+        ...prev,
+        "Only 2MB file size is allowed for each file and allowed file formats are jpg, png, txt, pdf, docx, xlsx.",
+      ]);
+    }
+
+    setFiles(validFiles);
   };
 
   const removeFile = (index) => {
@@ -96,6 +126,7 @@ const JobApplicationCandidates = () => {
   const [open, setOpen] = useState({
     reportModal: false,
     reviewModal: false,
+    interviewDetailsModal: false,
   });
   const handleModalOpen = (name, id) => {
     setCurrentApplicationId(() => id);
@@ -106,6 +137,12 @@ const JobApplicationCandidates = () => {
     setSelectedOption("");
     formik.resetForm();
     setFiles([]);
+    setFileError("");
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+
     setOpen((prev) => ({ ...prev, [name]: false }));
   };
 
@@ -181,6 +218,11 @@ const JobApplicationCandidates = () => {
     }
     handleEmailText();
     setFiles([]);
+    setFileError("");
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   }, [selectedOption]);
 
   useEffect(() => {
@@ -383,16 +425,7 @@ ${universityName}`;
         </Tabs>
 
         <hr className="mt-0" />
-        <div
-          className={`d-flex align-items-center flex-wrap my-3 ${
-            data.length <= 2
-              ? "justify-content-start"
-              : "justify-content-between"
-          }`}
-          style={{
-            gap: "10px",
-          }}
-        >
+        <div className="d-flex align-items-center flex-wrap my-3 justify-content-start column-gap-5">
           {filteredData.length > 0 ? (
             filteredData.map((e, index) => (
               <CandidateCard
@@ -709,17 +742,29 @@ ${universityName}`;
                           type="file"
                           hidden
                           multiple
-                          // accept=".jpg, .png, .pdf"
+                          accept=".jpg, .png, .pdf, .docx, .xlsx, .txt"
                           onChange={handleFile}
+                          ref={fileInputRef}
                         />
                       </Button>
                     )}
 
-                    {files.length >= 5 && (
-                      <p className="text-danger">
-                        Maximum of 5 files can be attached.
-                      </p>
-                    )}
+                    <p className="mt-2 text-secondary fw-medium">
+                      Maximum 5 files are allowed (2 MB each).
+                    </p>
+
+                    {Boolean(fileError) &&
+                      fileError.map((e, index) => (
+                        <Alert
+                          className="mt-3"
+                          key={index}
+                          variant="outlined"
+                          severity="warning"
+                          // onClose={() => {}}
+                        >
+                          {e}
+                        </Alert>
+                      ))}
 
                     {files.length > 0 && (
                       <div>
@@ -781,6 +826,66 @@ ${universityName}`;
                 </Button>
               </div>
             </form>
+          </Box>
+        </Modal>
+
+        <Modal
+          open={open.interviewDetailsModal}
+          onClose={() => handleModalClose("interviewDetailsModal")}
+        >
+          <Box sx={shortlistModalStyle}>
+            <h4 className="text-center">Interview Details</h4>
+            <hr />
+            {data.length > 0 &&
+              data.map((application, index) => {
+                if (currentApplicationId === application._id) {
+                  return (
+                    <Fragment key={index}>
+                      <p className="fw-semibold">
+                        Interview Mode:{" "}
+                        <span className="fw-normal text-capitalize">
+                          {application?.interviewDetails?.mode}
+                        </span>
+                      </p>
+
+                      <p className="fw-semibold">
+                        Date:{" "}
+                        <span className="fw-normal text-capitalize">
+                          {dayjs(application?.interviewDetails?.date).format(
+                            "DD-MM-YYYY"
+                          )}
+                        </span>
+                      </p>
+
+                      <p className="fw-semibold">
+                        Time:{" "}
+                        <span className="fw-normal text-capitalize">
+                          {dayjs(application?.interviewDetails?.time).format(
+                            "hh:mm A"
+                          )}
+                        </span>
+                      </p>
+
+                      <p className="fw-semibold">
+                        {application?.interviewDetails?.mode === "online"
+                          ? "Meeting Link"
+                          : "Location"}
+                        :{" "}
+                        <span
+                          className={`fw-normal ${
+                            application?.interviewDetails?.mode !== "online" &&
+                            "text-capitalize"
+                          }`}
+                        >
+                          {application?.interviewDetails?.mode === "online"
+                            ? application?.interviewDetails?.meetingURL
+                            : application?.interviewDetails?.location}
+                        </span>
+                      </p>
+                    </Fragment>
+                  );
+                }
+              })}
           </Box>
         </Modal>
       </div>
