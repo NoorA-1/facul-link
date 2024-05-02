@@ -14,6 +14,7 @@ export { default as EmployerProfilePage } from "./employer/EmployerProfilePage";
 export { default as HomePage } from "./teacher/HomePage";
 
 export { default as ErrorPage } from "./ErrorPage";
+export { default as OAuth } from "./OAuth";
 
 export { default as SearchJob } from "./SearchJob";
 export { default as AllJobs } from "./AllJobs";

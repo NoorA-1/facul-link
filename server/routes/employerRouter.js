@@ -16,6 +16,7 @@ import Job from "../models/jobModel.js";
 import Notifications from "../models/notificationsModel.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { notifyUserEmit } from "../utils/socketFunctions.js";
+import axios from "axios";
 
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
@@ -541,5 +542,46 @@ router.put(
     }
   }
 );
+
+router.post("/connect-zoom", async (req, res) => {
+  try {
+    const authCode = req.body.authCode;
+    if (!authCode) {
+      return res.status(401).send({ message: "No auth code" });
+    }
+    const encodedKey = Buffer.from(
+      process.env.ZM_CLIENT_ID + ":" + process.env.ZM_CLIENT_SECRET
+    );
+    console.log(authCode);
+
+    const zoomData = await axios.post(
+      `https://zoom.us/oauth/token`,
+      {
+        grant_type: "authorization_code",
+        code: authCode,
+        redirect_uri: "http://localhost:5173/dashboard/oauth",
+      },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${encodedKey.toString("base64")}`,
+        },
+      }
+    );
+    if (!zoomData.ok)
+      return res.status(401).send("Could not connect with Zoom");
+
+    // const zoomUserRes = await axios.get("https://api.zoom.us/v2/users/me", {
+    //   headers: {
+    //     "Content-Type": "application/x-www-form-urlencoded",
+    //     Authorization: `Bearer ${zoomData.access_token}`,
+    //   },
+    // });
+
+    console.log(zoomUserRes);
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 export default router;
