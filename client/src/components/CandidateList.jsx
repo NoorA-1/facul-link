@@ -1,6 +1,5 @@
 import {
   Avatar,
-  Button,
   IconButton,
   Paper,
   Table,
@@ -10,7 +9,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { serverURL } from "../utils/formData";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
@@ -20,7 +19,7 @@ import MarkEmailReadOutlinedIcon from "@mui/icons-material/MarkEmailReadOutlined
 const CandidateList = ({ data, testScore, handleModalOpen, navigate }) => {
   const profileImage = (candidate) => {
     return (
-      serverURL + candidate.applicantId?.profileImage?.split("public\\")[1]
+      serverURL + candidate?.applicantId?.profileImage?.split("public\\")[1]
     );
   };
 
@@ -44,10 +43,14 @@ const CandidateList = ({ data, testScore, handleModalOpen, navigate }) => {
             <TableCell>Email</TableCell>
             <TableCell>Contact Number</TableCell>
             <TableCell>Application Status</TableCell>
-            <TableCell>Test Score</TableCell>
+            {data[0]?.jobId?.hiringTest !== null && (
+              <TableCell>Test Score</TableCell>
+            )}
             <TableCell>Resume</TableCell>
             <TableCell>Profile</TableCell>
-            <TableCell>Report</TableCell>
+            {data[0]?.jobId?.hiringTest !== null && (
+              <TableCell>Report</TableCell>
+            )}
             <TableCell>Update</TableCell>
           </TableRow>
         </TableHead>
@@ -80,11 +83,9 @@ const CandidateList = ({ data, testScore, handleModalOpen, navigate }) => {
                     </span>
                   )}
                 </TableCell>
-                <TableCell>
-                  {candidate.test.status === "completed" && (
-                    <span className="fw-normal">{testScore(candidate)}%</span>
-                  )}
-                </TableCell>
+                {candidate.test.status === "completed" && (
+                  <TableCell>{testScore(candidate)}%</TableCell>
+                )}
                 <TableCell align="center">
                   <a
                     href={resumeFileSrc(candidate)}
@@ -108,8 +109,8 @@ const CandidateList = ({ data, testScore, handleModalOpen, navigate }) => {
                     <VisibilityOutlinedIcon />
                   </IconButton>
                 </TableCell>
-                <TableCell>
-                  {Boolean(candidate.test?.status === "completed") && (
+                {Boolean(candidate.test?.status === "completed") && (
+                  <TableCell>
                     <IconButton
                       variant="outlined"
                       color="warning"
@@ -119,8 +120,8 @@ const CandidateList = ({ data, testScore, handleModalOpen, navigate }) => {
                     >
                       <ScoreboardOutlinedIcon />
                     </IconButton>
-                  )}
-                </TableCell>
+                  </TableCell>
+                )}
                 <TableCell>
                   {Boolean(
                     candidate.status !== "pending" &&

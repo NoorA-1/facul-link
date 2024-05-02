@@ -17,7 +17,7 @@ const CandidateCard = ({
   handleModalOpen,
 }) => {
   const profileImage = (e) => {
-    return serverURL + e.applicantId?.profileImage?.split("public\\")[1];
+    return serverURL + e?.applicantId?.profileImage?.split("public\\")[1];
   };
 
   const resumeFileName = (e) => {
