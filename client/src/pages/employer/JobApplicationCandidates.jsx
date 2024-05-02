@@ -5,6 +5,8 @@ import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+import ViewListIcon from "@mui/icons-material/ViewList";
+import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import UploadIcon from "@mui/icons-material/Upload";
 
 import {
@@ -27,7 +29,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { FormikProvider, useFormik } from "formik";
-import React, { useEffect, useState, useRef, Fragment } from "react";
+import React, { useEffect, useState, useRef, Fragment, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   emailFormValidationSchema,
@@ -35,7 +37,7 @@ import {
 } from "../../schemas";
 import { serverURL } from "../../utils/formData";
 import http from "../../utils/http";
-import { CandidateCard } from "../../components";
+import { CandidateCard, CandidateList } from "../../components";
 
 dayjs.extend(duration);
 
@@ -75,6 +77,7 @@ const interviewFormInitialValues = {
 const JobApplicationCandidates = () => {
   const [loading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
+  const [cardView, setCardView] = useState("card");
   const params = useParams();
   const navigate = useNavigate();
   const [tab, setTab] = useState("applied");
@@ -232,27 +235,26 @@ const JobApplicationCandidates = () => {
     }
   }, [params.id]);
 
-  const filteredData = data.filter((e) => {
-    switch (tab) {
-      case "applied":
-        return e.status === "applied";
-
-      case "interview":
-        return e.status === "interview";
-
-      case "shortlisted":
-        return e.status === "shortlisted";
-
-      case "hired":
-        return e.status === "hired";
-
-      case "rejected":
-        return e.status === "rejected";
-
-      default:
-        return true;
-    }
-  });
+  const filteredData = useMemo(
+    () =>
+      data.filter((e) => {
+        switch (tab) {
+          case "applied":
+            return e.status === "applied";
+          case "interview":
+            return e.status === "interview";
+          case "shortlisted":
+            return e.status === "shortlisted";
+          case "hired":
+            return e.status === "hired";
+          case "rejected":
+            return e.status === "rejected";
+          default:
+            return true;
+        }
+      }),
+    [data, tab]
+  );
 
   if (loading && !data) {
     return (
@@ -425,8 +427,26 @@ ${universityName}`;
         </Tabs>
 
         <hr className="mt-0" />
+        <div className="d-flex justify-content-end">
+          <div className="border border-1 rounded p-2 py-0">
+            <IconButton onClick={() => setCardView("list")}>
+              <ViewListIcon />
+            </IconButton>
+            <div className="vr"></div>
+            <IconButton onClick={() => setCardView("card")}>
+              <ViewModuleIcon />
+            </IconButton>
+          </div>
+        </div>
         <div className="d-flex align-items-center flex-wrap my-3 justify-content-start column-gap-5">
-          {filteredData.length > 0 ? (
+          {filteredData.length > 0 && cardView === "list" ? (
+            <CandidateList
+              data={filteredData}
+              testScore={testScore}
+              navigate={navigate}
+              handleModalOpen={handleModalOpen}
+            />
+          ) : filteredData.length > 0 && cardView === "card" ? (
             filteredData.map((e, index) => (
               <CandidateCard
                 key={index}

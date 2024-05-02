@@ -17,3 +17,4 @@ export { default as AdminSmallSidebar } from "./AdminSmallSidebar";
 export { default as HomePageCard } from "./HomePageCard";
 export { default as JobPostCard } from "./JobPostCard";
 export { default as CandidateCard } from "./CandidateCard";
+export { default as CandidateList } from "./CandidateList";

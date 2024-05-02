@@ -17,6 +17,7 @@ import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
 import BookmarkOutlinedIcon from "@mui/icons-material/BookmarkOutlined";
 import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
+import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import UploadIcon from "@mui/icons-material/Upload";
 
@@ -289,6 +290,19 @@ const JobPage = () => {
   return (
     <div className="container mx-auto my-3">
       <div className="bg-white py-4 rounded grey-border px-5">
+        <Button
+          variant="outlined"
+          sx={{
+            border: 2,
+            ":hover": {
+              border: 2,
+            },
+          }}
+          startIcon={<ArrowBackOutlinedIcon />}
+          onClick={() => navigate(-1)}
+        >
+          Back
+        </Button>
         <div className="row">
           <div className="col-lg-8 col-12">
             <div className="d-flex flex-sm-row flex-column align-items-center justify-content-between">
