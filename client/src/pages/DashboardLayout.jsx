@@ -29,6 +29,7 @@ import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined
 import MenuIcon from "@mui/icons-material/Menu";
 import http from "../utils/http";
 import { io } from "socket.io-client";
+import { serverURL } from "../utils/formData";
 const DashboardContext = createContext();
 
 export const loader = async () => {
@@ -127,7 +128,6 @@ const DashboardLayout = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  const serverURL = "http://localhost:3000/";
   const profileImage = Boolean(userData.user.profileImage)
     ? serverURL + userData.user.profileImage?.split("public\\")[1]
     : null;

@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import http from "../utils/http";
 import {
   Avatar,
@@ -203,7 +208,7 @@ const JobPage = () => {
 
   const handleResumeChange = (event) => {
     const file = event.target.files[0];
-    if (file?.type === "application/pdf") {
+    if (file?.type === "application/pdf" && file.size <= 5 * 1024 * 1024) {
       setResumeFileError("");
       const resumeURL = URL.createObjectURL(file);
       setResume({
@@ -214,14 +219,16 @@ const JobPage = () => {
         isRemoved: false,
       });
     } else {
-      setResumeFileError("Resume file must be PDF");
+      setResumeFileError(
+        "Resume file must be PDF and maximum filesize is 5 MB"
+      );
     }
   };
 
   const ResumeFileMessageBox = () => {
     if (resumeFileError) {
       return (
-        <Alert variant="filled" severity="error">
+        <Alert variant="filled" severity="error" className="mt-3">
           {resumeFileError}
         </Alert>
       );
@@ -567,8 +574,11 @@ const JobPage = () => {
                 }
               />
             </div>
-            <div className="mb-4">
+            <div>
               <h5 className="fw-semibold">Resume</h5>
+              <p className="text-secondary m-0 mb-4">
+                PDF and maxmimum filesize is 5MB
+              </p>
               {userData.user.resumeFile ? (
                 <>
                   <div className="border border-1 border-secondary-subtle rounded p-2 px-4">
@@ -671,6 +681,15 @@ const JobPage = () => {
                 </div>
               )}
             </div>
+            <p className="m-0 text-end">
+              Want to update your profile?{" "}
+              <Link
+                to={"/dashboard/profile?status=editMode"}
+                className="primary-link-color fw-medium"
+              >
+                Edit Profile
+              </Link>
+            </p>
             <ResumeFileMessageBox />
 
             <div className="mt-5 d-flex justify-content-center">
