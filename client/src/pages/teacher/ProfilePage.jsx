@@ -9,12 +9,17 @@ import IconButton from "@mui/material/IconButton";
 import dayjs from "dayjs";
 import { TeacherEditProfileForm } from "../../components";
 import http from "../../utils/http";
+import { useSearchParams } from "react-router-dom";
 
 const ProfilePage = () => {
   const { userData, setUserData } = useDashboardContext();
   // const [userData, setUserData] = useState(initialUserData);
-  const [editMode, setEditMode] = useState(false);
-  // console.log(userData);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const paramsStatus = searchParams.get("status");
+
+  const [editMode, setEditMode] = useState(
+    paramsStatus === "editMode" ? "true" : false
+  );
   const serverURL = "http://localhost:3000/";
   const profileImage = Boolean(userData.user.profileImage)
     ? serverURL + userData.user.profileImage?.split("public\\")[1]
@@ -29,6 +34,12 @@ const ProfilePage = () => {
     value: "",
     filename: resumeFileSrc ? resumeFileSrc.split("documents\\")[1] : "",
   });
+
+  const resumeFileName = (resumePath) => {
+    const parts = resumePath.split("\\");
+    const fileName = parts[parts.length - 1];
+    return fileName;
+  };
 
   const updateUserData = async () => {
     const { data } = await http.get("/users/current-user");
@@ -85,7 +96,7 @@ const ProfilePage = () => {
             <div className="d-flex align-items-center gap-3">
               <DescriptionOutlinedIcon fontSize="large" color="secondary" />
               {/* <span>{resume.filename}</span> */}
-              <span>Resume</span>
+              <span>{resumeFileName(resumeFileSrc)}</span>
             </div>
             <div>
               <a

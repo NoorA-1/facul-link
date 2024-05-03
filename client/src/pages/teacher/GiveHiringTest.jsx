@@ -314,6 +314,21 @@ const GiveHiringTest = () => {
     return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
   };
 
+  //Block back button navigation
+  useEffect(() => {
+    const handleBackButton = (event) => {
+      event.preventDefault();
+      console.log("Back button was pressed.");
+    };
+
+    window.history.pushState(null, null, window.location.pathname);
+    window.addEventListener("popstate", handleBackButton);
+
+    return () => {
+      window.removeEventListener("popstate", handleBackButton);
+    };
+  }, []);
+
   // if (view === "completed") {
   //   return (
   //     <div className="container mx-auto my-3">

@@ -154,7 +154,7 @@ const TeacherProfileSetupForm = ({ userData }) => {
         setImageFileError("Image file must be JPG or PNG");
       }
     } else if (event.target.name === "resumeFile") {
-      if (filetype === "application/pdf") {
+      if (filetype === "application/pdf" && file.size <= 5 * 1024 * 1024) {
         setResumeFileError("");
         const resumeURL = URL.createObjectURL(file);
         setResumeFileSrc(resumeURL);
@@ -168,7 +168,9 @@ const TeacherProfileSetupForm = ({ userData }) => {
           };
         });
       } else {
-        setResumeFileError("Resume file must be PDF");
+        setResumeFileError(
+          "Resume file must be PDF and maximum filesize is 5MB"
+        );
       }
     }
   };
@@ -406,7 +408,9 @@ const TeacherProfileSetupForm = ({ userData }) => {
         </div>
         <hr />
         <h3 className="fw-bold mt-4 mb-1">Resume</h3>
-        <h6 className="text-secondary mb-4">Upload your resume (PDF)</h6>
+        <h6 className="text-secondary mb-4">
+          Upload your resume (PDF, max filesize: 5MB)
+        </h6>
         {resumeFileSrc && (
           <div className="bg-light-gray border border-dark-subtle rounded shadow-sm px-5 py-3 mb-1 d-flex align-items-center justify-content-between gap-2">
             <div className="d-flex align-items-center gap-3">
