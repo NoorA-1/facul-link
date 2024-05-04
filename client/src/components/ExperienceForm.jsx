@@ -16,7 +16,9 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import dayjs from "dayjs";
+import { useSearchParams } from "react-router-dom";
 import { teacherExperienceFormValidationSchema } from "../schemas";
+import http from "../utils/http";
 
 const modalStyle = {
   position: "absolute",
@@ -50,6 +52,9 @@ const initialValues = {
 const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
   const [startDate, setStartDate] = useState(dayjs());
   const [minEndDate, setMinEndDate] = useState(startDate.add(1, "month"));
+  const [searchParams, setSearchParams] = useSearchParams();
+  const applicationId = searchParams.get("applicationId");
+
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -85,6 +90,7 @@ const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
     touched,
     resetForm,
     setFieldValue,
+    setValues,
   } = useFormik({
     initialValues,
     validationSchema: teacherExperienceFormValidationSchema,
@@ -172,6 +178,35 @@ const ExperienceForm = memo(({ experiencesArray, setExperiencesArray }) => {
       prev.filter((e, i) => prev[i] !== prev[index])
     );
   };
+
+  const getApplication = async (applicationId) => {
+    try {
+      const { data } = await http.get(
+        `/teacher/job-application/${applicationId}`
+      );
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (applicationId) {
+        const data = await getApplication(applicationId);
+        console.log(data);
+        newExperience();
+        handleIsCurrentlyWorking();
+        setFieldValue("experience.title", data?.jobId?.title);
+        setFieldValue("experience.location.country", "Pakistan");
+        setFieldValue(
+          "experience.company",
+          data?.jobId?.createdBy?.universityName
+        );
+      }
+    };
+    fetchData();
+  }, [searchParams]);
 
   return (
     <>

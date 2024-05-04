@@ -510,6 +510,9 @@ router.put(
         onClickURL: `application-history/${req.params.applicationId}`,
         message: reqBody.text,
       };
+      if (application.status === "hired") {
+        notification.title = `Congratulations on getting hired for ${application.jobId.title} position. Do you want to add it to your profile?`;
+      }
 
       const newNotification = new Notifications({
         ...notification,
@@ -519,10 +522,6 @@ router.put(
 
       notifyUserEmit(application.applicantId.userId._id, newNotification);
 
-      if (files && files.length > 0) {
-        await cleanUpFiles(files);
-      }
-
       if (application.status === "hired") {
         const job = await Job.findById(application.jobId._id);
         if (job.totalPositions >= 1) {
@@ -531,6 +530,10 @@ router.put(
         } else {
           return;
         }
+      }
+
+      if (files && files.length > 0) {
+        await cleanUpFiles(files);
       }
 
       return res
