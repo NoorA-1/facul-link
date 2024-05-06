@@ -386,7 +386,7 @@ const GiveHiringTest = () => {
                   </h6>
                 </div>
               </div>
-              <h5>
+              <h5 className="user-select-none">
                 Q{currentQuestionIndex + 1} :{" "}
                 {questionsArray[currentQuestionIndex]?.question}
               </h5>

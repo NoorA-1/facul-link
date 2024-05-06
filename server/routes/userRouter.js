@@ -511,6 +511,7 @@ router.get("/search-jobs", authenticateUser, async (req, res) => {
       pipeline.push({ $match: matchConditions });
     }
 
+    pipeline.push({ $sort: { createdAt: -1 } });
     pipeline.push({ $skip: skip }, { $limit: limit });
 
     const jobs = await Job.aggregate(pipeline);
@@ -520,11 +521,16 @@ router.get("/search-jobs", authenticateUser, async (req, res) => {
     countPipeline.push({ $count: "total" });
 
     const countResult = await Job.aggregate(countPipeline);
+
     const totalJobs = countResult.length > 0 ? countResult[0].total : 0;
+    const totalJobsCount = await Job.countDocuments({
+      endDate: { $gte: today },
+    });
 
     res.status(200).json({
       jobs,
       totalPages: Math.ceil(totalJobs / limit),
+      totalJobsCount,
       currentPage: page,
     });
   } catch (err) {
