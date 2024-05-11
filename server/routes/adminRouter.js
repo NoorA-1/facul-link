@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import UniEmployer from "../models/uniEmployerModel.js";
 import Job from "../models/jobModel.js";
 import JobApplication from "../models/jobApplicationModel.js";
+import { LogError } from "concurrently";
 
 router.get("/stats", authenticateUser, async (req, res) => {
   try {
@@ -103,6 +104,79 @@ router.get("/stats", authenticateUser, async (req, res) => {
       });
     } else {
       res.status(401).json({ message: "Unauthorized Access. Not Admin." });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//get all jobs
+router.get("/jobs", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "admin") {
+      const allJobs = await Job.find().populate([
+        "hiringTest",
+        "createdBy",
+        {
+          path: "createdBy",
+          populate: {
+            path: "userId",
+            model: "User",
+          },
+        },
+      ]);
+      return res.status(200).json(allJobs);
+    } else {
+      return res.status(404).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.put("/jobs/:id", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "admin") {
+      const id = req.params.id;
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid id" });
+      }
+      const jobInfo = { ...req.body };
+      let hiringTestId = null;
+      if (jobInfo.hiringTest !== "") {
+        hiringTestId = jobInfo.hiringTest;
+      }
+      jobInfo.requiredExperience = Number(jobInfo.requiredExperience);
+
+      const job = await Job.findById(id);
+      if (job) {
+        Object.keys(jobInfo).forEach((key) => {
+          if (key === "hiringTest") {
+            job[key] = hiringTestId;
+          } else {
+            job[key] = jobInfo[key];
+          }
+        });
+        await job.save();
+        return res.status(200).json({ message: "Job updated" });
+      } else {
+        return res.status(404).json({ message: "Job not found" });
+      }
+    } else {
+      return res.status(404).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.get("/get-hiring-tests", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "admin") {
+      const allTests = await HiringTest.find();
+      return res.status(200).json(allTests);
+    } else {
+      return res.status(404).json({ message: "Unauthorized" });
     }
   } catch (error) {
     console.log(error);

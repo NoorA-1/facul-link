@@ -326,6 +326,7 @@ router.delete("/delete-job/:id", authenticateUser, async (req, res) => {
       }
       const deleteJob = await Job.findByIdAndDelete(id);
       if (deleteJob) {
+        await JobApplication.deleteMany({ jobId: id });
         return res.status(200).json({ message: "Job deleted successfully" });
       } else {
         return res.status(404).json({ message: "Job not found" });

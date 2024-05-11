@@ -44,6 +44,7 @@ import {
   JobApplicationCandidates,
   ViewTeacherProfile,
   Notifications,
+  AdminJobView,
 } from "./pages";
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
@@ -57,6 +58,7 @@ import { loader as applicationsHistoryLoader } from "./pages/teacher/AppHistory"
 import { loader as JobApplicationsLoader } from "./pages/employer/JobApplications";
 import { loader as searchJobLoader } from "./pages/SearchJob";
 import { loader as AdminDashboardLoader } from "./pages/admin/AdminDashboardLayout";
+import { loader as AdminJobsLoader } from "./pages/admin/AdminManageJobsPage";
 import { loader as AdminEmployersLoader } from "./pages/admin/AdminManageEmployersPage";
 // const token = Cookies.get("token");
 // if (token) {
@@ -362,6 +364,11 @@ const App = () => {
             {
               path: "manage-jobs",
               element: <AdminManageJobsPage />,
+              loader: AdminJobsLoader,
+            },
+            {
+              path: "jobs/:id",
+              element: <AdminJobView />,
             },
             {
               path: "manage-teachers",

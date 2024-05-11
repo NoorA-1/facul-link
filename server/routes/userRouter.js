@@ -523,14 +523,11 @@ router.get("/search-jobs", authenticateUser, async (req, res) => {
     const countResult = await Job.aggregate(countPipeline);
 
     const totalJobs = countResult.length > 0 ? countResult[0].total : 0;
-    const totalJobsCount = await Job.countDocuments({
-      endDate: { $gte: today },
-    });
 
     res.status(200).json({
       jobs,
       totalPages: Math.ceil(totalJobs / limit),
-      totalJobsCount,
+      totalJobs,
       currentPage: page,
     });
   } catch (err) {

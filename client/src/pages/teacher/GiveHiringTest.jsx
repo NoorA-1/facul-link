@@ -411,7 +411,7 @@ const GiveHiringTest = () => {
                           />
                         }
                         label={`${option.optionLabel}) ${option.optionValue}`}
-                        className="w-100"
+                        className="w-100 user-select-none"
                       />
                     </div>
                   )

@@ -314,8 +314,8 @@ const JobPage = () => {
           <div className="col-lg-8 col-12">
             <div className="d-flex flex-sm-row flex-column align-items-center justify-content-between">
               <h4 className="fw-bold mt-3">{jobData.title}</h4>
-              {userData.user.userId.role === "teacher" &&
-              !userData.user.bookmarks.includes(jobData._id) ? (
+              {userData?.user.userId.role === "teacher" &&
+              !userData?.user.bookmarks.includes(jobData._id) ? (
                 <Button
                   startIcon={<BookmarkBorderOutlinedIcon />}
                   onClick={() => bookmarkJob(jobData._id)}
@@ -459,7 +459,9 @@ const JobPage = () => {
                 sx={{ width: 80, height: 80, border: "1px solid #0A9396" }}
               />
               <h4 className="mt-3 fw-semibold">{`${jobData.createdBy.userId.firstname} ${jobData.createdBy.userId.lastname}`}</h4>
-              <p>{jobData.createdBy.departmentName} Department</p>
+              <p className="text-center">
+                {jobData.createdBy.departmentName} Department
+              </p>
               <hr className="w-100" />
               <div className="d-flex align-items-center gap-2">
                 <Avatar
