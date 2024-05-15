@@ -104,7 +104,7 @@ const AdminManageEmployersPage = () => {
                   <TableCell align="left">{e.departmentName}</TableCell>
                   <TableCell align="left">
                     <Chip
-                      className="fw-bold"
+                      className="fw-bold text-capitalize"
                       label={e.status}
                       color={
                         e.status === "active"
@@ -275,6 +275,11 @@ const AdminManageEmployersPage = () => {
               value="3"
               style={{ fontWeight: tab === "3" ? "bold" : "normal" }}
             />
+            <Tab
+              label="Rejected"
+              value="4"
+              style={{ fontWeight: tab === "4" ? "bold" : "normal" }}
+            />
           </TabList>
         </Box>
         <TabPanel value="1">
@@ -286,13 +291,16 @@ const AdminManageEmployersPage = () => {
         <TabPanel value="3">
           <DataTable status="pending" />
         </TabPanel>
+        <TabPanel value="4">
+          <DataTable status="rejected" />
+        </TabPanel>
       </TabContext>
       <Modal open={open.deleteModal} onClose={() => handleClose("deleteModal")}>
         <Box sx={style}>
           <h3 className="text-center">Are you sure?</h3>
           <p className="text-center mb-4">
             Do you want to delete this employer? This will also delete any jobs
-            posted by the employer
+            or hiring tests made by the employer
           </p>
           <div className="d-flex justify-content-center gap-3">
             <Button

@@ -59,6 +59,7 @@ import { loader as JobApplicationsLoader } from "./pages/employer/JobApplication
 import { loader as searchJobLoader } from "./pages/SearchJob";
 import { loader as AdminDashboardLoader } from "./pages/admin/AdminDashboardLayout";
 import { loader as AdminJobsLoader } from "./pages/admin/AdminManageJobsPage";
+import { loader as AdminTeacherLoader } from "./pages/admin/AdminManageTeachersPage";
 import { loader as AdminEmployersLoader } from "./pages/admin/AdminManageEmployersPage";
 // const token = Cookies.get("token");
 // if (token) {
@@ -373,6 +374,11 @@ const App = () => {
             {
               path: "manage-teachers",
               element: <AdminManageTeachersPage />,
+              loader: AdminTeacherLoader,
+            },
+            {
+              path: "teacher-profile/:id",
+              element: <ViewTeacherProfile />,
             },
             {
               path: "manage-employers",

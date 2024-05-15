@@ -78,6 +78,19 @@ const AdminManageJobsPage = () => {
 
   const navigate = useNavigate();
 
+  const onSubmit = async (values) => {
+    try {
+      const response = await http.put(`/admin/jobs/${currentJobId}`, values);
+      console.log(response);
+      handleClose("editModal");
+      if (response.status === 200) {
+        navigate("/admin-dashboard/manage-jobs");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleOpen = (name, id) => {
     setOpen((prev) => ({ ...prev, [name]: true }));
     setCurrentJobId(id);
@@ -99,17 +112,18 @@ const AdminManageJobsPage = () => {
       endDate: dayjs(foundData.endDate),
     };
   };
-
   const handleClose = (name) => setOpen((prev) => ({ ...prev, [name]: false }));
 
-  const onSubmit = async (values) => {
+  const handleDelete = async () => {
     try {
-      const response = await http.put(`/admin/jobs/${currentJobId}`, values);
+      const response = await http.delete(`/admin/delete-job/${currentJobId}`);
       console.log(response);
-      handleClose("editModal");
-      navigate("/admin-dashboard/manage-jobs");
+      if (response.status === 200) {
+        navigate("/admin-dashboard/manage-jobs");
+      }
+      handleClose("deleteModal");
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 
@@ -154,9 +168,22 @@ const AdminManageJobsPage = () => {
                   </TableCell>
 
                   <TableCell align="left">
-                    {job.createdBy.userId.firstname +
-                      " " +
-                      job.createdBy.userId.lastname}
+                    <span
+                      role="button"
+                      className="secondary-text fw-semibold"
+                      onClick={() =>
+                        navigate(
+                          `/admin-dashboard/employer-profile/${job.createdBy.userId._id}`
+                        )
+                      }
+                    >
+                      {job.createdBy.userId.firstname +
+                        " " +
+                        job.createdBy.userId.lastname}
+                    </span>
+                    <p className="text-dark-emphasis fw-normal">
+                      {job.createdBy.userId.email}
+                    </p>
                   </TableCell>
                   <TableCell align="left">
                     {job.createdBy.universityName}
@@ -203,7 +230,7 @@ const AdminManageJobsPage = () => {
                       </IconButton>
                       <IconButton
                         color="danger"
-                        onClick={() => handleOpen("deleteModal")}
+                        onClick={() => handleOpen("deleteModal", job._id)}
                       >
                         <DeleteOutlinedIcon />
                       </IconButton>
@@ -238,6 +265,34 @@ const AdminManageJobsPage = () => {
             skillsList={skillsList}
             programNamesList={programNamesList}
           />
+        </Box>
+      </Modal>
+
+      <Modal open={open.deleteModal} onClose={() => handleClose("deleteModal")}>
+        <Box sx={style}>
+          <h3 className="text-center">Are you sure?</h3>
+          <p className="text-center mb-4">
+            Do you want to delete this job? This will also delete any job
+            applications of the job.
+          </p>
+          <div className="d-flex justify-content-center gap-3">
+            <Button
+              variant="contained"
+              onClick={() => handleClose("deleteModal")}
+              color="grey"
+              sx={{ color: "#FFF" }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="danger"
+              sx={{ color: "#FFF" }}
+              onClick={handleDelete}
+            >
+              Delete
+            </Button>
+          </div>
         </Box>
       </Modal>
     </div>

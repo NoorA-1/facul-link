@@ -69,6 +69,15 @@ const AdminJobView = () => {
           <h6 className="fw-semibold">Description</h6>
           <p>{jobData.description}</p>
         </div>
+
+        <h6 className="fw-semibold mt-4">Required Skills:</h6>
+        <div className="d-flex gap-2 flex-wrap">
+          {jobData.skills &&
+            jobData.skills.map((skill, index) => {
+              return <Chip key={index} label={skill} />;
+            })}
+        </div>
+
         <div className="dateinfo-section my-5">
           <h6 className="fw-semibold">
             Posted Date:{" "}

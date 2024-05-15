@@ -342,8 +342,16 @@ router.get("/all-jobs/:num", authenticateUser, async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const num = Number(req.params.num);
+    const activeEmployers = await UniEmployer.find({ status: "active" }).select(
+      "_id"
+    );
 
-    const allJobs = await Job.find({ endDate: { $gte: today } })
+    const employerIds = activeEmployers.map((user) => user._id);
+
+    const allJobs = await Job.find({
+      endDate: { $gte: today },
+      createdBy: { $in: employerIds },
+    })
       .sort({ createdAt: -1 })
       .limit(num)
       .populate("createdBy");

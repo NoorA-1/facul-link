@@ -184,7 +184,7 @@ router.put(
 );
 
 router.put(
-  "/teacher-profile",
+  "/teacher-profile/:id",
   authenticateUser,
   upload.fields([
     { name: "profileImage", maxCount: 1 },
@@ -193,7 +193,8 @@ router.put(
   async (req, res) => {
     try {
       let userInfo = { ...req.body };
-      if (req.user.role === "teacher") {
+      const userId = req.params.id;
+      if (req.user.role === "teacher" || req.user.role === "admin") {
         console.log(req.files.profileImage);
         console.log(req.files.resumeFile);
 
@@ -226,7 +227,7 @@ router.put(
             .send({ error: { imageFormatCheck, resumeFormatCheck } });
         }
         let user = await Teacher.findOne({
-          userId: req.user.userId,
+          userId,
         });
 
         //if record has file and file exists else new file

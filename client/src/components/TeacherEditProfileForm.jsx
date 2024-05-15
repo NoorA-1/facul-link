@@ -27,7 +27,12 @@ import { teacherProfileValidationSchema } from "../schemas";
 import http from "../utils/http";
 import { skillsList } from "../utils/formData";
 
-const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
+const TeacherEditProfileForm = ({
+  userData,
+  setEditMode,
+  updateUserData,
+  role = null,
+}) => {
   const navigate = useNavigate();
   const initialValues = {
     firstname: Boolean(userData.userId.firstname)
@@ -191,11 +196,16 @@ const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
         formData.append("resumeFile", "");
       }
 
-      const response = await http.put("/users/teacher-profile", formData);
+      const response = await http.put(
+        `/users/teacher-profile/${userData.userId._id}`,
+        formData
+      );
       console.log(response);
       updateUserData();
       setEditMode(false);
-      navigate("/dashboard/profile");
+      if (role === null) {
+        navigate("/dashboard/profile");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -246,7 +256,7 @@ const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
   });
 
   return (
-    <div className="col-8 mt-3 mx-auto">
+    <div className={`col-8 ${role === "admin" && "col-12"} mt-3 mx-auto`}>
       <div className="bg-white p-3 px-5 rounded grey-border">
         <form onSubmit={handleSubmit} encType="multipart/form-data">
           <div className="d-flex align-items-center justify-content-center flex-column gap-3">
