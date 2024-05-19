@@ -184,7 +184,7 @@ router.put(
 );
 
 router.put(
-  "/teacher-profile",
+  "/teacher-profile/:id",
   authenticateUser,
   upload.fields([
     { name: "profileImage", maxCount: 1 },
@@ -193,7 +193,8 @@ router.put(
   async (req, res) => {
     try {
       let userInfo = { ...req.body };
-      if (req.user.role === "teacher") {
+      const userId = req.params.id;
+      if (req.user.role === "teacher" || req.user.role === "admin") {
         console.log(req.files.profileImage);
         console.log(req.files.resumeFile);
 
@@ -226,7 +227,7 @@ router.put(
             .send({ error: { imageFormatCheck, resumeFormatCheck } });
         }
         let user = await Teacher.findOne({
-          userId: req.user.userId,
+          userId,
         });
 
         //if record has file and file exists else new file
@@ -262,6 +263,8 @@ router.put(
           {
             firstname: userInfo.firstname,
             lastname: userInfo.lastname,
+            gender: userInfo.gender,
+            email: userInfo.email,
             isProfileSetup: true,
           }
         );
@@ -511,6 +514,7 @@ router.get("/search-jobs", authenticateUser, async (req, res) => {
       pipeline.push({ $match: matchConditions });
     }
 
+    pipeline.push({ $sort: { createdAt: -1 } });
     pipeline.push({ $skip: skip }, { $limit: limit });
 
     const jobs = await Job.aggregate(pipeline);
@@ -520,11 +524,13 @@ router.get("/search-jobs", authenticateUser, async (req, res) => {
     countPipeline.push({ $count: "total" });
 
     const countResult = await Job.aggregate(countPipeline);
+
     const totalJobs = countResult.length > 0 ? countResult[0].total : 0;
 
     res.status(200).json({
       jobs,
       totalPages: Math.ceil(totalJobs / limit),
+      totalJobs,
       currentPage: page,
     });
   } catch (err) {

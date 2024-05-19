@@ -9,6 +9,10 @@ import {
   Alert,
   InputAdornment,
   Autocomplete,
+  FormLabel,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
 } from "@mui/material";
 import { createFilterOptions } from "@mui/material";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
@@ -27,7 +31,12 @@ import { teacherProfileValidationSchema } from "../schemas";
 import http from "../utils/http";
 import { skillsList } from "../utils/formData";
 
-const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
+const TeacherEditProfileForm = ({
+  userData,
+  setEditMode,
+  updateUserData,
+  role = null,
+}) => {
   const navigate = useNavigate();
   const initialValues = {
     firstname: Boolean(userData.userId.firstname)
@@ -37,6 +46,9 @@ const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
     profileDescription: Boolean(userData.profileDescription)
       ? userData.profileDescription
       : "",
+
+    gender: Boolean(userData.userId.gender) ? userData.userId.gender : "",
+    email: Boolean(userData.userId.email) ? userData.userId.email : "",
   };
   const [qualificationsArray, setQualificationsArray] = useState(
     Boolean(userData.qualification.length > 0) ? userData.qualification : []
@@ -168,7 +180,7 @@ const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
     });
   };
 
-  console.log(resume);
+  // console.log(resume);
 
   const submitData = async (values) => {
     const formData = new FormData();
@@ -181,6 +193,10 @@ const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
       }
       formData.append("firstname", values.firstname);
       formData.append("lastname", values.lastname);
+      if (role === "admin") {
+        formData.append("gender", values.gender);
+        formData.append("email", values.email);
+      }
       formData.append("profileDescription", values.profileDescription);
       formData.append("qualification", JSON.stringify(qualificationsArray));
       formData.append("skills", JSON.stringify(skillsArray));
@@ -191,11 +207,16 @@ const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
         formData.append("resumeFile", "");
       }
 
-      const response = await http.put("/users/teacher-profile", formData);
+      const response = await http.put(
+        `/users/teacher-profile/${userData.userId._id}`,
+        formData
+      );
       console.log(response);
       updateUserData();
       setEditMode(false);
-      navigate("/dashboard/profile");
+      if (role === null) {
+        navigate("/dashboard/profile");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -246,7 +267,7 @@ const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
   });
 
   return (
-    <div className="col-8 mt-3 mx-auto">
+    <div className={`col-8 ${role === "admin" && "col-12"} mt-3 mx-auto`}>
       <div className="bg-white p-3 px-5 rounded grey-border">
         <form onSubmit={handleSubmit} encType="multipart/form-data">
           <div className="d-flex align-items-center justify-content-center flex-column gap-3">
@@ -331,6 +352,49 @@ const TeacherEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
               error={Boolean(touched.lastname) && Boolean(errors.lastname)}
             />
           </div>
+          {role === "admin" && (
+            <div className="my-3">
+              <FormLabel className="mt-3" id="radio-buttons-group-label">
+                Gender
+              </FormLabel>
+              <RadioGroup
+                aria-labelledby="radio-buttons-group-label"
+                defaultValue="male"
+                name="gender"
+                row
+                onChange={handleChange}
+                value={values.gender}
+              >
+                <FormControlLabel
+                  value="male"
+                  control={<Radio />}
+                  label="Male"
+                />
+                <FormControlLabel
+                  value="female"
+                  control={<Radio />}
+                  label="Female"
+                />
+              </RadioGroup>
+
+              <TextField
+                variant="outlined"
+                type="email"
+                label="Email"
+                className="mt-4"
+                fullWidth
+                name="email"
+                onChange={handleChange}
+                value={values.email}
+                helperText={
+                  Boolean(errors.email) &&
+                  Boolean(touched.email) &&
+                  errors.email
+                }
+                error={Boolean(touched.email) && Boolean(errors.email)}
+              />
+            </div>
+          )}
           <h3 className="fw-bold mt-4 mb-1">
             Profile Description
             <sup className="fs-5 text-danger">*</sup>

@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
 import http from "../../utils/http";
-import { useLoaderData, useParams } from "react-router-dom";
+import { useLoaderData, useParams, Link } from "react-router-dom";
 import {
   TableContainer,
   Table,
@@ -136,7 +136,7 @@ const AppHistory = () => {
                           <div style={{ margin: 16, whiteSpace: "pre-wrap" }}>
                             <p>{e.text}</p>
                             <hr />
-                            {e.status === "interview" && (
+                            {e.status === "interview" ? (
                               <>
                                 <p className="my-1 fw-medium">
                                   Interview Mode:{" "}
@@ -174,6 +174,18 @@ const AppHistory = () => {
                                   </span>
                                 </p>
                               </>
+                            ) : (
+                              e.status === "hired" && (
+                                <p>
+                                  Add experience to your profile?{" "}
+                                  <Link
+                                    to={`/dashboard/profile?status=editMode&applicationId=${e._id}`}
+                                    className="fw-semibold primary-link-color"
+                                  >
+                                    Add Experience
+                                  </Link>
+                                </p>
+                              )
                             )}
                           </div>
                         </Collapse>

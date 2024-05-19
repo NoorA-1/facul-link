@@ -114,7 +114,10 @@ const SearchJob = () => {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => getJobs()}
+                  onClick={() => {
+                    getJobs();
+                    setPage(1);
+                  }}
                 >
                   Search
                 </Button>
@@ -232,7 +235,7 @@ const SearchJob = () => {
             </div>
           </div>
           <div className="col-12 col-md-9 col-lg-10 mt-md-0 mt-5">
-            <h5 className="fw-semibold">Jobs Found: {jobsData.jobs.length}</h5>
+            <h5 className="fw-semibold">Jobs Found: {jobsData.totalJobs}</h5>
 
             <div className="mt-3 w-100">
               {jobsData?.jobs && jobsData.jobs.length > 0 ? (

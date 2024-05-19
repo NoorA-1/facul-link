@@ -39,12 +39,12 @@ const CandidateList = ({ data, testScore, handleModalOpen, navigate }) => {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell>Contact Number</TableCell>
-            <TableCell>Application Status</TableCell>
+            <TableCell className="fw-semibold">Name</TableCell>
+            <TableCell className="fw-semibold">Email</TableCell>
+            <TableCell className="fw-semibold">Contact Number</TableCell>
+            <TableCell className="fw-semibold">Application Status</TableCell>
             {data[0]?.jobId?.hiringTest !== null && (
-              <TableCell>Test Score</TableCell>
+              <TableCell className="fw-semibold">Test Score</TableCell>
             )}
             <TableCell>Resume</TableCell>
             <TableCell>Profile</TableCell>
@@ -84,7 +84,7 @@ const CandidateList = ({ data, testScore, handleModalOpen, navigate }) => {
                   )}
                 </TableCell>
                 {candidate.test.status === "completed" && (
-                  <TableCell>{testScore(candidate)}%</TableCell>
+                  <TableCell align="center">{testScore(candidate)}%</TableCell>
                 )}
                 <TableCell align="center">
                   <a

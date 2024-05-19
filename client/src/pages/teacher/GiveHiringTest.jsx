@@ -386,7 +386,7 @@ const GiveHiringTest = () => {
                   </h6>
                 </div>
               </div>
-              <h5>
+              <h5 className="user-select-none">
                 Q{currentQuestionIndex + 1} :{" "}
                 {questionsArray[currentQuestionIndex]?.question}
               </h5>
@@ -411,7 +411,7 @@ const GiveHiringTest = () => {
                           />
                         }
                         label={`${option.optionLabel}) ${option.optionValue}`}
-                        className="w-100"
+                        className="w-100 user-select-none"
                       />
                     </div>
                   )

@@ -327,6 +327,7 @@ router.delete("/delete-job/:id", authenticateUser, async (req, res) => {
       }
       const deleteJob = await Job.findByIdAndDelete(id);
       if (deleteJob) {
+        await JobApplication.deleteMany({ jobId: id });
         return res.status(200).json({ message: "Job deleted successfully" });
       } else {
         return res.status(404).json({ message: "Job not found" });
@@ -342,8 +343,16 @@ router.get("/all-jobs/:num", authenticateUser, async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const num = Number(req.params.num);
+    const activeEmployers = await UniEmployer.find({ status: "active" }).select(
+      "_id"
+    );
 
-    const allJobs = await Job.find({ endDate: { $gte: today } })
+    const employerIds = activeEmployers.map((user) => user._id);
+
+    const allJobs = await Job.find({
+      endDate: { $gte: today },
+      createdBy: { $in: employerIds },
+    })
       .sort({ createdAt: -1 })
       .limit(num)
       .populate("createdBy");
@@ -511,6 +520,9 @@ router.put(
         onClickURL: `application-history/${req.params.applicationId}`,
         message: reqBody.text,
       };
+      if (application.status === "hired") {
+        notification.title = `Congratulations on getting hired for ${application.jobId.title} position. Do you want to add it to your profile?`;
+      }
 
       const newNotification = new Notifications({
         ...notification,
@@ -520,10 +532,6 @@ router.put(
 
       notifyUserEmit(application.applicantId.userId._id, newNotification);
 
-      if (files && files.length > 0) {
-        await cleanUpFiles(files);
-      }
-
       if (application.status === "hired") {
         const job = await Job.findById(application.jobId._id);
         if (job.totalPositions >= 1) {
@@ -532,6 +540,10 @@ router.put(
         } else {
           return;
         }
+      }
+
+      if (files && files.length > 0) {
+        await cleanUpFiles(files);
       }
 
       return res

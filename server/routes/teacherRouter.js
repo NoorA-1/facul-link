@@ -217,6 +217,33 @@ router.get("/job-applications", authenticateUser, async (req, res) => {
   }
 });
 
+router.get("/job-application/:id", authenticateUser, async (req, res) => {
+  try {
+    const applicationId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: "Invalid id" });
+    }
+
+    const application = await JobApplication.findById(applicationId).populate([
+      "jobId",
+      {
+        path: "jobId",
+        populate: {
+          path: "createdBy",
+          model: "UniEmployer",
+        },
+      },
+    ]);
+    if (!application) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+
+    return res.status(200).json(application);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 router.get(
   "/job-application/test-status/:id",
   authenticateUser,

@@ -7,6 +7,9 @@ import mongoose from "mongoose";
 import UniEmployer from "../models/uniEmployerModel.js";
 import Job from "../models/jobModel.js";
 import JobApplication from "../models/jobApplicationModel.js";
+import { LogError } from "concurrently";
+import Teacher from "../models/teacherModel.js";
+import Notifications from "../models/notificationsModel.js";
 
 router.get("/stats", authenticateUser, async (req, res) => {
   try {
@@ -87,7 +90,7 @@ router.get("/stats", authenticateUser, async (req, res) => {
         },
       ]);
 
-      const totalUsers = await User.countDocuments();
+      const totalUsers = await User.countDocuments({ role: { $ne: "admin" } });
       const totalJobs = await Job.countDocuments();
       const totalTests = await HiringTest.countDocuments();
       const totalApplications = await JobApplication.countDocuments();
@@ -103,6 +106,208 @@ router.get("/stats", authenticateUser, async (req, res) => {
       });
     } else {
       res.status(401).json({ message: "Unauthorized Access. Not Admin." });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//get all jobs
+router.get("/jobs", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "admin") {
+      const allJobs = await Job.find().populate([
+        "hiringTest",
+        "createdBy",
+        {
+          path: "createdBy",
+          populate: {
+            path: "userId",
+            model: "User",
+          },
+        },
+      ]);
+      return res.status(200).json(allJobs);
+    } else {
+      return res.status(404).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.put("/jobs/:id", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "admin") {
+      const id = req.params.id;
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid id" });
+      }
+      const jobInfo = { ...req.body };
+      let hiringTestId = null;
+      if (jobInfo.hiringTest !== "") {
+        hiringTestId = jobInfo.hiringTest;
+      }
+      jobInfo.requiredExperience = Number(jobInfo.requiredExperience);
+
+      const job = await Job.findById(id);
+      if (job) {
+        Object.keys(jobInfo).forEach((key) => {
+          if (key === "hiringTest") {
+            job[key] = hiringTestId;
+          } else {
+            job[key] = jobInfo[key];
+          }
+        });
+        await job.save();
+        return res.status(200).json({ message: "Job updated" });
+      } else {
+        return res.status(404).json({ message: "Job not found" });
+      }
+    } else {
+      return res.status(404).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.delete("/delete-job/:id", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "admin") {
+      const id = req.params.id;
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid id" });
+      }
+      const deleteJob = await Job.findByIdAndDelete(id);
+      if (deleteJob) {
+        await JobApplication.deleteMany({ jobId: id });
+        return res.status(200).json({ message: "Job deleted successfully" });
+      } else {
+        return res.status(404).json({ message: "Job not found" });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.get("/get-hiring-tests", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "admin") {
+      const allTests = await HiringTest.find().populate([
+        "createdBy",
+        {
+          path: "createdBy",
+          populate: {
+            path: "userId",
+            model: "User",
+          },
+        },
+      ]);
+      return res.status(200).json(allTests);
+    } else {
+      return res.status(404).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+router.get("/get-hiring-test/:id", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "admin") {
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ message: "Invalid id" });
+      }
+      const test = await HiringTest.findById(req.params.id);
+      return res.status(200).json(test);
+    } else {
+      return res.status(404).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: "Test not found" });
+  }
+});
+
+router.put("/edit-hiring-test/:id", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "admin") {
+      let { title, duration, shuffleQuestions, questions } = req.body;
+      duration = Number(duration);
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ message: "Invalid id" });
+      }
+      const test = await HiringTest.findById(req.params.id);
+
+      if (test) {
+        test.title = title;
+        test.duration = duration;
+        test.shuffleQuestions = shuffleQuestions;
+        test.questions = questions;
+        await test.save();
+        return res.status(200).json({ message: "Test edited successfully" });
+      }
+
+      return res.status(400).json({ message: "This test does not exists." });
+    } else {
+      return res.status(404).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.delete("/delete-hiring-test/:id", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "admin") {
+      const id = req.params.id;
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid id" });
+      }
+      const deleteTest = await HiringTest.findByIdAndDelete(id);
+      if (deleteTest) {
+        await Job.updateMany(
+          { hiringTest: id },
+          { $set: { hiringTest: null, isTestEnabled: false } }
+        );
+        return res.status(200).json({ message: "Test deleted successfully" });
+      } else {
+        return res.status(404).json({ message: "Test not found" });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.get("/teachers", authenticateUser, async (req, res) => {
+  try {
+    if (req.user.role === "admin") {
+      const allTeachers = await Teacher.find().populate("userId");
+      return res.status(200).json(allTeachers);
+    } else {
+      return res.status(404).json({ message: "Unauthorized" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.delete("/teacher/:id", authenticateUser, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: "Invalid id" });
+    }
+    const teacher = await Teacher.findOne({ userId: req.params.id });
+    if (teacher) {
+      await User.findByIdAndDelete(req.params.id);
+      await Teacher.findByIdAndDelete(teacher._id);
+      await JobApplication.deleteMany({ applicantId: teacher._id });
+      await Notifications.deleteMany({ userId: req.params.id });
+      return res.status(200).json({ message: "User deleted successfully" });
+    } else {
+      return res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
     console.log(error);
@@ -178,7 +383,12 @@ router.delete("/employer/:id", authenticateUser, async (req, res) => {
     if (employer) {
       await User.findByIdAndDelete(req.params.id);
       await UniEmployer.findByIdAndDelete(employer._id);
+
+      const jobs = await Job.find({ createdBy: employer._id }).select("_id");
+      const jobIds = jobs.map((job) => job._id);
       await Job.deleteMany({ createdBy: employer._id });
+      await HiringTest.deleteMany({ createdBy: employer._id });
+      await JobApplication.deleteMany({ jobId: { $in: jobIds } });
       return res.status(200).json({ message: "User deleted successfully" });
     } else {
       return res.status(404).json({ message: "User not found" });

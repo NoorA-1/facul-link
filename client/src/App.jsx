@@ -44,6 +44,7 @@ import {
   JobApplicationCandidates,
   ViewTeacherProfile,
   Notifications,
+  AdminJobView,
   OAuth,
 } from "./pages";
 
@@ -58,7 +59,10 @@ import { loader as applicationsHistoryLoader } from "./pages/teacher/AppHistory"
 import { loader as JobApplicationsLoader } from "./pages/employer/JobApplications";
 import { loader as searchJobLoader } from "./pages/SearchJob";
 import { loader as AdminDashboardLoader } from "./pages/admin/AdminDashboardLayout";
+import { loader as AdminJobsLoader } from "./pages/admin/AdminManageJobsPage";
+import { loader as AdminTeacherLoader } from "./pages/admin/AdminManageTeachersPage";
 import { loader as AdminEmployersLoader } from "./pages/admin/AdminManageEmployersPage";
+import { loader as AdminTestsLoader } from "./pages/admin/AdminManageHiringTestsPage";
 // const token = Cookies.get("token");
 // if (token) {
 //   console.log(token);
@@ -367,10 +371,20 @@ const App = () => {
             {
               path: "manage-jobs",
               element: <AdminManageJobsPage />,
+              loader: AdminJobsLoader,
+            },
+            {
+              path: "jobs/:id",
+              element: <AdminJobView />,
             },
             {
               path: "manage-teachers",
               element: <AdminManageTeachersPage />,
+              loader: AdminTeacherLoader,
+            },
+            {
+              path: "teacher-profile/:id",
+              element: <ViewTeacherProfile />,
             },
             {
               path: "manage-employers",
@@ -384,6 +398,7 @@ const App = () => {
             {
               path: "manage-tests",
               element: <AdminManageHiringTestsPage />,
+              loader: AdminTestsLoader,
             },
             {
               path: "manage-account",
