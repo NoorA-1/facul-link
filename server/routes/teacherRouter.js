@@ -512,7 +512,7 @@ router.get("/recommend-jobs", authenticateUser, async (req, res) => {
       },
       { $match: { score: { $gt: 0 } } },
       { $sort: { score: -1 } },
-      { $limit: 10 },
+      { $limit: 5 },
     ]);
 
     res.status(200).json(jobs);
