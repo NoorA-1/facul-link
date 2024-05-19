@@ -433,6 +433,8 @@ const getTotalYearsExperience = (experiences) => {
 
 router.get("/recommend-jobs", authenticateUser, async (req, res) => {
   try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const teacher = await Teacher.findOne({ userId: req.user.userId });
     if (!teacher) {
       return res.status(404).send({ message: "Teacher not found" });
@@ -442,6 +444,42 @@ router.get("/recommend-jobs", authenticateUser, async (req, res) => {
     const totalExperienceYears = getTotalYearsExperience(teacher.experience);
 
     const jobs = await Job.aggregate([
+      {
+        $lookup: {
+          from: "uniemployer",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "createdBy",
+        },
+      },
+      {
+        $unwind: {
+          path: "$createdBy",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "createdBy.userId",
+          foreignField: "_id",
+          as: "createdBy.userId",
+        },
+      },
+      {
+        $unwind: {
+          path: "$createdBy.userId",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          "createdBy.status": "active",
+          endDate: {
+            $gte: today,
+          },
+        },
+      },
       {
         $addFields: {
           score: {
