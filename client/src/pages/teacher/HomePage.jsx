@@ -12,6 +12,7 @@ dayjs.extend(relativeTime);
 const HomePage = () => {
   const [jobsData, setJobsData] = useState(null);
   const [statsData, setStatsData] = useState(null);
+  const [recommendedJobsData, setRecommendedJobsData] = useState(null);
   const { userData, setUserData } = useDashboardContext();
   // const [userData, setUserData] = useState(initialUserData);
   // console.log(userData);
@@ -29,12 +30,24 @@ const HomePage = () => {
     }
   };
 
+  const getRecommendations = async () => {
+    try {
+      const { data } = await http.get("/teacher/recommend-jobs");
+      setRecommendedJobsData(data);
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getJobsData();
+    getRecommendations();
   }, []);
 
   const updateUserData = async () => {
     const { data } = await http.get("/users/current-user");
+    setRecommendedJobsData(data);
     console.log(data);
     setUserData(() => data);
   };
@@ -115,25 +128,39 @@ const HomePage = () => {
 
       <div className="mt-5 bg-white p-3 px-5 rounded grey-border">
         <h5 className="fw-bold mb-3">Jobs Matching Your Profile</h5>
-        {/* <JobPostCard
-          title="Example"
-          universityName="Example"
-          location="Karachi"
-        />
-        <JobPostCard
-          title="Example"
-          universityName="Example"
-          location="Karachi"
-        />
-        <JobPostCard
-          title="Example"
-          universityName="Example"
-          location="Karachi"
-        /> */}
-        <div className="d-flex align-items-center justify-content-center flex-column">
-          <FolderOffOutlinedIcon color="disabled" />
-          <p className="text-secondary">No jobs found</p>
-        </div>
+
+        {recommendedJobsData && recommendedJobsData.length > 0 ? (
+          recommendedJobsData.map(
+            (e, index) =>
+              e.score >= 50 && (
+                <JobPostCard
+                  key={index}
+                  logo={`${serverURL}${
+                    e.createdBy?.universityLogo &&
+                    e.createdBy?.universityLogo.split("public\\")[1]
+                  }`}
+                  title={e.title}
+                  universityName={e.createdBy.universityName}
+                  location={e.location}
+                  postedDate={dayjs(e.createdAt).fromNow()}
+                  endDate={dayjs(e.endDate).format("DD-MM-YYYY")}
+                  role="teacher"
+                  isBookmarked={
+                    Boolean(userData?.user?.bookmarks.includes(e._id))
+                      ? true
+                      : false
+                  }
+                  updateUserData={updateUserData}
+                  jobId={e._id}
+                />
+              )
+          )
+        ) : (
+          <div className="d-flex align-items-center justify-content-center flex-column">
+            <FolderOffOutlinedIcon color="disabled" />
+            <p className="text-secondary">No jobs found</p>
+          </div>
+        )}
       </div>
     </div>
   );
