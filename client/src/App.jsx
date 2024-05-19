@@ -45,6 +45,7 @@ import {
   ViewTeacherProfile,
   Notifications,
   AdminJobView,
+  OAuth,
 } from "./pages";
 
 import { loader as profileSetupLoader } from "./pages/ProfileSetup";
@@ -314,6 +315,10 @@ const App = () => {
                 ) : (
                   <Navigate to="/dashboard" />
                 ),
+            },
+            {
+              path: "/dashboard/oauth",
+              element: <OAuth />,
             },
             {
               path: "profile",

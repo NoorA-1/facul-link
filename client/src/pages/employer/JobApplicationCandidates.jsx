@@ -30,7 +30,7 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { FormikProvider, useFormik } from "formik";
 import React, { useEffect, useState, useRef, Fragment, useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   emailFormValidationSchema,
   interviewFormValidationSchema,
@@ -417,6 +417,15 @@ ${universityName}`;
             All positions for this job have been filled
           </p>
         )}
+
+        <Link
+          to={`https://zoom.us/oauth/authorize?response_type=code&client_id=${
+            import.meta.env.VITE_ZM_CLIENT_ID
+          }&redirect_uri=${import.meta.env.VITE_ZM_REDIRECT_URL}`}
+        >
+          Connect Zoom
+        </Link>
+
         <hr className="mt-3 m-0" />
         <Tabs value={tab} onChange={handleTab}>
           <Tab label="Applied" value="applied" />
