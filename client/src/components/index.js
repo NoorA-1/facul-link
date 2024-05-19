@@ -11,6 +11,7 @@ export { default as TeacherEditProfileForm } from "./TeacherEditProfileForm";
 export { default as QualificationForm } from "./QualificationForm";
 export { default as ExperienceForm } from "./ExperienceForm";
 export { default as AdminJobForm } from "./AdminJobForm";
+export { default as AdminHiringTestForm } from "./AdminHiringTestForm";
 export { default as BigSidebar } from "./BigSidebar";
 export { default as SmallSidebar } from "./SmallSidebar";
 export { default as AdminBigSidebar } from "./AdminBigSidebar";

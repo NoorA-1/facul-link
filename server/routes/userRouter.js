@@ -263,6 +263,8 @@ router.put(
           {
             firstname: userInfo.firstname,
             lastname: userInfo.lastname,
+            gender: userInfo.gender,
+            email: userInfo.email,
             isProfileSetup: true,
           }
         );

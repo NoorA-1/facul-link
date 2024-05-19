@@ -9,6 +9,10 @@ import {
   Alert,
   InputAdornment,
   Autocomplete,
+  FormLabel,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
 } from "@mui/material";
 import { createFilterOptions } from "@mui/material";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
@@ -42,6 +46,9 @@ const TeacherEditProfileForm = ({
     profileDescription: Boolean(userData.profileDescription)
       ? userData.profileDescription
       : "",
+
+    gender: Boolean(userData.userId.gender) ? userData.userId.gender : "",
+    email: Boolean(userData.userId.email) ? userData.userId.email : "",
   };
   const [qualificationsArray, setQualificationsArray] = useState(
     Boolean(userData.qualification.length > 0) ? userData.qualification : []
@@ -173,7 +180,7 @@ const TeacherEditProfileForm = ({
     });
   };
 
-  console.log(resume);
+  // console.log(resume);
 
   const submitData = async (values) => {
     const formData = new FormData();
@@ -186,6 +193,10 @@ const TeacherEditProfileForm = ({
       }
       formData.append("firstname", values.firstname);
       formData.append("lastname", values.lastname);
+      if (role === "admin") {
+        formData.append("gender", values.gender);
+        formData.append("email", values.email);
+      }
       formData.append("profileDescription", values.profileDescription);
       formData.append("qualification", JSON.stringify(qualificationsArray));
       formData.append("skills", JSON.stringify(skillsArray));
@@ -341,6 +352,49 @@ const TeacherEditProfileForm = ({
               error={Boolean(touched.lastname) && Boolean(errors.lastname)}
             />
           </div>
+          {role === "admin" && (
+            <div className="my-3">
+              <FormLabel className="mt-3" id="radio-buttons-group-label">
+                Gender
+              </FormLabel>
+              <RadioGroup
+                aria-labelledby="radio-buttons-group-label"
+                defaultValue="male"
+                name="gender"
+                row
+                onChange={handleChange}
+                value={values.gender}
+              >
+                <FormControlLabel
+                  value="male"
+                  control={<Radio />}
+                  label="Male"
+                />
+                <FormControlLabel
+                  value="female"
+                  control={<Radio />}
+                  label="Female"
+                />
+              </RadioGroup>
+
+              <TextField
+                variant="outlined"
+                type="email"
+                label="Email"
+                className="mt-4"
+                fullWidth
+                name="email"
+                onChange={handleChange}
+                value={values.email}
+                helperText={
+                  Boolean(errors.email) &&
+                  Boolean(touched.email) &&
+                  errors.email
+                }
+                error={Boolean(touched.email) && Boolean(errors.email)}
+              />
+            </div>
+          )}
           <h3 className="fw-bold mt-4 mb-1">
             Profile Description
             <sup className="fs-5 text-danger">*</sup>

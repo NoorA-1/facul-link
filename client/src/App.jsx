@@ -61,6 +61,7 @@ import { loader as AdminDashboardLoader } from "./pages/admin/AdminDashboardLayo
 import { loader as AdminJobsLoader } from "./pages/admin/AdminManageJobsPage";
 import { loader as AdminTeacherLoader } from "./pages/admin/AdminManageTeachersPage";
 import { loader as AdminEmployersLoader } from "./pages/admin/AdminManageEmployersPage";
+import { loader as AdminTestsLoader } from "./pages/admin/AdminManageHiringTestsPage";
 // const token = Cookies.get("token");
 // if (token) {
 //   console.log(token);
@@ -392,6 +393,7 @@ const App = () => {
             {
               path: "manage-tests",
               element: <AdminManageHiringTestsPage />,
+              loader: AdminTestsLoader,
             },
             {
               path: "manage-account",
