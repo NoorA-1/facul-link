@@ -439,9 +439,20 @@ router.get("/recommend-jobs", authenticateUser, async (req, res) => {
     if (!teacher) {
       return res.status(404).send({ message: "Teacher not found" });
     }
-
-    const qualificationLevels = teacher.qualification.map((e) => e.level);
+    const qualificationFields = teacher.qualification.map((e) =>
+      e.field.toLowerCase().trim()
+    );
+    const teacherSkills = teacher.skills.map((skill) =>
+      skill.toLowerCase().trim()
+    );
     const totalExperienceYears = getTotalYearsExperience(teacher.experience);
+
+    const maxSkillsScore = teacherSkills.length * 50;
+    const maxQualificationsScore = qualificationFields.length * 20;
+    const maxExperienceScore = 30;
+
+    const maxPossibleScore =
+      maxSkillsScore + maxQualificationsScore + maxExperienceScore;
 
     const jobs = await Job.aggregate([
       {
@@ -482,18 +493,50 @@ router.get("/recommend-jobs", authenticateUser, async (req, res) => {
       },
       {
         $addFields: {
+          normalizedSkills: {
+            $map: {
+              input: "$skills",
+              as: "skill",
+              in: { $toLower: { $trim: { input: "$$skill" } } },
+            },
+          },
+          normalizedQualificationFields: {
+            $map: {
+              input: "$requiredQualification.field",
+              as: "field",
+              in: { $toLower: { $trim: { input: "$$field" } } },
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
           score: {
             $add: [
               {
                 $multiply: [
-                  { $size: { $setIntersection: ["$skills", teacher.skills] } },
+                  {
+                    $size: {
+                      $setIntersection: ["$normalizedSkills", teacherSkills],
+                    },
+                  },
                   50,
                 ],
               },
               {
                 $cond: {
                   if: {
-                    $in: ["$requiredQualification.degree", qualificationLevels],
+                    $gt: [
+                      {
+                        $size: {
+                          $setIntersection: [
+                            "$normalizedQualificationFields",
+                            qualificationFields,
+                          ],
+                        },
+                      },
+                      0,
+                    ],
                   },
                   then: 20,
                   else: 0,
@@ -510,9 +553,21 @@ router.get("/recommend-jobs", authenticateUser, async (req, res) => {
           },
         },
       },
-      { $match: { score: { $gt: 0 } } },
+      {
+        $addFields: {
+          percentageScore: {
+            $multiply: [
+              {
+                $divide: ["$score", maxPossibleScore],
+              },
+              100,
+            ],
+          },
+        },
+      },
+      { $match: { score: { $gte: 0 } } },
       { $sort: { score: -1 } },
-      { $limit: 5 },
+      { $limit: 3 },
     ]);
 
     res.status(200).json(jobs);
