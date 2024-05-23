@@ -207,7 +207,10 @@ const TeacherProfileSetupForm = ({ userData }) => {
         formData.append("resumeFile", "");
       }
 
-      const response = await http.put("/users/teacher-profile", formData);
+      const response = await http.put(
+        `/users/teacher-profile/${userData.userId._id}`,
+        formData
+      );
       console.log(response);
       navigate("/dashboard/profile");
     } catch (error) {

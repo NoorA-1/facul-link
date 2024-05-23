@@ -258,7 +258,7 @@ const PostJob = () => {
               fullWidth
               select
               variant="outlined"
-              label="Required Qualification "
+              label="Required Qualification"
               className="mb-3"
               name="requiredQualification.degree"
               value={values.requiredQualification?.degree}
@@ -370,7 +370,7 @@ const PostJob = () => {
                 fullWidth
                 onBlur={() => setFieldTouched("skills", true)}
                 options={
-                  values.skills.length >= 8
+                  values.skills.length >= 5
                     ? []
                     : skillsList.filter(
                         (skill) => !values.skills.includes(skill)
@@ -380,7 +380,7 @@ const PostJob = () => {
                 filterOptions={filterOptions}
                 inputValue={inputValue}
                 onInputChange={(event, newInputValue) => {
-                  if (values.skills.length < 8) {
+                  if (values.skills.length < 5) {
                     setInputValue(newInputValue);
                   }
                 }}

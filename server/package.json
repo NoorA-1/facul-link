@@ -28,6 +28,7 @@
     "nanoid": "^5.0.1",
     "nodemailer": "^6.9.13",
     "nodemon": "^3.0.1",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.5",
+    "string-similarity": "^4.0.4"
   }
 }

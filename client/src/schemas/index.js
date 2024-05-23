@@ -206,7 +206,7 @@ export const teacherProfileValidationSchema = Yup.object({
     .required("Please enter last name"),
   profileDescription: Yup.string()
     .required("Description is required")
-    .min(5, "Description must be at least 3 characters long")
+    .min(5, "Description must be at least 5 characters long")
     .test(
       "is-empty-after-trim",
       "Description cannot be empty or only whitespace",
@@ -398,7 +398,7 @@ export const jobPostValidationSchema = Yup.object({
   skills: Yup.array()
     .required()
     .min(3, "Minimum 3 skills are required")
-    .max(8, "Maximum 8 skills are allowed"),
+    .max(5, "Maximum 5 skills are allowed"),
   isTestEnabled: Yup.boolean(),
   hiringTest: Yup.string().when("isTestEnabled", {
     is: (isTestEnabled) => isTestEnabled === true,

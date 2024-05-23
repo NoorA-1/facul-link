@@ -12,6 +12,7 @@ import path from "path";
 import fs from "fs";
 import JobApplication from "../models/jobApplicationModel.js";
 import HiringTest from "../models/hiringTestModel.js";
+import stringSimilarity from "string-similarity";
 
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
@@ -431,6 +432,66 @@ const getTotalYearsExperience = (experiences) => {
   }, 0);
 };
 
+const normalizeString = (array) =>
+  array.map((string) => string.toLowerCase().trim());
+
+const calculateJobScore = (
+  job,
+  teacherSkills,
+  qualificationFields,
+  totalExperienceYears
+) => {
+  const normalizedJobSkills = normalizeString(job.skills);
+  const normalizedJobQualificationFields = normalizeString(
+    job.requiredQualification.field.map((q) => q)
+  );
+
+  const skillsScore = normalizedJobSkills.reduce((score, jobSkill) => {
+    const bestMatch = stringSimilarity.findBestMatch(
+      jobSkill,
+      teacherSkills
+    ).bestMatch;
+
+    return score + (bestMatch.rating >= 0.7 ? 10 : 0);
+  }, 0);
+
+  const qualificationDegreeScore = qualificationFields.some(
+    (q) => q.level === job.requiredQualification.degree.toLowerCase()
+  )
+    ? 10
+    : 0;
+
+  const qualificationFieldScore = qualificationFields.some((q) =>
+    normalizedJobQualificationFields.includes(q.field)
+  )
+    ? 10
+    : 0;
+
+  const qualificationsScore =
+    qualificationFieldScore + qualificationDegreeScore;
+
+  const experienceScore =
+    job.requiredExperience <= totalExperienceYears ? 30 : 0;
+
+  console.log(
+    job.title +
+      ", q: " +
+      qualificationsScore +
+      ", e:" +
+      experienceScore +
+      ", skills: " +
+      skillsScore
+  );
+
+  const totalScore = skillsScore + qualificationsScore + experienceScore;
+  const maxSkillsScore = normalizedJobSkills.length * 10;
+
+  return {
+    totalScore,
+    maxSkillsScore,
+  };
+};
+
 router.get("/recommend-jobs", authenticateUser, async (req, res) => {
   try {
     const today = new Date();
@@ -439,20 +500,16 @@ router.get("/recommend-jobs", authenticateUser, async (req, res) => {
     if (!teacher) {
       return res.status(404).send({ message: "Teacher not found" });
     }
-    const qualificationFields = teacher.qualification.map((e) =>
-      e.field.toLowerCase().trim()
-    );
-    const teacherSkills = teacher.skills.map((skill) =>
-      skill.toLowerCase().trim()
-    );
+
+    const qualificationFields = teacher.qualification.map((e) => ({
+      field: e.field.toLowerCase().trim(),
+      level: e.level.toLowerCase().trim(),
+    }));
+    const teacherSkills = normalizeString(teacher.skills);
     const totalExperienceYears = getTotalYearsExperience(teacher.experience);
 
-    const maxSkillsScore = teacherSkills.length * 50;
-    const maxQualificationsScore = qualificationFields.length * 20;
+    const maxQualificationsScore = 20;
     const maxExperienceScore = 30;
-
-    const maxPossibleScore =
-      maxSkillsScore + maxQualificationsScore + maxExperienceScore;
 
     const jobs = await Job.aggregate([
       {
@@ -463,12 +520,7 @@ router.get("/recommend-jobs", authenticateUser, async (req, res) => {
           as: "createdBy",
         },
       },
-      {
-        $unwind: {
-          path: "$createdBy",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
+      { $unwind: "$createdBy" },
       {
         $lookup: {
           from: "user",
@@ -477,104 +529,198 @@ router.get("/recommend-jobs", authenticateUser, async (req, res) => {
           as: "createdBy.userId",
         },
       },
-      {
-        $unwind: {
-          path: "$createdBy.userId",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
+      { $unwind: "$createdBy.userId" },
       {
         $match: {
           "createdBy.status": "active",
-          endDate: {
-            $gte: today,
-          },
+          endDate: { $gte: today },
         },
       },
       {
-        $addFields: {
-          normalizedSkills: {
-            $map: {
-              input: "$skills",
-              as: "skill",
-              in: { $toLower: { $trim: { input: "$$skill" } } },
-            },
-          },
-          normalizedQualificationFields: {
-            $map: {
-              input: "$requiredQualification.field",
-              as: "field",
-              in: { $toLower: { $trim: { input: "$$field" } } },
-            },
-          },
+        $project: {
+          title: 1,
+          skills: 1,
+          requiredQualification: 1,
+          requiredExperience: 1,
+          location: 1,
+          createdBy: 1,
+          createdAt: 1,
+          endDate: 1,
         },
       },
-      {
-        $addFields: {
-          score: {
-            $add: [
-              {
-                $multiply: [
-                  {
-                    $size: {
-                      $setIntersection: ["$normalizedSkills", teacherSkills],
-                    },
-                  },
-                  50,
-                ],
-              },
-              {
-                $cond: {
-                  if: {
-                    $gt: [
-                      {
-                        $size: {
-                          $setIntersection: [
-                            "$normalizedQualificationFields",
-                            qualificationFields,
-                          ],
-                        },
-                      },
-                      0,
-                    ],
-                  },
-                  then: 20,
-                  else: 0,
-                },
-              },
-              {
-                $cond: {
-                  if: { $gte: ["$requiredExperience", totalExperienceYears] },
-                  then: 30,
-                  else: 0,
-                },
-              },
-            ],
-          },
-        },
-      },
-      {
-        $addFields: {
-          percentageScore: {
-            $multiply: [
-              {
-                $divide: ["$score", maxPossibleScore],
-              },
-              100,
-            ],
-          },
-        },
-      },
-      { $match: { score: { $gte: 0 } } },
-      { $sort: { score: -1 } },
-      { $limit: 3 },
     ]);
 
-    res.status(200).json(jobs);
+    const scoredJobs = jobs.map((job) => {
+      const { totalScore, maxSkillsScore } = calculateJobScore(
+        job,
+        teacherSkills,
+        qualificationFields,
+        totalExperienceYears
+      );
+
+      const maxPossibleScore =
+        maxSkillsScore + maxQualificationsScore + maxExperienceScore;
+
+      return {
+        ...job,
+        score: totalScore,
+        percentageScore: (totalScore / maxPossibleScore) * 100,
+      };
+    });
+
+    const topJobs = scoredJobs.sort((a, b) => b.score - a.score).slice(0, 3);
+
+    res.status(200).json(topJobs);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err.message });
   }
 });
 
+//old
+// router.get("/recommend-jobs", authenticateUser, async (req, res) => {
+//   try {
+//     const today = new Date();
+//     today.setHours(0, 0, 0, 0);
+//     const teacher = await Teacher.findOne({ userId: req.user.userId });
+//     if (!teacher) {
+//       return res.status(404).send({ message: "Teacher not found" });
+//     }
+//     const qualificationFields = teacher.qualification.map((e) =>
+//       e.field.toLowerCase().trim()
+//     );
+//     const teacherSkills = teacher.skills.map((skill) =>
+//       skill.toLowerCase().trim()
+//     );
+//     const totalExperienceYears = getTotalYearsExperience(teacher.experience);
+
+//     const maxSkillsScore = teacherSkills.length * 50;
+//     const maxQualificationsScore = qualificationFields.length * 20;
+//     const maxExperienceScore = 30;
+
+//     const maxPossibleScore =
+//       maxSkillsScore + maxQualificationsScore + maxExperienceScore;
+
+//     const jobs = await Job.aggregate([
+//       {
+//         $lookup: {
+//           from: "uniemployer",
+//           localField: "createdBy",
+//           foreignField: "_id",
+//           as: "createdBy",
+//         },
+//       },
+//       {
+//         $unwind: {
+//           path: "$createdBy",
+//           preserveNullAndEmptyArrays: true,
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: "user",
+//           localField: "createdBy.userId",
+//           foreignField: "_id",
+//           as: "createdBy.userId",
+//         },
+//       },
+//       {
+//         $unwind: {
+//           path: "$createdBy.userId",
+//           preserveNullAndEmptyArrays: true,
+//         },
+//       },
+//       {
+//         $match: {
+//           "createdBy.status": "active",
+//           endDate: {
+//             $gte: today,
+//           },
+//         },
+//       },
+//       {
+//         $addFields: {
+//           normalizedSkills: {
+//             $map: {
+//               input: "$skills",
+//               as: "skill",
+//               in: { $toLower: { $trim: { input: "$$skill" } } },
+//             },
+//           },
+//           normalizedQualificationFields: {
+//             $map: {
+//               input: "$requiredQualification.field",
+//               as: "field",
+//               in: { $toLower: { $trim: { input: "$$field" } } },
+//             },
+//           },
+//         },
+//       },
+//       {
+//         $addFields: {
+//           score: {
+//             $add: [
+//               {
+//                 $multiply: [
+//                   {
+//                     $size: {
+//                       $setIntersection: ["$normalizedSkills", teacherSkills],
+//                     },
+//                   },
+//                   50,
+//                 ],
+//               },
+//               {
+//                 $cond: {
+//                   if: {
+//                     $gt: [
+//                       {
+//                         $size: {
+//                           $setIntersection: [
+//                             "$normalizedQualificationFields",
+//                             qualificationFields,
+//                           ],
+//                         },
+//                       },
+//                       0,
+//                     ],
+//                   },
+//                   then: 20,
+//                   else: 0,
+//                 },
+//               },
+//               {
+//                 $cond: {
+//                   if: { $gte: ["$requiredExperience", totalExperienceYears] },
+//                   then: 30,
+//                   else: 0,
+//                 },
+//               },
+//             ],
+//           },
+//         },
+//       },
+//       {
+//         $addFields: {
+//           percentageScore: {
+//             $multiply: [
+//               {
+//                 $divide: ["$score", maxPossibleScore],
+//               },
+//               100,
+//             ],
+//           },
+//         },
+//       },
+//       { $match: { score: { $gte: 0 } } },
+//       { $sort: { score: -1 } },
+//       { $limit: 3 },
+//     ]);
+
+//     res.status(200).json(jobs);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: err.message });
+//   }
+// });
 export default router;

@@ -5,7 +5,7 @@ import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined
 import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
 import BookmarkOutlinedIcon from "@mui/icons-material/BookmarkOutlined";
 import Avatar from "@mui/material/Avatar";
-import { Button, IconButton } from "@mui/material";
+import { Button, Chip, IconButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import http from "../utils/http";
 
@@ -19,6 +19,7 @@ const JobPostCard = ({
   jobId,
   isBookmarked,
   updateUserData,
+  matchingScore,
   classes,
   endDate,
 }) => {
@@ -56,9 +57,22 @@ const JobPostCard = ({
       <div className="w-100">
         <div className="d-flex flex-column flex-lg-row justify-content-between">
           <div>
-            <h6 className="fw-bold text-wrap" style={{ color: "#084C61" }}>
-              {title}
-            </h6>
+            <div className="d-flex align-items-center gap-2 my-1">
+              <h6
+                className="fw-bold text-wrap m-0"
+                style={{ color: "#084C61" }}
+              >
+                {title}
+              </h6>
+              {matchingScore && (
+                <Chip
+                  label={`${Math.round(matchingScore)}% matching your profile`}
+                  variant="outlined"
+                  size="small"
+                  color="info"
+                />
+              )}
+            </div>
             <div className="d-flex gap-2 flex-wrap">
               <div className="d-flex align-items-center gap-2">
                 <CorporateFareOutlinedIcon fontSize="small" />
