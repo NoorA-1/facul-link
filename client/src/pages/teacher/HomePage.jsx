@@ -130,29 +130,32 @@ const HomePage = () => {
         <h5 className="fw-bold mb-3">Jobs Matching Your Profile</h5>
 
         {recommendedJobsData && recommendedJobsData.length > 0 ? (
-          recommendedJobsData.map((e, index) => (
-            <JobPostCard
-              key={index}
-              logo={`${serverURL}${
-                e.createdBy?.universityLogo &&
-                e.createdBy?.universityLogo.split("public\\")[1]
-              }`}
-              title={e.title}
-              universityName={e.createdBy.universityName}
-              location={e.location}
-              postedDate={dayjs(e.createdAt).fromNow()}
-              endDate={dayjs(e.endDate).format("DD-MM-YYYY")}
-              role="teacher"
-              isBookmarked={
-                Boolean(userData?.user?.bookmarks.includes(e._id))
-                  ? true
-                  : false
-              }
-              updateUserData={updateUserData}
-              jobId={e._id}
-              matchingScore={e.percentageScore}
-            />
-          ))
+          recommendedJobsData.map(
+            (e, index) =>
+              e.score > 0 && (
+                <JobPostCard
+                  key={index}
+                  logo={`${serverURL}${
+                    e.createdBy?.universityLogo &&
+                    e.createdBy?.universityLogo.split("public\\")[1]
+                  }`}
+                  title={e.title}
+                  universityName={e.createdBy.universityName}
+                  location={e.location}
+                  postedDate={dayjs(e.createdAt).fromNow()}
+                  endDate={dayjs(e.endDate).format("DD-MM-YYYY")}
+                  role="teacher"
+                  isBookmarked={
+                    Boolean(userData?.user?.bookmarks.includes(e._id))
+                      ? true
+                      : false
+                  }
+                  updateUserData={updateUserData}
+                  jobId={e._id}
+                  matchingScore={e.percentageScore}
+                />
+              )
+          )
         ) : (
           <div className="d-flex align-items-center justify-content-center flex-column">
             <FolderOffOutlinedIcon color="disabled" />

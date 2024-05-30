@@ -473,6 +473,9 @@ router.get("/search-jobs", authenticateUser, async (req, res) => {
     } = req.query;
     const skip = (page - 1) * limit;
 
+    const skillsArray = Array.isArray(skills) ? skills : [skills];
+    const trimmedSkillsArray = skillsArray.map((skill) => skill.trim());
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -508,7 +511,9 @@ router.get("/search-jobs", authenticateUser, async (req, res) => {
       matchConditions.requiredExperience = parseInt(experience);
     }
 
-    if (skills.length > 0) matchConditions.skills = { $all: skills };
+    if (trimmedSkillsArray.length > 0) {
+      matchConditions.skills = { $in: trimmedSkillsArray };
+    }
 
     if (Object.keys(matchConditions).length > 0) {
       pipeline.push({ $match: matchConditions });

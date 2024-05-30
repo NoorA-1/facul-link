@@ -52,7 +52,8 @@ export const loader = async () => {
 
 const PostJob = () => {
   const navigate = useNavigate();
-  const testsData = useLoaderData();
+  const data = useLoaderData();
+  const [testsData, setTestsData] = useState(data);
   const params = useParams();
   const [editMode, setEditMode] = useState(false);
 
@@ -170,6 +171,15 @@ const PostJob = () => {
       } else {
         navigate("/dashboard/post-job?status=posted");
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const refreshTests = async () => {
+    try {
+      const { data } = await http.get("/employer/get-hiring-tests");
+      setTestsData(data);
     } catch (error) {
       console.log(error);
     }
@@ -416,24 +426,34 @@ const PostJob = () => {
               />
             </div>
 
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={values.isTestEnabled}
-                  name="isTestEnabled"
-                  color="primary"
-                  onChange={(event) => {
-                    handleChange(event);
-                    setFieldValue("hiringTest", "");
-                    setFieldError("hiringTest", "");
-                    setFieldTouched("hiringTest", false);
-                  }}
-                  onBlur={handleBlur}
-                  disabled={!testsData.length > 0 || editMode === true}
-                />
-              }
-              label="Conduct Hiring Test"
-            />
+            <div className="d-flex justify-content-between">
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={values.isTestEnabled}
+                    name="isTestEnabled"
+                    color="primary"
+                    onChange={(event) => {
+                      handleChange(event);
+                      setFieldValue("hiringTest", "");
+                      setFieldError("hiringTest", "");
+                      setFieldTouched("hiringTest", false);
+                    }}
+                    onBlur={handleBlur}
+                    disabled={!testsData.length > 0 || editMode === true}
+                  />
+                }
+                label="Conduct Hiring Test"
+              />
+
+              <Button
+                variant="text"
+                onClick={refreshTests}
+                disabled={editMode === true}
+              >
+                Refresh
+              </Button>
+            </div>
             <TextField
               fullWidth
               select
