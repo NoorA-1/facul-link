@@ -38,6 +38,7 @@ const jobSchema = new Schema(
     skills: {
       type: [String],
       required: true,
+      set: (skills) => skills.map((skill) => skill.trim()),
     },
     isTestEnabled: {
       type: Boolean,

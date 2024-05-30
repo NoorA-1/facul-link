@@ -26,12 +26,7 @@ const GiveHiringTest = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [questionsArray, setQuestionsArray] = useState([]);
   const [currentSelection, setCurrentSelection] = useState("");
-  const [answers, setAnswers] = useState([
-    {
-      questionId: "",
-      answer: "",
-    },
-  ]);
+  const [answers, setAnswers] = useState([]);
   const [error, setError] = useState(null);
   const [timeLeft, setTimeLeft] = useState(null);
   const [timeUp, setTimeUp] = useState(false);
@@ -51,6 +46,7 @@ const GiveHiringTest = () => {
   useEffect(() => {
     const storedTestDetails = localStorage.getItem("testDetails");
     const testDetails = JSON.parse(storedTestDetails);
+
     if (params.jobId && testDetails?.jobId === params.jobId) {
       const timeLeftInSeconds = calculateTimeLeft(testDetails.endTime);
       console.log(timeLeftInSeconds);
@@ -58,6 +54,9 @@ const GiveHiringTest = () => {
         setIsTestMode(true);
         setView("test");
         setTimeLeft(timeLeftInSeconds);
+        if (testDetails.answers) {
+          setAnswers(testDetails.answers);
+        }
       } else {
         localStorage.removeItem("testDetails");
         setTimeUp(() => true);
@@ -83,11 +82,22 @@ const GiveHiringTest = () => {
 
   useEffect(() => {
     if (jobData) {
-      if (jobData?.hiringTest.shuffleQuestions) {
-        const shuffledArray = shuffle([...jobData.hiringTest.questions]);
-        setQuestionsArray(shuffledArray);
-      } else {
-        setQuestionsArray([...jobData.hiringTest.questions]);
+      let shuffledArray = [...jobData.hiringTest.questions];
+      if (jobData.hiringTest.shuffleQuestions) {
+        shuffledArray = shuffle(shuffledArray);
+      }
+      setQuestionsArray(shuffledArray);
+
+      const storedTestDetails = localStorage.getItem("testDetails");
+      const testDetails = JSON.parse(storedTestDetails);
+      if (testDetails?.answers) {
+        const updatedAnswers = shuffledArray.map((question) => {
+          const savedAnswer = testDetails.answers.find(
+            (answer) => answer.questionId === question._id
+          );
+          return savedAnswer || { questionId: question._id, answer: "" };
+        });
+        setAnswers(updatedAnswers);
       }
     }
   }, [jobData]);
@@ -295,6 +305,7 @@ const GiveHiringTest = () => {
         jobId: jobData._id,
         testId: jobData.hiringTest._id,
         endTime: data.endTime,
+        answers: [],
       };
       localStorage.setItem("testDetails", JSON.stringify(testDetails));
     } catch (error) {

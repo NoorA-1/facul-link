@@ -568,7 +568,9 @@ router.get("/recommend-jobs", authenticateUser, async (req, res) => {
       };
     });
 
-    const topJobs = scoredJobs.sort((a, b) => b.score - a.score).slice(0, 3);
+    const topJobs = scoredJobs
+      .sort((a, b) => b.percentageScore - a.percentageScore)
+      .slice(0, 3);
 
     res.status(200).json(topJobs);
   } catch (err) {
