@@ -5,6 +5,7 @@ import {
   Avatar,
   Button,
   TextField,
+  createFilterOptions,
   Alert,
   InputAdornment,
   MenuItem,
@@ -14,12 +15,18 @@ import UploadIcon from "@mui/icons-material/Upload";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
+import { programNamesList } from "../utils/formData";
 
 import { employerEditProfileValidationSchema } from "../schemas";
 import http from "../utils/http";
 import data from "../utils/universities";
 import { useNavigate } from "react-router-dom";
-const EmployerEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
+const EmployerEditProfileForm = ({
+  userData,
+  setEditMode,
+  updateUserData,
+  role = null,
+}) => {
   const navigate = useNavigate();
   const initialValues = {
     firstname: Boolean(userData.userId.firstname)
@@ -32,12 +39,14 @@ const EmployerEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
     universityURL: Boolean(userData.universityURL)
       ? userData.universityURL
       : "",
-    // universityname: Boolean(userData.universityName)
-    //   ? userData.universityName
-    //   : "",
-    // departmentname: Boolean(userData.departmentName)
-    //   ? userData.departmentName
-    //   : "",
+    universityname: Boolean(userData.universityName)
+      ? userData.universityName
+      : "",
+    departmentname: Boolean(userData.departmentName)
+      ? userData.departmentName
+      : "",
+
+    status: Boolean(userData.status) ? userData.status : "",
   };
 
   const serverURL = "http://localhost:3000/";
@@ -54,6 +63,7 @@ const EmployerEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
     profileImage: { file: "", URL: "", value: "", filename: "" },
     universityLogo: { file: "", URL: "", value: "", filename: "" },
   });
+  const [inputValue, setInputValue] = useState("");
 
   const {
     values,
@@ -73,6 +83,7 @@ const EmployerEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
       }
     },
   });
+  console.log(values);
 
   const submitData = async (values) => {
     console.log("submitting");
@@ -89,14 +100,22 @@ const EmployerEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
       formData.append("lastname", values.lastname);
       formData.append("profileDescription", values.profileDescription);
       formData.append("universityURL", values.universityURL);
-      // formData.append("universityName", values.universityname);
-      // formData.append("departmentName", values.departmentname);
+      if (role === "admin") {
+        formData.append("status", values.status);
+        formData.append("universityName", values.universityname);
+        formData.append("departmentName", values.departmentname);
+      }
 
-      const response = await http.put("/users/employer-profile", formData);
+      const response = await http.put(
+        `/users/employer-profile/${userData.userId._id}`,
+        formData
+      );
       console.log(response);
       updateUserData();
-      setEditMode(false);
-      navigate("/dashboard/profile");
+      if (role !== "admin") {
+        setEditMode(false);
+        navigate("/dashboard/profile");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -165,11 +184,40 @@ const EmployerEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
       );
     }
   };
-  console.log(errors);
+  const filterOptions = createFilterOptions({
+    ignoreCase: true,
+    matchFrom: "start",
+    limit: 5,
+  });
   return (
-    <div className="col-8 mt-3 mx-auto">
+    <div className={`${role === "admin" && "col-12"} col-8 mt-3 mx-auto`}>
       <div className="bg-white p-3 px-5 rounded grey-border">
         <form onSubmit={handleSubmit} encType="multipart/form-data">
+          {role === "admin" && (
+            <div>
+              <TextField
+                select
+                variant="outlined"
+                label="Status"
+                className="mb-3"
+                fullWidth
+                name="status"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.status}
+                helperText={
+                  Boolean(errors.status) &&
+                  Boolean(touched.status) &&
+                  errors.status
+                }
+                error={Boolean(touched.status) && Boolean(errors.status)}
+              >
+                <MenuItem value={"active"}>Active</MenuItem>
+                <MenuItem value={"pending"}>Pending</MenuItem>
+                <MenuItem value={"rejected"}>Rejected</MenuItem>
+              </TextField>
+            </div>
+          )}
           <div className="d-flex align-items-center justify-content-center flex-column gap-3">
             <Avatar
               sx={{ width: 120, height: 120 }}
@@ -286,6 +334,88 @@ const EmployerEditProfileForm = ({ userData, setEditMode, updateUserData }) => {
               error={Boolean(touched.lastname) && Boolean(errors.lastname)}
             />
           </div>
+          {role === "admin" && (
+            <div>
+              <Autocomplete
+                options={data}
+                disableClearable
+                getOptionLabel={(option) => option.label || option}
+                isOptionEqualToValue={(option, value) => option.label === value}
+                value={values.universityname}
+                onChange={(event, newValue) => {
+                  if (newValue !== "" && data.includes(newValue, 0)) {
+                    setFieldValue("universityname", newValue.label);
+                  }
+                  console.log(newValue);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    label="University Name"
+                    fullWidth
+                    className="my-4"
+                    name="universityname"
+                    onBlur={handleBlur}
+                    onChange={(event, newValue) => {
+                      if (newValue !== "" && data.includes(newValue, 0)) {
+                        setFieldValue("universityname", newValue.label);
+                      }
+                    }}
+                    helperText={
+                      Boolean(errors.universityname) &&
+                      Boolean(touched.universityname) &&
+                      errors.universityname
+                    }
+                    error={
+                      Boolean(touched.universityname) &&
+                      Boolean(errors.universityname)
+                    }
+                  />
+                )}
+              />
+
+              <Autocomplete
+                freeSolo
+                options={programNamesList}
+                disableClearable
+                isOptionEqualToValue={(option, value) => option.label === value}
+                filterOptions={filterOptions}
+                inputValue={inputValue}
+                value={values.departmentname}
+                onChange={(event, newValue) => {
+                  if (newValue !== "") {
+                    setFieldValue("departmentname", newValue);
+                  }
+                }}
+                onInputChange={(event, newInputValue) => {
+                  setInputValue(() => newInputValue);
+                  setFieldValue("departmentname", newInputValue);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    label="Department"
+                    fullWidth
+                    className="mb-3"
+                    name="departmentname"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    helperText={
+                      Boolean(errors.departmentname) &&
+                      Boolean(touched.departmentname) &&
+                      errors.departmentname
+                    }
+                    error={
+                      Boolean(touched.departmentname) &&
+                      Boolean(errors.departmentname)
+                    }
+                  />
+                )}
+              />
+            </div>
+          )}
           <hr />
           <h3 className="fw-bold mt-4 mb-1">
             Profile Description

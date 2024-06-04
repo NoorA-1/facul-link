@@ -27,6 +27,7 @@ import React, { useState } from "react";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import { adminEditEmployerValidationSchema } from "../../schemas";
 import http from "../../utils/http";
+import { EmployerEditProfileForm } from "../../components";
 
 export const loader = async () => {
   try {
@@ -42,11 +43,13 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 450,
+  width: 800,
   bgcolor: "background.paper",
   borderRadius: 2,
   boxShadow: 24,
   p: 4,
+  maxHeight: "90vh",
+  overflowY: "auto",
 };
 
 const AdminManageEmployersPage = () => {
@@ -325,124 +328,14 @@ const AdminManageEmployersPage = () => {
 
       <Modal open={open.editModal} onClose={() => handleClose("editModal")}>
         <Box sx={style}>
-          <form onSubmit={handleSubmit}>
-            <TextField
-              select
-              variant="outlined"
-              label="Status"
-              className="w-50 mb-3"
-              name="status"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.status}
-              helperText={
-                Boolean(errors.status) &&
-                Boolean(touched.status) &&
-                errors.status
-              }
-              error={Boolean(touched.status) && Boolean(errors.status)}
-            >
-              <MenuItem value={"active"}>Active</MenuItem>
-              <MenuItem value={"pending"}>Pending</MenuItem>
-              <MenuItem value={"rejected"}>Rejected</MenuItem>
-            </TextField>
-            <div className="d-flex align-items-center gap-2">
-              <TextField
-                variant="outlined"
-                label="First Name"
-                type="text"
-                name="firstname"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.firstname}
-                helperText={
-                  Boolean(errors.firstname) &&
-                  Boolean(touched.firstname) &&
-                  errors.firstname
-                }
-                error={Boolean(touched.firstname) && Boolean(errors.firstname)}
-              />
-              <TextField
-                variant="outlined"
-                type="text"
-                label="Last Name"
-                name="lastname"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.lastname}
-                helperText={
-                  Boolean(errors.lastname) &&
-                  Boolean(touched.lastname) &&
-                  errors.lastname
-                }
-                error={Boolean(touched.lastname) && Boolean(errors.lastname)}
-              />
-            </div>
-            <TextField
-              variant="outlined"
-              type="email"
-              label="Email"
-              fullWidth
-              className="my-3"
-              name="email"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.email}
-              helperText={
-                Boolean(errors.email) && Boolean(touched.email) && errors.email
-              }
-              error={Boolean(touched.email) && Boolean(errors.email)}
-            />
-            <TextField
-              variant="outlined"
-              label="Department"
-              fullWidth
-              className="mb-3"
-              name="departmentname"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.departmentname}
-              helperText={
-                Boolean(errors.departmentname) &&
-                Boolean(touched.departmentname) &&
-                errors.departmentname
-              }
-              error={
-                Boolean(touched.departmentname) &&
-                Boolean(errors.departmentname)
-              }
-            />
-            <TextField
-              label="Website"
-              fullWidth
-              className="mb-3"
-              name="universityURL"
-              value={values.universityURL}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              helperText={
-                Boolean(errors.universityURL) &&
-                Boolean(touched.universityURL) &&
-                errors.universityURL
-              }
-              error={
-                Boolean(touched.universityURL) && Boolean(errors.universityURL)
-              }
-            />
-            <div className="d-flex justify-content-center gap-3">
-              <Button
-                variant="contained"
-                onClick={() => handleClose("editModal")}
-                color="grey"
-                sx={{ color: "#FFF" }}
-              >
-                Cancel
-              </Button>
-              <Button variant="contained" type="submit">
-                Save
-              </Button>
-            </div>
-          </form>
+          <EmployerEditProfileForm
+            userData={user}
+            role="admin"
+            updateUserData={() => {
+              navigate("/admin-dashboard/manage-employers");
+              handleClose("editModal");
+            }}
+          />
         </Box>
       </Modal>
     </div>

@@ -280,7 +280,7 @@ router.put(
 );
 
 router.put(
-  "/employer-profile",
+  "/employer-profile/:id",
   authenticateUser,
   upload.fields([
     { name: "profileImage", maxCount: 1 },
@@ -289,9 +289,11 @@ router.put(
   async (req, res) => {
     try {
       let userInfo = { ...req.body };
+
+      const userId = req.params.id;
       console.log(userInfo);
 
-      if (req.user.role === "employer") {
+      if (req.user.role === "employer" || req.user.role === "admin") {
         //File format validation
         const imageFormatCheck =
           req.files.profileImage &&
@@ -321,7 +323,7 @@ router.put(
             .send({ error: { imageFormatCheck, universityLogoFormatCheck } });
         }
         let user = await UniEmployer.findOne({
-          userId: req.user.userId,
+          userId,
         });
 
         //if record has file and file exists else new file
