@@ -2,7 +2,7 @@ import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import MarkEmailReadOutlinedIcon from "@mui/icons-material/MarkEmailReadOutlined";
 import ScoreboardOutlinedIcon from "@mui/icons-material/ScoreboardOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
-import { Avatar, Button } from "@mui/material";
+import { Avatar, Button, Chip } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { serverURL } from "../utils/formData";
@@ -42,6 +42,16 @@ const CandidateCard = ({
           sx={{ border: "1px solid #0A9396", width: 80, height: 80 }}
         >{`${candidate.applicantId.userId.firstname[0]}${candidate.applicantId.userId.lastname[0]}`}</Avatar>
         <h5 className="mt-3 mb-0 fw-semibold">{`${candidate.applicantId.userId.firstname} ${candidate.applicantId.userId.lastname}`}</h5>
+
+        <Chip
+          label={`${Math.round(
+            candidate?.matchingScore
+          )}% profile matches the job`}
+          variant="outlined"
+          size="small"
+          color="info"
+          className="mt-2"
+        />
       </div>
       <hr className="w-100" />
       <p className="fw-medium">

@@ -422,7 +422,7 @@ router.get(
   }
 );
 
-const getTotalYearsExperience = (experiences) => {
+export const getTotalYearsExperience = (experiences) => {
   const currentDate = new Date();
   return experiences.reduce((total, exp) => {
     const startDate = new Date(exp.date.startDate);
@@ -432,10 +432,10 @@ const getTotalYearsExperience = (experiences) => {
   }, 0);
 };
 
-const normalizeString = (array) =>
+export const normalizeString = (array) =>
   array.map((string) => string.toLowerCase().trim());
 
-const calculateJobScore = (
+export const calculateJobScore = (
   job,
   teacherSkills,
   qualificationFields,

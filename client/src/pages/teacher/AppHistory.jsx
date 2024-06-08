@@ -141,14 +141,14 @@ const AppHistory = () => {
                                 <p className="my-1 fw-medium">
                                   Interview Mode:{" "}
                                   <span className="fw-normal text-capitalize">
-                                    {e.interviewDetails.mode}
+                                    {e.interviewDetails?.mode}
                                   </span>
                                 </p>
 
                                 <p className="my-1 fw-medium">
                                   Date:{" "}
                                   <span className="fw-normal text-capitalize">
-                                    {dayjs(e.interviewDetails.date).format(
+                                    {dayjs(e.interviewDetails?.date).format(
                                       "DD-MM-YYYY"
                                     )}
                                   </span>
@@ -157,20 +157,20 @@ const AppHistory = () => {
                                 <p className="my-1 fw-medium">
                                   Time:{" "}
                                   <span className="fw-normal text-capitalize">
-                                    {dayjs(e.interviewDetails.time).format(
+                                    {dayjs(e.interviewDetails?.time).format(
                                       "hh:mm A"
                                     )}
                                   </span>
                                 </p>
 
                                 <p className="my-1 fw-medium">
-                                  {e.interviewDetails.mode === "online"
+                                  {e.interviewDetails?.mode === "online"
                                     ? "Meeting Link: "
                                     : "Location: "}
                                   <span className="fw-normal text-capitalize">
-                                    {e.interviewDetails.mode === "online"
-                                      ? e.interviewDetails.meetingURL
-                                      : e.interviewDetails.location}
+                                    {e.interviewDetails?.mode === "online"
+                                      ? e.interviewDetails?.meetingURL
+                                      : e.interviewDetails?.location}
                                   </span>
                                 </p>
                               </>

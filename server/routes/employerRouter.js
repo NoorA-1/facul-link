@@ -16,6 +16,11 @@ import Job from "../models/jobModel.js";
 import Notifications from "../models/notificationsModel.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { notifyUserEmit } from "../utils/socketFunctions.js";
+import {
+  getTotalYearsExperience,
+  normalizeString,
+  calculateJobScore,
+} from "./teacherRouter.js";
 
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
@@ -428,7 +433,46 @@ router.get("/applications/:jobId", authenticateUser, async (req, res) => {
         },
       },
     ]);
-    res.status(200).json(applications);
+
+    const job = applications[0]?.jobId;
+    if (!job) {
+      return res.status(404).send({ message: "Job not found" });
+    }
+
+    const maxQualificationsScore = 20;
+    const maxExperienceScore = 30;
+
+    //for each teacher profile
+    const updatedApplications = [];
+
+    for (const application of applications) {
+      const teacher = application.applicantId;
+      const qualificationFields = teacher?.qualification.map((e) => ({
+        field: e.field.toLowerCase().trim(),
+        level: e.level.toLowerCase().trim(),
+      }));
+      const teacherSkills = normalizeString(teacher?.skills);
+      const totalExperienceYears = getTotalYearsExperience(teacher?.experience);
+
+      const { totalScore, maxSkillsScore } = calculateJobScore(
+        application.jobId,
+        teacherSkills,
+        qualificationFields,
+        totalExperienceYears
+      );
+
+      const percentageScore =
+        (totalScore /
+          (maxSkillsScore + maxQualificationsScore + maxExperienceScore)) *
+        100;
+
+      updatedApplications.push({
+        ...application.toObject(),
+        matchingScore: percentageScore,
+      });
+    }
+
+    res.status(200).json(updatedApplications);
   } catch (error) {
     console.log(error);
   }
