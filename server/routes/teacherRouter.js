@@ -446,26 +446,35 @@ export const calculateJobScore = (
     job.requiredQualification.field.map((q) => q)
   );
 
-  const skillsScore = normalizedJobSkills.reduce((score, jobSkill) => {
-    const bestMatch = stringSimilarity.findBestMatch(
-      jobSkill,
-      teacherSkills
-    ).bestMatch;
+  const skillsScore =
+    teacherSkills && teacherSkills.length
+      ? normalizedJobSkills.reduce((score, jobSkill) => {
+          const bestMatch = stringSimilarity.findBestMatch(
+            jobSkill,
+            teacherSkills
+          ).bestMatch;
 
-    return score + (bestMatch.rating >= 0.7 ? 10 : 0);
-  }, 0);
+          return score + (bestMatch.rating >= 0.7 ? 10 : 0);
+        }, 0)
+      : 0;
 
-  const qualificationDegreeScore = qualificationFields.some(
-    (q) => q.level === job.requiredQualification.degree.toLowerCase()
-  )
-    ? 10
-    : 0;
+  const qualificationDegreeScore =
+    qualificationFields && qualificationFields.length
+      ? qualificationFields.some(
+          (q) => q.level === job.requiredQualification.degree.toLowerCase()
+        )
+        ? 10
+        : 0
+      : 0;
 
-  const qualificationFieldScore = qualificationFields.some((q) =>
-    normalizedJobQualificationFields.includes(q.field)
-  )
-    ? 10
-    : 0;
+  const qualificationFieldScore =
+    qualificationFields && qualificationFields.length
+      ? qualificationFields.some((q) =>
+          normalizedJobQualificationFields.includes(q.field)
+        )
+        ? 10
+        : 0
+      : 0;
 
   const qualificationsScore =
     qualificationFieldScore + qualificationDegreeScore;
