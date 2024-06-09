@@ -11,33 +11,33 @@ const teacherSchema = new Schema({
   resumeFile: { type: String, default: null },
   qualification: [
     {
-      instituteName: { type: String, default: null },
-      field: { type: String, default: null },
-      level: { type: String, default: null },
-      grade: { type: String, default: null },
+      instituteName: { type: String, default: null, trim: true },
+      field: { type: String, default: null, trim: true },
+      level: { type: String, default: null, trim: true },
+      grade: { type: String, default: null, trim: true },
       date: {
         startDate: { type: Date, default: null },
         endDate: { type: Date, default: null },
       },
       location: {
-        country: { type: String, default: null },
-        city: { type: String, default: null },
+        country: { type: String, default: null, trim: true },
+        city: { type: String, default: null, trim: true },
       },
     },
   ],
   skills: { type: Array, default: [] },
   experience: [
     {
-      title: { type: String, default: null },
-      company: { type: String, default: null },
+      title: { type: String, default: null, trim: true },
+      company: { type: String, default: null, trim: true },
       isCurrentlyWorking: { type: Boolean, default: false },
       date: {
         startDate: { type: Date, default: null },
         endDate: { type: Date, default: null },
       },
       location: {
-        country: { type: String, default: null },
-        city: { type: String, default: null },
+        country: { type: String, default: null, trim: true },
+        city: { type: String, default: null, trim: true },
       },
     },
   ],

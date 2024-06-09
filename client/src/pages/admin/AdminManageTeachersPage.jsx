@@ -18,8 +18,9 @@ import {
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { serverURL } from "../../utils/formData";
-import { TeacherEditProfileForm } from "../../components";
+import { AdminTeacherForm, TeacherEditProfileForm } from "../../components";
 
 export const loader = async () => {
   try {
@@ -36,7 +37,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 800,
+  width: "55%",
   bgcolor: "background.paper",
   borderRadius: 2,
   boxShadow: 24,
@@ -49,6 +50,7 @@ const AdminManageTeachersPage = () => {
   const navigate = useNavigate();
   const data = useLoaderData();
   const [open, setOpen] = useState({
+    addModal: false,
     editModal: false,
     deleteModal: false,
   });
@@ -84,8 +86,17 @@ const AdminManageTeachersPage = () => {
 
   return (
     <div className="container my-3 bg-white py-3 px-5 rounded grey-border">
-      <h3 className="fw-bold my-3">Manage Teachers</h3>
-      <hr className="mb-5" />
+      <div className="d-flex justify-content-between my-3">
+        <h3 className="fw-bold">Manage Teachers</h3>
+        <Button
+          variant="contained"
+          onClick={() => handleOpen("addModal")}
+          startIcon={<AddOutlinedIcon />}
+        >
+          Add Teacher
+        </Button>
+      </div>
+      <hr className="mb-3" />
       <TableContainer
         sx={{ border: "1px solid #0A9396" }}
         className="mb-4"
@@ -173,6 +184,17 @@ const AdminManageTeachersPage = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Modal open={open.addModal} onClose={() => handleClose("addModal")}>
+        <Box sx={style}>
+          <AdminTeacherForm
+            onSuccess={() => {
+              handleClose("addModal");
+              navigate("/admin-dashboard/manage-teachers");
+            }}
+          />
+        </Box>
+      </Modal>
 
       <Modal open={open.editModal} onClose={() => handleClose("editModal")}>
         <Box sx={style}>

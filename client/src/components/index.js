@@ -10,6 +10,8 @@ export { default as EmployerEditProfileForm } from "./EmployerEditProfileForm";
 export { default as TeacherEditProfileForm } from "./TeacherEditProfileForm";
 export { default as QualificationForm } from "./QualificationForm";
 export { default as ExperienceForm } from "./ExperienceForm";
+export { default as AdminTeacherForm } from "./AdminTeacherForm";
+export { default as AdminEmployerForm } from "./AdminEmployerForm";
 export { default as AdminJobForm } from "./AdminJobForm";
 export { default as AdminHiringTestForm } from "./AdminHiringTestForm";
 export { default as BigSidebar } from "./BigSidebar";

@@ -2,6 +2,7 @@ import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import FolderOffOutlinedIcon from "@mui/icons-material/FolderOffOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
@@ -27,7 +28,7 @@ import React, { useState } from "react";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import { adminEditEmployerValidationSchema } from "../../schemas";
 import http from "../../utils/http";
-import { EmployerEditProfileForm } from "../../components";
+import { AdminEmployerForm, EmployerEditProfileForm } from "../../components";
 
 export const loader = async () => {
   try {
@@ -43,7 +44,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 800,
+  width: "55%",
   bgcolor: "background.paper",
   borderRadius: 2,
   boxShadow: 24,
@@ -135,9 +136,7 @@ const AdminManageEmployersPage = () => {
                       )}
                       <IconButton
                         color="secondary"
-                        onClick={() =>
-                          handleEditOpen("editModal", e.userId._id)
-                        }
+                        onClick={() => handleOpen("editModal", e.userId._id)}
                       >
                         <EditOutlinedIcon />
                       </IconButton>
@@ -177,6 +176,7 @@ const AdminManageEmployersPage = () => {
   };
 
   const [open, setOpen] = useState({
+    addModal: false,
     deleteModal: false,
     editModal: false,
   });
@@ -189,20 +189,22 @@ const AdminManageEmployersPage = () => {
     departmentname: "",
     universityURL: "",
   };
-  const handleEditOpen = (name, id) => {
+  const handleOpen = (name, id) => {
     setOpen((prev) => ({ ...prev, [name]: true }));
-    setUser(() => {
-      const foundUser = data.find((user) => user.userId._id === id);
-      setValues({
-        status: foundUser.status,
-        firstname: foundUser.userId.firstname,
-        lastname: foundUser.userId.lastname,
-        email: foundUser.userId.email,
-        departmentname: foundUser.departmentName,
-        universityURL: foundUser.universityURL,
+    if (Boolean(id)) {
+      setUser(() => {
+        const foundUser = data.find((user) => user.userId._id === id);
+        setValues({
+          status: foundUser.status,
+          firstname: foundUser.userId.firstname,
+          lastname: foundUser.userId.lastname,
+          email: foundUser.userId.email,
+          departmentname: foundUser.departmentName,
+          universityURL: foundUser.universityURL,
+        });
+        return foundUser;
       });
-      return foundUser;
-    });
+    }
   };
   const handleDeleteOpen = (name, id) => {
     setOpen((prev) => ({ ...prev, [name]: true }));
@@ -260,6 +262,16 @@ const AdminManageEmployersPage = () => {
 
   return (
     <div className="container my-3 bg-white py-3 px-2 rounded grey-border">
+      <div className="d-flex justify-content-end pe-4">
+        <Button
+          variant="contained"
+          onClick={() => handleOpen("addModal")}
+          startIcon={<AddOutlinedIcon />}
+        >
+          Add Employer
+        </Button>
+      </div>
+
       <TabContext value={tab}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <TabList onChange={handleTab}>
@@ -285,6 +297,7 @@ const AdminManageEmployersPage = () => {
             />
           </TabList>
         </Box>
+
         <TabPanel value="1">
           <DataTable />
         </TabPanel>
@@ -298,6 +311,18 @@ const AdminManageEmployersPage = () => {
           <DataTable status="rejected" />
         </TabPanel>
       </TabContext>
+
+      <Modal open={open.addModal} onClose={() => handleClose("addModal")}>
+        <Box sx={style}>
+          <AdminEmployerForm
+            onSuccess={() => {
+              handleClose("addModal");
+              navigate("/admin-dashboard/manage-employers");
+            }}
+          />
+        </Box>
+      </Modal>
+
       <Modal open={open.deleteModal} onClose={() => handleClose("deleteModal")}>
         <Box sx={style}>
           <h3 className="text-center">Are you sure?</h3>
