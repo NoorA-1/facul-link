@@ -507,7 +507,7 @@ ${universityName}`;
                           ].find((ans) => ans.questionId === question._id);
                           const isCorrect =
                             givenAnswer &&
-                            question.correctOption === givenAnswer.answer;
+                            question.correctOption === givenAnswer?.answer;
                           return (
                             <div
                               key={qIndex}
@@ -531,7 +531,7 @@ ${universityName}`;
                                       question.correctOption ===
                                         option.optionLabel
                                         ? "border border-2 border-success rounded"
-                                        : givenAnswer.answer ===
+                                        : givenAnswer?.answer ===
                                             option.optionLabel &&
                                           "border border-2 border-danger rounded"
                                     }`}
