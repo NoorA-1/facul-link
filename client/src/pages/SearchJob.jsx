@@ -72,7 +72,9 @@ const SearchJob = () => {
     try {
       const skillsQuery =
         skills.length > 0
-          ? skills.map((skill) => `skills[]=${skill}`).join("&")
+          ? skills
+              .map((skill) => `skills[]=${encodeURIComponent(skill)}`)
+              .join("&")
           : "";
 
       const qualification =
@@ -87,6 +89,7 @@ const SearchJob = () => {
         universityRef.current.value === "0" ? "" : universityRef.current.value;
 
       const queryString = `title=${titleRef.current.value}&degree=${qualification}&experience=${experience}&${skillsQuery}&page=${page}&universityName=${university}`;
+
       const { data } = await http.get(`/users/search-jobs?${queryString}`);
       setJobsData(data);
     } catch (error) {

@@ -473,6 +473,7 @@ router.get("/search-jobs", authenticateUser, async (req, res) => {
       degree,
       universityName,
     } = req.query;
+
     const skip = (page - 1) * limit;
 
     const skillsArray = Array.isArray(skills) ? skills : [skills];
