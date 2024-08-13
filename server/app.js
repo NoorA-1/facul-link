@@ -89,3 +89,5 @@ try {
 }
 
 export { io, userSockets };
+
+export default app;
