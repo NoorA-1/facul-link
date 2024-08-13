@@ -36,9 +36,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(
   cors({
     origin: [process.env.CORS_ORIGIN, "http://localhost:5173"],
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
+    allowedHeaders: "Content-Type,Authorization",
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   })
 );
+
 app.use(morgan("dev"));
 
 app.use(express.static(path.resolve(__dirname, "./public")));
