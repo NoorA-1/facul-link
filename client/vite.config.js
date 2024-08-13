@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: `${import.meta.env.VITE_BACKENDURL}/api`,
+        target: `https://facul-link-api.vercel.app/api`,
         changeOrigin: true,
         secure: false, //extra added
         rewrite: (path) => path.replace(/^\/api/, ""),
