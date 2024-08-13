@@ -73,7 +73,7 @@ router.post("/sign-in", validateSignIn, async (req, res) => {
     // const tenSeconds = 1000 * 10;
 
     res.cookie("token", token, {
-      // httpOnly: true,
+      httpOnly: false,
       secure: true,
       expires: new Date(Date.now() + oneDayTime),
       sameSite: "None",

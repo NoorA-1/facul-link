@@ -95,7 +95,7 @@ const App = () => {
     if (token) {
       console.log(token);
     }
-  }, [token]);
+  }, [cookies, setCookie]);
 
   console.log(cookies);
 
