@@ -33,12 +33,7 @@ import cookieParser from "cookie-parser";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-app.use(
-  cors({
-    origin: "https://facul-link.vercel.app",
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(morgan("dev"));
 
 app.use(express.static(path.resolve(__dirname, "./public")));
