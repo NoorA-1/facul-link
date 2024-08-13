@@ -29,6 +29,7 @@
     "nodemailer": "^6.9.13",
     "nodemon": "^3.0.1",
     "socket.io": "^4.7.5",
-    "string-similarity": "^4.0.4"
+    "string-similarity": "^4.0.4",
+    "vercel": "^35.2.4"
   }
 }
