@@ -45,7 +45,7 @@ const SignInPage = () => {
       setAlertError("");
       setIsSuccess(true);
       actions.resetForm();
-      handleToken(responseData.token);
+      // handleToken(responseData.token);
       setTimeout(() => {
         if (responseData.role === "admin") {
           navigate("/admin-dashboard");
