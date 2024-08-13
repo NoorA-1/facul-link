@@ -35,15 +35,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 app.use(
   cors({
-    origin: ["https://facul-link.vercel.app", "http://localhost:5173"], // Allow all origins
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"], // Allow all methods
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "X-Requested-With",
-      "Accept",
-    ], // Allow all standard headers
-    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+    origin: ["https://facul-link.vercel.app", "http://localhost:5173"],
+    credentials: true,
   })
 );
 app.use(morgan("dev"));
