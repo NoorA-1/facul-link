@@ -8,6 +8,8 @@ const passwordRegex = new RegExp(
   "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.])[A-Za-z\\d@$!%*?&.]{8,}$"
 );
 
+const cnicRegex = /^[0-9]{5}-[0-9]{7}-[0-9]{1}$/;
+
 const onlyWhiteSpaceRegex = new RegExp("^(?!\\s*$).+");
 const URLRegex =
   /^((http|https):\/\/)?(www.)?(?!.*(http|https|www.))[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+(\/)?.([\w\?[a-zA-Z-_%\/@?]+)*([^\/\w\?[a-zA-Z0-9_-]+=\w+(&[a-zA-Z0-9_]+=\w+)*)?$/;
@@ -41,6 +43,17 @@ export const teacherSignUpValidationSchema = new Yup.object({
     .matches(emailRegex, "Please enter valid email.")
     .max(50, "Email must be not exceed 50 characters long")
     .required("Please enter email"),
+  cnic: Yup.string()
+    .required("Please enter CNIC number")
+    .test(
+      "len",
+      "CNIC should be exactly 13 numeric characters long",
+      (value) => {
+        const numericOnly = value.replace(/\D/g, "");
+        return numericOnly.length === 13;
+      }
+    )
+    .matches(/^[0-9-]*$/, "CNIC can only contain numbers and hyphens"),
   password: Yup.string()
     .matches(
       passwordRegex,

@@ -6,6 +6,7 @@ const teacherSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
+  cnic: { type: String, default: null },
   profileImage: { type: String, default: null },
   profileDescription: { type: String, default: null },
   resumeFile: { type: String, default: null },

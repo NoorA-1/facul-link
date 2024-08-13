@@ -21,7 +21,8 @@ router.post("/sign-up", validateSignUp, async (req, res) => {
     }
     // const isFirstAccount = User.countDocuments() ===0;
     // req.body.role = isFirstAccount ? "admin" : req.body.role;
-    const { firstname, lastname, gender, email, password, role } = req.body;
+    const { firstname, lastname, gender, email, cnic, password, role } =
+      req.body;
     const user = new User({
       firstname,
       lastname,
@@ -38,7 +39,7 @@ router.post("/sign-up", validateSignUp, async (req, res) => {
     }
     let newUserType;
     if (user.role === "teacher") {
-      newUserType = new Teacher({ userId: user._id });
+      newUserType = new Teacher({ userId: user._id, cnic });
     } else if (user.role === "employer") {
       newUserType = new UniEmployer({
         universityName: req.body.universityname,
@@ -76,14 +77,12 @@ router.post("/sign-in", validateSignIn, async (req, res) => {
       expires: new Date(Date.now() + oneDayTime),
     });
 
-    res
-      .status(200)
-      .json({
-        message: "Log In successful",
-        error: false,
-        role: user.role,
-        isProfileSetup: user.isProfileSetup,
-      });
+    res.status(200).json({
+      message: "Log In successful",
+      error: false,
+      role: user.role,
+      isProfileSetup: user.isProfileSetup,
+    });
   } catch (error) {
     console.log(error);
   }

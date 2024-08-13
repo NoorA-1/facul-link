@@ -25,6 +25,7 @@ const initialValues = {
   lastname: "",
   gender: "male",
   email: "",
+  cnic: "",
   password: "",
   conpassword: "",
 };
@@ -246,6 +247,21 @@ const TeacherSignUpPage = () => {
                     </InputAdornment>
                   ),
                 }}
+              />
+              <TextField
+                variant="outlined"
+                type="cnic"
+                label="CNIC"
+                fullWidth
+                className=" mb-3"
+                name="cnic"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.cnic}
+                helperText={
+                  Boolean(errors.cnic) && Boolean(touched.cnic) && errors.cnic
+                }
+                error={Boolean(touched.cnic) && Boolean(errors.cnic)}
               />
               <TextField
                 variant="outlined"
