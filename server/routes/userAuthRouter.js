@@ -85,7 +85,6 @@ router.post("/sign-in", validateSignIn, async (req, res) => {
       error: false,
       role: user.role,
       isProfileSetup: user.isProfileSetup,
-      token,
     });
   } catch (error) {
     console.log(error);

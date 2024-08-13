@@ -5,6 +5,7 @@ import {
   createBrowserRouter,
 } from "react-router-dom";
 import jwtDecode from "jwt-decode";
+import { useCookies } from "react-cookie";
 
 import {
   LandingPage,
@@ -61,8 +62,15 @@ import { loader as AdminJobsLoader } from "./pages/admin/AdminManageJobsPage";
 import { loader as AdminTeacherLoader } from "./pages/admin/AdminManageTeachersPage";
 import { loader as AdminEmployersLoader } from "./pages/admin/AdminManageEmployersPage";
 import { loader as AdminTestsLoader } from "./pages/admin/AdminManageHiringTestsPage";
+// const token = Cookies.get("token");
+// if (token) {
+//   console.log(token);
+//   const decodedToken = jwtDecode(token);
+//   console.log(decodedToken);
+// }
 
 const App = () => {
+  const [cookies, setCookie] = useCookies(["token"]);
   const [token, setToken] = useState({
     token: null,
     role: null,
@@ -70,26 +78,24 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Retrieve the token from localStorage
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decodedToken = jwtDecode(token);
-      setToken({
-        token: token,
-        role: decodedToken.role,
+    if (cookies.token) {
+      const decodedToken = jwtDecode(cookies.token);
+      setToken(() => {
+        return {
+          token: cookies.token,
+          role: decodedToken.role,
+        };
       });
     } else {
       setToken(null);
     }
     setIsLoading(false);
-  }, []);
-
+  }, [cookies, setCookie]);
   useEffect(() => {
     if (token) {
       console.log(token);
     }
   }, [token]);
-
   const router = createBrowserRouter([
     {
       path: "/",
@@ -148,6 +154,7 @@ const App = () => {
             ) : (
               <Navigate to="/" />
             ),
+          // element: <ProfileSetup />,
           loader: profileSetupLoader,
         },
         {
