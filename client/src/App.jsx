@@ -97,6 +97,8 @@ const App = () => {
     }
   }, [token]);
 
+  console.log(cookies);
+
   const router = createBrowserRouter([
     {
       path: "/",
