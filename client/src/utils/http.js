@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const http = axios.create({
-  baseURL: `https://facul-link-api.vercel.app/api/v1`,
+  baseURL: `${import.meta.env.VITE_BACKENDURL}/v1`,
   withCredentials: true,
 });
 
