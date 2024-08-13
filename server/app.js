@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import http from "http";
 import { Server } from "socket.io";
+import cors from "cors";
 
 const app = express();
 const server = http.createServer(app);
@@ -31,6 +32,8 @@ import path from "path";
 import cookieParser from "cookie-parser";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+app.use(cors());
 app.use(morgan("dev"));
 
 app.use(express.static(path.resolve(__dirname, "./public")));
