@@ -29,6 +29,15 @@ const SignInPage = () => {
     event.preventDefault();
   };
 
+  const handleLogin = (token) => {
+    localStorage.setItem("token", token);
+    const decodedToken = jwtDecode(token);
+    setToken({
+      token: token,
+      role: decodedToken.role,
+    });
+  };
+
   const submitSignInData = async (data, actions) => {
     try {
       const { data: responseData } = await http.post("/auth/sign-in", data);
@@ -36,6 +45,7 @@ const SignInPage = () => {
       setAlertError("");
       setIsSuccess(true);
       actions.resetForm();
+      handleToken(responseData.token);
       setTimeout(() => {
         if (responseData.role === "admin") {
           navigate("/admin-dashboard");
