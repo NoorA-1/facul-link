@@ -62,15 +62,9 @@ import { loader as AdminJobsLoader } from "./pages/admin/AdminManageJobsPage";
 import { loader as AdminTeacherLoader } from "./pages/admin/AdminManageTeachersPage";
 import { loader as AdminEmployersLoader } from "./pages/admin/AdminManageEmployersPage";
 import { loader as AdminTestsLoader } from "./pages/admin/AdminManageHiringTestsPage";
-// const token = Cookies.get("token");
-// if (token) {
-//   console.log(token);
-//   const decodedToken = jwtDecode(token);
-//   console.log(decodedToken);
-// }
 
 const App = () => {
-  const [cookies, setCookie] = useCookies(["token"]);
+  const [cookies] = useCookies(["token"]);
   const [token, setToken] = useState({
     token: null,
     role: null,
@@ -80,24 +74,23 @@ const App = () => {
   useEffect(() => {
     if (cookies.token) {
       const decodedToken = jwtDecode(cookies.token);
-      setToken(() => {
-        return {
-          token: cookies.token,
-          role: decodedToken.role,
-        };
+      setToken({
+        token: cookies.token,
+        role: decodedToken.role,
       });
     } else {
       setToken(null);
     }
     setIsLoading(false);
-  }, [cookies, setCookie]);
+  }, [cookies]);
+
   useEffect(() => {
     if (token) {
       console.log(token);
     }
   }, [token]);
 
-  console.log("token :" + token);
+  console.log("token :", token);
 
   const router = createBrowserRouter([
     {
@@ -111,43 +104,47 @@ const App = () => {
         },
         {
           path: "sign-up",
-          element: !token ? (
-            <SignUpPage />
-          ) : token.role !== "admin" ? (
-            <Navigate to="/profile-setup" />
-          ) : (
-            <Navigate to="/admin-dashboard" />
-          ),
+          element:
+            !token && !isLoading ? (
+              <SignUpPage />
+            ) : token?.role !== "admin" ? (
+              <Navigate to="/profile-setup" />
+            ) : (
+              <Navigate to="/admin-dashboard" />
+            ),
         },
         {
           path: "sign-in",
-          element: !token ? (
-            <SignInPage />
-          ) : token.role !== "admin" ? (
-            <Navigate to="/profile-setup" />
-          ) : (
-            <Navigate to="/admin-dashboard" />
-          ),
+          element:
+            !token && !isLoading ? (
+              <SignInPage />
+            ) : token?.role !== "admin" ? (
+              <Navigate to="/profile-setup" />
+            ) : (
+              <Navigate to="/admin-dashboard" />
+            ),
         },
         {
           path: "sign-up-teacher",
-          element: !token ? (
-            <TeacherSignUpPage />
-          ) : token.role !== "admin" ? (
-            <Navigate to="/profile-setup" />
-          ) : (
-            <Navigate to="/admin-dashboard" />
-          ),
+          element:
+            !token && !isLoading ? (
+              <TeacherSignUpPage />
+            ) : token?.role !== "admin" ? (
+              <Navigate to="/profile-setup" />
+            ) : (
+              <Navigate to="/admin-dashboard" />
+            ),
         },
         {
           path: "sign-up-employer",
-          element: !token ? (
-            <EmployerSignUpPage />
-          ) : token.role !== "admin" ? (
-            <Navigate to="/profile-setup" />
-          ) : (
-            <Navigate to="/admin-dashboard" />
-          ),
+          element:
+            !token && !isLoading ? (
+              <EmployerSignUpPage />
+            ) : token?.role !== "admin" ? (
+              <Navigate to="/profile-setup" />
+            ) : (
+              <Navigate to="/admin-dashboard" />
+            ),
         },
         {
           path: "profile-setup",
@@ -157,7 +154,6 @@ const App = () => {
             ) : (
               <Navigate to="/" />
             ),
-          // element: <ProfileSetup />,
           loader: profileSetupLoader,
         },
         {
@@ -414,9 +410,11 @@ const App = () => {
       ],
     },
   ]);
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
+
   return <RouterProvider router={router} />;
 };
 
