@@ -35,7 +35,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 app.use(
   cors({
-    origin: "*", // Your frontend URL
+    origin: "https://facul-link.vercel.app", // Your frontend URL
     credentials: true, // This allows cookies to be sent with requests
   })
 );
