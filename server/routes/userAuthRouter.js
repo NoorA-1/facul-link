@@ -76,7 +76,6 @@ router.post("/sign-in", validateSignIn, async (req, res) => {
       httpOnly: false,
       expires: new Date(Date.now() + oneDayTime),
       // secure: true, // Send cookie only over HTTPS
-      sameSite: "None", // Prevent CSRF attacks
       // maxAge: 3600000, // 1 hour expiry for the cookie
     });
 
