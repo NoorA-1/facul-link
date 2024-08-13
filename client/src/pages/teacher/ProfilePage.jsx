@@ -20,7 +20,7 @@ const ProfilePage = () => {
   const [editMode, setEditMode] = useState(
     paramsStatus === "editMode" ? "true" : false
   );
-  const serverURL = "http://localhost:3000/";
+  const serverURL = import.meta.env.VITE_BACKENDURL;
   const profileImage = Boolean(userData.user.profileImage)
     ? serverURL + userData.user.profileImage?.split("public\\")[1]
     : null;

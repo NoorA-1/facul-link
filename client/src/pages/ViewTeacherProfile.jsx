@@ -15,7 +15,7 @@ const ViewTeacherProfile = () => {
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
 
-  const serverURL = "http://localhost:3000/";
+  const serverURL = import.meta.env.VITE_BACKENDURL;
 
   useEffect(() => {
     const fetchUserData = async () => {

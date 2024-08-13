@@ -7,7 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const ViewEmployerProfilePage = () => {
   const [userData, setUserData] = useState(null);
-  const serverURL = "http://localhost:3000/";
+  const serverURL = import.meta.env.VITE_BACKENDURL;
   const params = useParams();
   const navigate = useNavigate();
   useEffect(() => {

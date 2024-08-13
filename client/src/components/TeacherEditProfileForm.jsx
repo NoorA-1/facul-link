@@ -63,7 +63,7 @@ const TeacherEditProfileForm = ({
   );
   const skillRef = useRef(null);
 
-  const serverURL = "http://localhost:3000/";
+  const serverURL = import.meta.env.VITE_BACKENDURL;
   const profileImage = serverURL + userData.profileImage?.split("public\\")[1];
   const [imageSrc, setImageSrc] = useState(
     Boolean(userData.profileImage) ? profileImage : null

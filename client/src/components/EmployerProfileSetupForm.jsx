@@ -43,7 +43,7 @@ const EmployerProfileSetupForm = ({ userData }) => {
       : "",
   };
 
-  const serverURL = "http://localhost:3000/";
+  const serverURL = import.meta.env.VITE_BACKENDURL;
   const profileImage = serverURL + userData.profileImage?.split("public\\")[1];
   const universityLogo =
     serverURL + userData.universityLogo?.split("public\\")[1];
