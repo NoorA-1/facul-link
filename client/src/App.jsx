@@ -96,6 +96,9 @@ const App = () => {
       console.log(token);
     }
   }, [token]);
+
+  console.log("token :" + token);
+
   const router = createBrowserRouter([
     {
       path: "/",
