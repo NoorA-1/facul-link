@@ -75,6 +75,9 @@ router.post("/sign-in", validateSignIn, async (req, res) => {
     res.cookie("token", token, {
       // httpOnly: false,
       expires: new Date(Date.now() + oneDayTime),
+      secure: true, // Send cookie only over HTTPS
+      sameSite: "Strict", // Prevent CSRF attacks
+      // maxAge: 3600000, // 1 hour expiry for the cookie
     });
 
     res.status(200).json({
