@@ -14,8 +14,11 @@ export const authenticateUser = async (req, res, next) => {
     req.user = { userId, role };
     next();
   } catch (error) {
-    return res
-      .status(401)
-      .json({ message: "Authentication failed, token not found" });
+    return (
+      res
+        .status(401)
+        // .json({ message: "Authentication failed, token not found" });
+        .json({ error: error })
+    );
   }
 };
