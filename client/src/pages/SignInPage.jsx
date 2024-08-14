@@ -12,6 +12,7 @@ import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import { useFormik } from "formik";
 import { signInValidationSchema } from "../schemas";
 import http from "../utils/http";
+import { useCookies } from "react-cookie";
 
 const initialValues = {
   email: "",
@@ -24,28 +25,29 @@ const SignInPage = () => {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
+  const [cookies, setCookie] = useCookies(["token"]);
+
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
 
-  const handleLogin = (token) => {
-    localStorage.setItem("token", token);
-    const decodedToken = jwtDecode(token);
-    setToken({
-      token: token,
-      role: decodedToken.role,
-    });
-  };
-
   const submitSignInData = async (data, actions) => {
     try {
       const { data: responseData } = await http.post("/auth/sign-in", data);
-      // console.log(responseData);
+
+      const { token, role, isProfileSetup } = responseData;
+
+      setCookie("token", token, {
+        path: "/",
+        expires: new Date(Date.now() + 86400000),
+        secure: true,
+        sameSite: "None",
+      });
+
       setAlertError("");
       setIsSuccess(true);
       actions.resetForm();
-      // handleToken(responseData.token);
       setTimeout(() => {
         if (responseData.role === "admin") {
           navigate("/admin-dashboard");
