@@ -41,7 +41,7 @@ const SignInPage = () => {
       setCookie("token", token, {
         path: "/",
         expires: new Date(Date.now() + 86400000),
-        // secure: true,
+        secure: true,
         sameSite: "None",
       });
 
