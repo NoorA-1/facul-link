@@ -39,6 +39,7 @@ const SignInPage = () => {
       const { token, role, isProfileSetup } = responseData;
 
       setCookie("token", token, {
+        domain: import.meta.env.VITE_BACKENDURL,
         path: "/",
         expires: new Date(Date.now() + 86400000),
         secure: true,
