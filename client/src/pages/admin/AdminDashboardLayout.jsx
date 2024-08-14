@@ -12,6 +12,7 @@ import {
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import http from "../../utils/http";
+import { useCookies } from "react-cookie";
 
 const DashboardContext = createContext();
 

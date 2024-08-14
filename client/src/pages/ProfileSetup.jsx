@@ -9,6 +9,7 @@ import {
   TeacherProfileSetupForm,
   EmployerProfileSetupForm,
 } from "../components";
+import { useCookies } from "react-cookie";
 
 export const loader = async () => {
   try {
