@@ -72,12 +72,12 @@ router.post("/sign-in", validateSignIn, async (req, res) => {
 
     // const tenSeconds = 1000 * 10;
 
-    // res.cookie("token", token, {
-    //   httpOnly: false,
-    //   secure: true,
-    //   expires: new Date(Date.now() + oneDayTime),
-    //   sameSite: "None",
-    // });
+    res.cookie("token", token, {
+      httpOnly: false,
+      secure: true,
+      expires: new Date(Date.now() + oneDayTime),
+      sameSite: "None",
+    });
 
     res.status(200).json({
       message: "Log In successful",

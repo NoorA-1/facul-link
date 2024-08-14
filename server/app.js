@@ -35,7 +35,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 app.use(
   cors({
-    origin: [process.env.CORS_ORIGIN, "http://localhost:5173"],
+    origin: process.env.CORS_ORIGIN,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
     allowedHeaders: "Content-Type,Authorization",
