@@ -44,8 +44,8 @@ export const loader = async () => {
 
     return data;
   } catch (error) {
-    // const { data } = await http.get("/auth/sign-out");
-    console.log(error);
+    const { data } = await http.get("/auth/sign-out");
+    // console.log(error);
 
     return null;
   }
