@@ -28,6 +28,8 @@ const ProfileSetup = () => {
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("xl"));
   const buttonSize = isSmallScreen ? "small" : "medium";
   const [loading, setLoading] = useState(true);
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+
   useEffect(() => {
     console.log(data);
     if (data && data.user.userId.isProfileSetup) {
@@ -55,6 +57,7 @@ const ProfileSetup = () => {
 
       const { data } = await http.get("/auth/sign-out");
       console.log(data);
+      removeCookie("token", { path: "/" });
     } catch (error) {
       console.log(error);
     }

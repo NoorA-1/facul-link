@@ -58,6 +58,8 @@ const DashboardLayout = () => {
     Boolean(loaderData.notificationsData) ? loaderData.notificationsData : []
   );
   const [isTestMode, setIsTestMode] = useState(false);
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+
   const navigate = useNavigate();
 
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("xl"));
@@ -110,6 +112,7 @@ const DashboardLayout = () => {
 
       const { data } = await http.get("/auth/sign-out");
       console.log(data);
+      removeCookie("token", { path: "/" });
     } catch (error) {
       console.log(error);
     }

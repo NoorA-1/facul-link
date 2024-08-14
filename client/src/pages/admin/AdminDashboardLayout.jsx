@@ -34,6 +34,8 @@ const AdminDashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const buttonSize = isSmallScreen ? "small" : "medium";
   const [anchorEl, setAnchorEl] = useState(null);
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -52,6 +54,7 @@ const AdminDashboardLayout = () => {
 
       const { data } = await http.get("/auth/sign-out");
       console.log(data);
+      removeCookie("token", { path: "/" });
     } catch (error) {
       console.log(error);
     }
